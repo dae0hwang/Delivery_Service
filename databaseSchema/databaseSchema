@@ -1,0 +1,14 @@
+create table company_members
+(
+    id                 bigint auto_increment
+        primary key,
+    login_name         varchar(30)  not null,
+    password           varchar(128) not null,
+    name               varchar(30)  not null,
+    phone_verification tinyint(1)   not null,
+    registration_date  date         not null,
+    constraint login_name
+        unique (login_name),
+    constraint name
+        unique (name)
+);
