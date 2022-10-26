@@ -1,0 +1,79 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="utf-8">
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <script>
+    window.onload = function () {
+      let txtId = document.getElementById("id");
+      let txtPassword = document.getElementById("password");
+      let txtName = document.getElementById("name");
+      let btnSubmit = document.getElementById("submit");
+
+      btnSubmit.onclick = function () {
+        axios({
+          url: 'http://127.0.0.1:5510/api/delivery-service/company/join',
+          method: 'post',
+          data: {
+            loginName: txtId.value,
+            password: txtPassword.value,
+            name: txtName.value
+          }
+        })
+        .then(function a(response) {
+          console.log(response.data)
+          let responseData = response.data;
+          let status = responseData["status"];
+          if (status =="success"){
+            alert("회원가입에 성공하였습니다.")
+            window.location.href="http://localhost:8080/delivery-service"
+          }else {
+            let error = responseData["errorMessage"];
+            if (error =="duplicatedLoginNameException"){
+              alert("[실패]중복된 아이디 입니다.")
+            }else if (error =="duplicatedNameException"){
+              alert("[실패]중복된 이름 입니다.")
+            }else if (error =="SQLException"){
+              alert("서버에 문제가 있습니다. 잠시 후 시도해주세요.")
+            }
+          }
+        })
+        .catch(function (error) {
+          console.log(error);
+          alert("실패")
+        });
+      };
+    }
+  </script>
+
+</head>
+<body>
+
+<div>
+  <div >
+    <h2>기업멤버 회원가입</h2>
+  </div>
+    <div>
+      <label for="id">아이디</label>
+      <input type="text" id="id" name="loginName" placeholder="id를 입력하세요">
+    </div>
+    <div>
+      <label for="password">비밀번호</label>
+      <input type="text" id="password" name="password" placeholder="비밀번호를 입력하세요">
+    </div>
+    <div>
+      <label for="name">이름</label>
+      <input type="text" id="name" name="name" placeholder="이름을 입력하세요">
+    </div>
+
+    <div>
+      <div>
+        <input type="button" id="submit" value="등록">
+      </div>
+      <div>
+        <input type="button" onclick="location.href='/delivery-service'" value="취소">
+      </div>
+    </div>
+</div> <!-- /container -->
+</body>
+</html>
