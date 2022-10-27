@@ -9,4 +9,5 @@ public class JoinStatus {
 
     private String status;
     private String errorMessage;
+    private String HttpStatusCode;
 }

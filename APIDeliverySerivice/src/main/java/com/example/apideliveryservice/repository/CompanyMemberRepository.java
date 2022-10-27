@@ -82,13 +82,14 @@ public class CompanyMemberRepository {
     }
 
     private CompanyMemberDto getCompanyMemberDto(ResultSet resultSet) throws SQLException {
+        Integer id = resultSet.getInt(1);
         String loginName = resultSet.getString(2);
         String password = resultSet.getString(3);
         String name = resultSet.getString(4);
         int phoneVerification = resultSet.getInt(5);
         LocalDateTime createAt = LocalDate.parse(resultSet.getString(6)
             , DateTimeFormatter.ISO_DATE).atStartOfDay();
-        return new CompanyMemberDto(loginName, password, name, phoneVerification
+        return new CompanyMemberDto(id,loginName, password, name, phoneVerification
             , createAt);
     }
 }

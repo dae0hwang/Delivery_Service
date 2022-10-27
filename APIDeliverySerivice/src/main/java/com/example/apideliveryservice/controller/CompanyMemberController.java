@@ -26,24 +26,27 @@ public class CompanyMemberController {
 
     @PostMapping("/join")
     public JoinStatus joinMember(@RequestBody HashMap<String, String> requestJson) {
-        CompanyMemberDto companyMemberDto = new CompanyMemberDto(requestJson.get("loginName"),
+        CompanyMemberDto companyMemberDto = new CompanyMemberDto(null, requestJson.get("loginName"),
             requestJson.get("password"), requestJson.get("name"), 0
             , LocalDateTime.now());
         try {
             companyJoinService.join(companyMemberDto);
-            JoinStatus success = new JoinStatus("success", null);
+            JoinStatus success = new JoinStatus("success", null
+                , "201 Created");
             return success;
         } catch (SQLException e) {
-            JoinStatus fail = new JoinStatus("fail", "SQLException");
+            JoinStatus fail = new JoinStatus("fail", "SQLException"
+                , "500 Internal Server Error");
             return fail;
         } catch (DuplicatedLoginNameException e) {
             log.info("duplicatedLonginNameError", e);
             JoinStatus fail = new JoinStatus("fail"
-                , "duplicatedLoginNameException");
+                , "duplicatedLoginNameException", "409 Conflict");
             return fail;
         } catch (DuplicatedNameException e) {
             log.info("duplicatedNameError", e);
-            JoinStatus fail = new JoinStatus("fail", "duplicatedNameException");
+            JoinStatus fail = new JoinStatus("fail", "duplicatedNameException"
+                , "409 Conflict");
             return fail;
         }
     }

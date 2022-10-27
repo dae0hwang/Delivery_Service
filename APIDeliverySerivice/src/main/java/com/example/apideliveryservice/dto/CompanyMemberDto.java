@@ -8,6 +8,7 @@ import lombok.Data;
 @AllArgsConstructor
 public class CompanyMemberDto {
 
+    private Integer id;
     private String loginName;
     private String password;
     private String name;
