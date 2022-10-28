@@ -1,0 +1,66 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="utf-8">
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <script>
+    function toDOM(row) {
+      var tr = "";
+      tr += "<tr>";
+      tr += "  <td>" + row.name + "</td>";
+      tr += "  <td><input type='button' value='상세페이지'></td>"
+      tr += "</tr>";
+      return tr;
+    }
+
+    function renderTable(id, dataList) {
+      var trList = "";
+      for (i in dataList) {
+        trList += toDOM(dataList[i]);
+      }
+      document.querySelector("#" + id + " tbody").innerHTML = trList;
+    }
+
+    window.onload = function () {
+      axios({
+        url: 'http://127.0.0.1:5510/api/delivery-service/company/allMember',
+        method: 'get'
+      })
+      .then(function a(response) {
+        let responseData = response.data;
+        let status = responseData["status"];
+        let memberList = responseData["list"];
+
+        if (status == "success") {
+          renderTable("table", memberList);
+        } else {
+          alert("서버에 문제가 있습니다. 잠시 후 시도해주세요.")
+        }
+      })
+      .catch(function (error) {
+        console.log(error);
+        alert("실패")
+      });
+    }
+  </script>
+</head>
+
+<body>
+
+<div>
+  <h2>기업회원 목록</h2>
+  <button th:onclick="|location.href='@{/delivery-service}'|" type="button">돌아가기</button>
+</div>
+
+<table id="table" border="1">
+  <thead>
+  <tr>
+    <th>상호명</th>
+    <th>상세 페이지</th>
+  </tr>
+  </thead>
+  <tbody></tbody>
+</table>
+
+</body>
+</html>

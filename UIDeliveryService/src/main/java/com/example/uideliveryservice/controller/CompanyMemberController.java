@@ -12,4 +12,9 @@ public class CompanyMemberController {
     public String joinForm() {
         return "company/member/joinForm";
     }
+
+    @GetMapping("/members")
+    public String memberList() {
+        return "company/member/memberList";
+    }
 }

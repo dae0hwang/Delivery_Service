@@ -10,6 +10,8 @@ import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -76,6 +78,23 @@ public class CompanyMemberRepository {
             log.error("SQLException", e);
         }
         return Optional.empty();
+    }
+
+    public Optional<List<CompanyMemberDto>> findAllMember(Connection connection) {
+        String sql = "SELECT * FROM company_members";
+        List<CompanyMemberDto> list = new ArrayList<>();
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                while (resultSet.next()) {
+                    CompanyMemberDto companyMemberDto = getCompanyMemberDto(resultSet);
+                    list.add(companyMemberDto);
+                }
+                return Optional.ofNullable(list);
+            }
+        } catch (SQLException e) {
+            log.error("SQLException", e);
+        }
+        return Optional.ofNullable(list);
     }
 
     private CompanyMemberDto getCompanyMemberDto(ResultSet resultSet) throws SQLException {

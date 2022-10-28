@@ -4,12 +4,15 @@ import com.example.apideliveryservice.dto.CompanyMemberDto;
 import com.example.apideliveryservice.repository.CompanyMemberRepository;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class CompanyJoinService {
+public class CompanyMemberService {
 
     private final CompanyMemberRepository companyMemberRepository;
 
@@ -42,5 +45,15 @@ public class CompanyJoinService {
             .ifPresent(m -> {
                 throw new DuplicatedNameException();
             });
+    }
+
+    public List<CompanyMemberDto> findAllMember() throws SQLException {
+        try (Connection connection = companyMemberRepository.connectJdbc()) {
+            List<CompanyMemberDto> allMember = companyMemberRepository.findAllMember(
+                connection).orElse(new ArrayList<>());
+            return allMember;
+        } catch (SQLException e) {
+            throw new SQLException();
+        }
     }
 }
