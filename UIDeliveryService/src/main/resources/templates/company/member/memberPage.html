@@ -1,0 +1,70 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="utf-8">
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <script>
+    window.onload = function () {
+      let url = window.location.href;
+      let id = url.replace('http://localhost:8080/delivery-service/company/members/', '');
+      let addFoodFormUrl = 'http://localhost:8080/delivery-service/company/addFood/'+id;
+      let addFoodBtn = document.getElementById('addFoodBtn');
+      addFoodBtn.onclick =function () {
+        location.href = addFoodFormUrl;
+      }
+    };
+    //음식 상호명 name적용하기
+    //테이블 똑같이 만들기
+    //테이블 가격 수정 옆에 버튼 누르면 가격 수정 폼까지 만드는 것까지.
+
+    // let url = window.location.href;
+    // let id = url.replace('http://localhost:8080/delivery-service/company/members/', '');
+    // let addFoodFormUrl = 'http://localhost:8080/delivery-service/addFood/'+id;
+    // alert(addFoodFormUrl);
+    // function buttonClick() {
+    //   location.href = addFoodFormUrl;
+    // }
+  </script>
+<!--  <script>-->
+<!--    window.onload = function () {-->
+<!--      // let url = window.location.href;-->
+<!--      // let id = url.replace('http://localhost:8080/delivery-service/company/members/', '');-->
+<!--      // function buttonClick() {-->
+<!--      //   let addUrl = '/delivery-service/company/members/'+id+'/addFood';-->
+<!--      //   location.href = addUrl;-->
+<!--      // }-->
+<!--    };-->
+<!--  </script>-->
+</head>
+
+<body>
+  <p>
+    테스트입니다.
+  </p>
+  <div>
+    <h2 >기업 멤버 상호명</h2>
+    <input type="button" value="돌아가기" onclick="location.href='/delivery-service/company/members'">
+    <input id="addFoodBtn" type="button" value="음식 등록하기">
+  </div>
+
+<!--  <div>-->
+<!--  <h3 th:text="|${companyMember.name} 음식 목록|"></h3>-->
+<!--    <table border="1">-->
+<!--      <thead>-->
+<!--      <tr>-->
+<!--        <th>음식 이름</th>-->
+<!--        <th>가격</th>-->
+<!--      </tr>-->
+<!--      </thead>-->
+<!--      <tbody>-->
+<!--      <tr th:each="memeber, memberStat : ${memeberList}">-->
+<!--        <td th:text="${memberStat.count}">count</td>-->
+<!--        <td th:text="${memeber.name}">상호명</td>-->
+<!--      </tr>-->
+
+<!--      </tbody>-->
+<!--    </table>-->
+<!--  </div>-->
+
+</body>
+</html>

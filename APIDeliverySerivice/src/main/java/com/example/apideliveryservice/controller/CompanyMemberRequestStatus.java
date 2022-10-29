@@ -7,10 +7,11 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class RequestStatus {
+public class CompanyMemberRequestStatus {
 
     private String status;
     private String errorMessage;
     private String HttpStatusCode;
     private List<CompanyMemberDto> list;
+    private CompanyMemberDto companyMemberDto;
 }

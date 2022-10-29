@@ -1,7 +1,6 @@
 package com.example.apideliveryservice.controller;
 
 import com.example.apideliveryservice.dto.CompanyMemberDto;
-import com.example.apideliveryservice.repository.CompanyMemberRepository;
 import com.example.apideliveryservice.service.CompanyMemberService;
 import com.example.apideliveryservice.service.DuplicatedLoginNameException;
 import com.example.apideliveryservice.service.DuplicatedNameException;
@@ -26,45 +25,47 @@ import org.springframework.web.bind.annotation.RestController;
 public class CompanyMemberController {
 
     private final CompanyMemberService companyMemberService;
-    private final CompanyMemberRepository repository;
 
     @PostMapping("/join")
-    public RequestStatus joinMember(@RequestBody HashMap<String, String> requestJson) {
+    public CompanyMemberRequestStatus joinMember(@RequestBody HashMap<String, String> requestJson) {
         CompanyMemberDto companyMemberDto = new CompanyMemberDto(null, requestJson.get("loginName"),
             requestJson.get("password"), requestJson.get("name"), 0
             , LocalDateTime.now());
         try {
             companyMemberService.join(companyMemberDto);
-            RequestStatus success = new RequestStatus("success", null
-                , "201 Created", null);
+            CompanyMemberRequestStatus success = new CompanyMemberRequestStatus("success", null
+                , "201 Created", null,null);
             return success;
         } catch (SQLException e) {
-            RequestStatus fail = new RequestStatus("fail", "SQLException"
-                , "500 Internal Server Error", null);
+            CompanyMemberRequestStatus fail = new CompanyMemberRequestStatus("fail", "SQLException"
+                , "500 Internal Server Error", null,null);
             return fail;
         } catch (DuplicatedLoginNameException e) {
-            log.info("duplicatedLonginNameError", e);
-            RequestStatus fail = new RequestStatus("fail"
-                , "duplicatedLoginNameException", "409 Conflict", null);
+            log.error("duplicatedLonginNameError", e);
+            CompanyMemberRequestStatus fail = new CompanyMemberRequestStatus("fail"
+                , "duplicatedLoginNameException", "409 Conflict", null
+            ,null);
             return fail;
         } catch (DuplicatedNameException e) {
-            log.info("duplicatedNameError", e);
-            RequestStatus fail = new RequestStatus("fail", "duplicatedNameException"
-                , "409 Conflict", null);
+            log.error("duplicatedNameError", e);
+            CompanyMemberRequestStatus fail = new CompanyMemberRequestStatus("fail"
+                , "duplicatedNameException", "409 Conflict"
+                , null,null);
             return fail;
         }
     }
 
     @GetMapping("/allMember")
-    public RequestStatus allMember() {
+    public CompanyMemberRequestStatus allMember() {
         try {
             List<CompanyMemberDto> allMember = companyMemberService.findAllMember();
-            RequestStatus success = new RequestStatus("success", null
-                , "200 OK", allMember);
+            CompanyMemberRequestStatus success = new CompanyMemberRequestStatus("success"
+                , null, "200 OK", allMember,null);
             return success;
         } catch (SQLException e) {
-            RequestStatus fail = new RequestStatus("fail", "SQLException"
-                , "500 Internal Server Error", null);
+            CompanyMemberRequestStatus fail = new CompanyMemberRequestStatus("fail"
+                , "SQLException", "500 Internal Server Error", null
+            ,null);
             return fail;
         }
     }

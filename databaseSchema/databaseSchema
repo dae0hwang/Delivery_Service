@@ -12,3 +12,14 @@ create table company_members
     constraint name
         unique (name)
 );
+
+create table company_food
+(
+    id        bigint auto_increment
+        primary key,
+    member_id bigint      not null,
+    name      varchar(30) not null,
+    price     int         not null,
+    constraint name
+        unique (name)
+);

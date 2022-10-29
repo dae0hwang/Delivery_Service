@@ -4,24 +4,31 @@
   <meta charset="utf-8">
   <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
   <script>
-    function toDOM(row) {
-      var tr = "";
-      tr += "<tr>";
-      tr += "  <td>" + row.name + "</td>";
-      tr += "  <td><input type='button' value='상세페이지'></td>"
-      tr += "</tr>";
-      return tr;
-    }
-
-    function renderTable(id, dataList) {
-      var trList = "";
-      for (i in dataList) {
-        trList += toDOM(dataList[i]);
-      }
-      document.querySelector("#" + id + " tbody").innerHTML = trList;
-    }
-
     window.onload = function () {
+      var tBody = document.querySelector('#tBody');
+
+      function makeTable(dataList) {
+        for (i in dataList) {
+          var url = 'http://localhost:8080/delivery-service/company/members/'+dataList[i].id;
+          function buttonClick() {
+            location.href = url;
+          }
+          var textNode = document.createTextNode(dataList[i].name);
+          var tdNode = document.createElement("td");
+          tdNode.appendChild(textNode);
+          var inputNode = document.createElement("input");
+          inputNode.type = "button";
+          inputNode.value = "상세페이지";
+          inputNode.onclick=buttonClick;
+          var tdNode2 = document.createElement("td");
+          tdNode2.appendChild(inputNode);
+          var trNode = document.createElement("tr");
+          trNode.appendChild(tdNode);
+          trNode.appendChild(tdNode2);
+          tBody.appendChild(trNode);
+        }
+      }
+
       axios({
         url: 'http://127.0.0.1:5510/api/delivery-service/company/allMember',
         method: 'get'
@@ -30,9 +37,10 @@
         let responseData = response.data;
         let status = responseData["status"];
         let memberList = responseData["list"];
+        console.log(memberList)
 
         if (status == "success") {
-          renderTable("table", memberList);
+          makeTable(memberList);
         } else {
           alert("서버에 문제가 있습니다. 잠시 후 시도해주세요.")
         }
@@ -49,7 +57,7 @@
 
 <div>
   <h2>기업회원 목록</h2>
-  <button th:onclick="|location.href='@{/delivery-service}'|" type="button">돌아가기</button>
+  <input type="button" onclick="location.href='/delivery-service'" value="돌아가기">
 </div>
 
 <table id="table" border="1">
@@ -59,7 +67,7 @@
     <th>상세 페이지</th>
   </tr>
   </thead>
-  <tbody></tbody>
+  <tbody id="tBody"></tbody>
 </table>
 
 </body>

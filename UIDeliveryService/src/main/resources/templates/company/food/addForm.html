@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <script>
+    window.onload = function () {
+      //취소버튼 함수
+      let url = window.location.href;
+      let id = url.replace("http://localhost:8080/delivery-service/company/addFood/", "");
+      var cancelBtn = document.getElementById('cancel');
+      cancelBtn.onclick = function () {
+        location.href = "http://localhost:8080/delivery-service/company/members/" + id;
+      }
+
+      //음식등록 함수
+      let txtName = document.getElementById("name");
+      let txtPrice = document.getElementById("price");
+      let btnSubmit = document.getElementById("submit");
+      btnSubmit.onclick = function () {
+        axios({
+          url: 'http://127.0.0.1:5510/api/delivery-service/company/addFood',
+          method: 'post',
+          data: {
+            memberId: id,
+            name: txtName.value,
+            price: txtPrice.value
+          }
+        })
+        .then(function a(response) {
+          let responseData = response.data;
+          let status = responseData["status"];
+          if (status == "success") {
+            alert("음식등록에 성공했습니다..")
+            window.location.href = "http://localhost:8080/delivery-service/company/members/" + id;
+          } else {
+            let error = responseData["errorMessage"];
+            if (error == "duplicatedFoodNameException") {
+              alert("[실패]중복된 음식입니다.")
+            } else if (error == "SQLException") {
+              alert("서버에 문제가 있습니다. 잠시 후 시도해주세요.")
+            }
+          }
+        })
+        .catch(function (error) {
+          console.log(error);
+          alert("실패")
+        });
+      };
+    };
+  </script>
+
+  <title>음식등록</title>
+</head>
+<body>
+<div>
+  <h2>음식 등록</h2>
+</div>
+<div>
+  <label for="name">음식이름</label>
+  <input type="text" id="name" placeholder="음식이름을 입력하세요">
+</div>
+<div>
+  <label for="price">가격</label>
+  <input type="text" id="price" placeholder="가격을 입력하세요">
+</div>
+
+<div>
+  <input type="button" id="submit" value="등록">
+</div>
+<div>
+  <input type="button" id="cancel" onclick="location.href='/delivery-service'" value="취소">
+</div>
+
+</body>
+</html>

@@ -55,7 +55,7 @@ public class CompanyMemberRepository {
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 if (resultSet.next()) {
                     CompanyMemberDto companyMemberDto = getCompanyMemberDto(resultSet);
-                    return Optional.of(companyMemberDto);
+                    return Optional.ofNullable(companyMemberDto);
                 }
             }
         } catch (SQLException e) {
@@ -71,7 +71,7 @@ public class CompanyMemberRepository {
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 if (resultSet.next()) {
                     CompanyMemberDto companyMemberDto = getCompanyMemberDto(resultSet);
-                    return Optional.of(companyMemberDto);
+                    return Optional.ofNullable(companyMemberDto);
                 }
             }
         } catch (SQLException e) {
@@ -79,6 +79,22 @@ public class CompanyMemberRepository {
         }
         return Optional.empty();
     }
+
+//    public Optional<CompanyMemberDto> findById(Connection connection, int id) {
+//        String sql = "SELECT * FROM company_members WHERE id=?";
+//        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+//            preparedStatement.setInt(1, id);
+//            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+//                if (resultSet.next()) {
+//                    CompanyMemberDto companyMemberDto = getCompanyMemberDto(resultSet);
+//                    return Optional.ofNullable(companyMemberDto);
+//                }
+//            }
+//        } catch (SQLException e) {
+//            log.error("SQLException", e);
+//        }
+//        return Optional.empty();
+//    }
 
     public Optional<List<CompanyMemberDto>> findAllMember(Connection connection) {
         String sql = "SELECT * FROM company_members";
