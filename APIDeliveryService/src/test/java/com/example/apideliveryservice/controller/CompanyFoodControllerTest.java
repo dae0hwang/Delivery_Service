@@ -180,4 +180,49 @@ class CompanyFoodControllerTest {
             .andExpect(content().json(responseContent))
             .andDo(log());
     }
+
+    @Test
+    @DisplayName("음식 정보 가져오기 성공 Test")
+    void findFood1() throws Exception {
+        //given
+        String url = baseUrl + "/food/information";
+
+        CompanyFoodDto saveFood = new CompanyFoodDto(null, new BigInteger("1"), "foodName",
+            new BigDecimal("3000"));
+        repository.add(connection, saveFood);
+
+        String foodId = "1";
+        CompanyFoodDto findFood = service.findFood(foodId);
+        ResponseCompanyFoodSuccess success = new ResponseCompanyFoodSuccess(200, null,
+            findFood);
+        String responseContent = objectMapper.writeValueAsString(success);
+        //when
+
+        //then
+        mockMvc.perform(get(url).param("foodId", foodId))
+            .andExpect(status().isOk())
+            .andExpect(content().json(responseContent))
+            .andDo(log());
+    }
+
+    @Test
+    @DisplayName("음식 정보 가져오기 실패 Test")
+    void findFood2() throws Exception {
+        //given
+        String url = baseUrl + "/food/information";
+
+        String foodId = "1";
+
+        ResponseCompanyFoodError error = new ResponseCompanyFoodError("/errors/food/find/no-id"
+            , "NonExistentFoodIdException", 404, "find food fail due to no exist food id"
+            , "/api/delivery-service/company/food/information");
+        String responseContent = objectMapper.writeValueAsString(error);
+        //when
+
+        //then
+        mockMvc.perform(get(url).param("foodId", foodId))
+            .andExpect(status().isNotFound())
+            .andExpect(content().json(responseContent))
+            .andDo(log());
+    }
 }

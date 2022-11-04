@@ -3,6 +3,7 @@ package com.example.apideliveryservice.service;
 import com.example.apideliveryservice.dto.CompanyFoodDto;
 import com.example.apideliveryservice.exception.BlackException;
 import com.example.apideliveryservice.exception.DuplicatedFoodNameException;
+import com.example.apideliveryservice.exception.NonExistentFoodIdException;
 import com.example.apideliveryservice.repository.CompanyFoodRepository;
 import java.math.BigInteger;
 import java.sql.Connection;
@@ -76,6 +77,24 @@ public class CompanyFoodService {
             List<CompanyFoodDto> foodList = companyFoodRepository.findAllFood(connection,
                 new BigInteger(memberId)).orElse(new ArrayList<CompanyFoodDto>());
             return foodList;
+        }
+    }
+
+    /**
+     *
+     * @param id
+     * @return findFood
+     * @throws SQLException
+     * @throws NonExistentFoodIdException
+     */
+    public CompanyFoodDto findFood(String id) throws SQLException {
+        try (Connection connection = companyFoodRepository.connectJdbc()) {
+            CompanyFoodDto findFood = companyFoodRepository.findById(
+                connection, new BigInteger(id)).orElse(null);
+            if (findFood == null) {
+                throw new NonExistentFoodIdException();
+            }
+            return findFood;
         }
     }
 }

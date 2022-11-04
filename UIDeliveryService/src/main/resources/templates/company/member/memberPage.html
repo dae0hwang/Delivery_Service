@@ -48,7 +48,7 @@
         let aNode = document.createElement("a");
         aNode.text = dataList[i].price;
         //가격 수정 페이지 이동
-        aNode.href = 'http://localhost:8080/delivery-service/company/member/members';
+        aNode.href = 'http://localhost:8080/delivery-service/company/food/updatePrice/'+dataList[i].id;
         let tdNode2 = document.createElement("td");
         tdNode2.appendChild(aNode)
         let trNode = document.createElement("tr");

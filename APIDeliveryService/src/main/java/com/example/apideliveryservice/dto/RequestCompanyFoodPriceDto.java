@@ -9,7 +9,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class RequestCompanyFoodPriceDto {
 
-    private String memberId;
     private String foodId;
     private String price;
 }

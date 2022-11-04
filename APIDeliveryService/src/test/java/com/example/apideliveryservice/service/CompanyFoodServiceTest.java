@@ -8,6 +8,7 @@ import com.example.apideliveryservice.RepositoryResetHelper;
 import com.example.apideliveryservice.dto.CompanyFoodDto;
 import com.example.apideliveryservice.exception.BlackException;
 import com.example.apideliveryservice.exception.DuplicatedFoodNameException;
+import com.example.apideliveryservice.exception.NonExistentFoodIdException;
 import com.example.apideliveryservice.repository.CompanyFoodRepository;
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -95,4 +96,22 @@ class CompanyFoodServiceTest {
             service.addFood(companyFoodDto2))
             .isInstanceOf(DuplicatedFoodNameException.class);
     }
+
+    @Test
+    @DisplayName("company food 찾기 test")
+    void findMember() throws SQLException {
+        //given
+        CompanyFoodDto saveFood = new CompanyFoodDto(new BigInteger("1"), new BigInteger("11"),
+            "foodName", new BigDecimal("3000"));
+        repository.add(connection, saveFood);
+        //when
+        CompanyFoodDto findFood = service.findFood("1");
+        //then
+        assertThat(findFood).isEqualTo(saveFood);
+        assertThatThrownBy(() ->
+            service.findFood("2"))
+            .isInstanceOf(NonExistentFoodIdException.class);
+    }
+
+
 }

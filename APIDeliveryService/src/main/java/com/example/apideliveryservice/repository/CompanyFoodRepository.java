@@ -82,4 +82,19 @@ public class CompanyFoodRepository {
             }
         }
     }
+
+    public Optional<CompanyFoodDto> findById(Connection connection, BigInteger id)
+        throws SQLException {
+        String sql = "SELECT * FROM company_food WHERE id = ?";
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.setBigDecimal(1, new BigDecimal(id));
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                if (resultSet.next()) {
+                    CompanyFoodDto companyFoodDto = getCompanyFoodDto(resultSet);
+                    return Optional.ofNullable(companyFoodDto);
+                }
+            }
+            return Optional.empty();
+        }
+    }
 }

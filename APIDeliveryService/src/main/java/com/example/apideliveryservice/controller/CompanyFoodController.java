@@ -6,6 +6,7 @@ import com.example.apideliveryservice.dto.ResponseCompanyFood;
 import com.example.apideliveryservice.dto.ResponseCompanyFoodError;
 import com.example.apideliveryservice.dto.ResponseCompanyFoodSuccess;
 import com.example.apideliveryservice.exception.BlackException;
+import com.example.apideliveryservice.exception.NonExistentFoodIdException;
 import com.example.apideliveryservice.service.CompanyFoodService;
 import com.example.apideliveryservice.exception.DuplicatedFoodNameException;
 import java.math.BigDecimal;
@@ -35,14 +36,14 @@ public class CompanyFoodController {
 
     @PostMapping("food/addFood")
     public ResponseEntity<ResponseCompanyFood> addFood(
-        @RequestBody RequestCompanyFoodDto requestCompanyFood) throws SQLException{
+        @RequestBody RequestCompanyFoodDto requestCompanyFood) throws SQLException {
 
         CompanyFoodDto companyFoodDto = new CompanyFoodDto(null
-            , requestCompanyFood.getMemberId().isBlank()?
-            null:new BigInteger(requestCompanyFood.getMemberId())
+            , requestCompanyFood.getMemberId().isBlank() ?
+            null : new BigInteger(requestCompanyFood.getMemberId())
             , requestCompanyFood.getName()
-            , requestCompanyFood.getPrice().isBlank()?
-            null:new BigDecimal(requestCompanyFood.getPrice()));
+            , requestCompanyFood.getPrice().isBlank() ?
+            null : new BigDecimal(requestCompanyFood.getPrice()));
         ResponseCompanyFoodSuccess success;
         ResponseCompanyFoodError error;
         try {
@@ -71,5 +72,22 @@ public class CompanyFoodController {
         List<CompanyFoodDto> allFood = companyFoodService.findAllFood(memberId);
         ResponseCompanyFoodSuccess success = new ResponseCompanyFoodSuccess(200, allFood, null);
         return ResponseEntity.status(HttpStatus.OK).body(success);
+    }
+
+    @GetMapping("/food/information")
+    public ResponseEntity<ResponseCompanyFood> foodInformation(
+        @RequestParam("foodId") String foodId) throws SQLException {
+        try {
+            CompanyFoodDto findFood = companyFoodService.findFood(foodId);
+            ResponseCompanyFoodSuccess success = new ResponseCompanyFoodSuccess(200, null,
+                findFood);
+            return ResponseEntity.status(HttpStatus.OK).body(success);
+        } catch (NonExistentFoodIdException e) {
+            log.info("ex", e);
+            ResponseCompanyFoodError error = new ResponseCompanyFoodError("/errors/food/find/no-id"
+                , "NonExistentFoodIdException", 404, "find food fail due to no exist food id"
+                , "/api/delivery-service/company/food/information");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+        }
     }
 }

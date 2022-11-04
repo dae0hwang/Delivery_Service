@@ -1,10 +1,93 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
-  <meta charset="UTF-8">
-  <title>Title</title>
+  <meta charset="utf-8">
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <script>
+    window.onload = function () {
+      //foodId
+      let url = window.location.href;
+      let foodId = url.replace('http://localhost:8080/delivery-service/company/food/updatePrice/', '');
+
+      //취소버튼 이전 페이지
+      let referrer = document.referrer;
+      let cancelBtn = document.getElementById("cancelBtn");
+      cancelBtn.onclick = function () {
+        location.href = referrer;
+      };
+
+      //음식업데이트 등록
+      let idInput = document.getElementById("id");
+      let priceInput = document.getElementById("price");
+      let btnSubmit = document.getElementById("submit");
+      //food id로 정보를 받아와서 idInput.value 값 넣기
+      axios({
+        url
+      });
+
+
+      let txtId = document.getElementById("id");
+      let txtPassword = document.getElementById("password");
+      let txtName = document.getElementById("name");
+
+      btnSubmit.onclick = function () {
+        axios({
+          url: 'http://127.0.0.1:5510/api/delivery-service/company/member/join',
+          method: 'post',
+          data: {
+            loginName: txtId.value,
+            password: txtPassword.value,
+            name: txtName.value
+          }
+        })
+        .then(function (response) {
+          let status = response.status;
+          if (status == 201) {
+            alert("회원가입에 성공하였습니다.");
+            window.location.href="http://localhost:8080/delivery-service";
+          }
+        })
+        .catch(function (error) {
+          let status = error.response.status;
+          if (status == 409) {
+            alert("[실패]중복된 아이디 입니다.")
+          }else if (status == 400) {
+            alert("[실패]아이디 비밀번호 이름은 공백을 허용하지 않습니다.");
+          } else {
+            alert("[실패] 잠시 후 시도해 주세요");
+          }
+        });
+      };
+
+
+    }
+  </script>
+
 </head>
 <body>
 
+<div>
+  <div >
+    <h2>음식 가격 변경</h2>
+  </div>
+  <div>
+    <label for="id">이름</label>
+    <input type="text" id="id" readonly>
+  </div>
+  <div>
+    <label for="price">가격</label>
+    <input type="text" id="price" placeholder="변경할 가격을 입력하세요">
+  </div>
+
+
+  <div>
+    <div>
+      <input type="button" id="submit" value="등록">
+    </div>
+    <div>
+      <input type="button" id='cancelBtn' value="취소">
+    </div>
+  </div>
+</div> <!-- /container -->
 </body>
 </html>

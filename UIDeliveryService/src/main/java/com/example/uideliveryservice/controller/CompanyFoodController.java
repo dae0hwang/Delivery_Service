@@ -13,7 +13,7 @@ public class CompanyFoodController {
         return "company/food/addForm";
     }
 
-    @GetMapping("food/updatePrice/{memberId}")
+    @GetMapping("food/updatePrice/{foodId}")
     public String updatePriceForm() {
         return "company/food/updatePriceForm";
     }

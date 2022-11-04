@@ -74,6 +74,13 @@ public class CompanyMemberService {
         }
     }
 
+    /**
+     *
+     * @param id
+     * @return findCompanyMember
+     * @throws SQLException
+     * @throws NonExistentMemberIdException
+     */
     public CompanyMemberDto findMember(String id) throws SQLException {
         try (Connection connection = companyMemberRepository.connectJdbc()) {
             CompanyMemberDto member = companyMemberRepository.findById(
