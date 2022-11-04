@@ -97,4 +97,14 @@ public class CompanyFoodRepository {
             return Optional.empty();
         }
     }
+
+    public void updatePrice(Connection connection, BigInteger id,
+        BigDecimal price) throws SQLException {
+        String sql = "UPDATE company_food SET price=? WHERE id=?";
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.setBigDecimal(1, price);
+            preparedStatement.setBigDecimal(2, new BigDecimal(id));
+            preparedStatement.executeUpdate();
+        }
+    }
 }

@@ -112,4 +112,19 @@ class CompanyFoodRepositoryTest {
         assertThat(findFood1).isEqualTo(saveFood);
         assertThat(findFood2).isNull();
     }
+
+    @Test
+    @DisplayName("가격 변경 Test")
+    void updatePrice() throws SQLException {
+        //given
+        CompanyFoodDto saveFood = new CompanyFoodDto(new BigInteger("1"), new BigInteger("11"),
+            "name", new BigDecimal("3000"));
+        repository.add(connection, saveFood);
+        //when
+        repository.updatePrice(connection, new BigInteger("1"), new BigDecimal("5000"));
+        CompanyFoodDto findFood = repository.findById(connection, new BigInteger("1"))
+            .orElse(null);
+        //then
+        assertThat(findFood.getPrice()).isEqualTo(new BigDecimal("5000"));
+    }
 }

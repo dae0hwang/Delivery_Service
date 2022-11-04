@@ -16,50 +16,56 @@
         location.href = referrer;
       };
 
-      //음식업데이트 등록
-      let idInput = document.getElementById("id");
-      let priceInput = document.getElementById("price");
-      let btnSubmit = document.getElementById("submit");
       //food id로 정보를 받아와서 idInput.value 값 넣기
+      let idInput = document.getElementById("id");
+      let foodInfo;
       axios({
-        url
+        url: 'http://127.0.0.1:5510/api/delivery-service/company/food/information',
+        method: 'get',
+        params: {
+          foodId: foodId
+        }
+      })
+      .then(function (response) {
+        foodInfo = response.data.companyFoodDto;
+        idInput.value = foodInfo.name;
+      })
+      .catch(function (error) {
+        console.log(error);
       });
 
-
-      let txtId = document.getElementById("id");
-      let txtPassword = document.getElementById("password");
-      let txtName = document.getElementById("name");
+      //음식 업데이트 등록 버튼 연결
+      let priceInput = document.getElementById("price");
+      let btnSubmit = document.getElementById("submit");
 
       btnSubmit.onclick = function () {
         axios({
-          url: 'http://127.0.0.1:5510/api/delivery-service/company/member/join',
-          method: 'post',
+          url: 'http://127.0.0.1:5510/api/delivery-service/company/food/update',
+          method: 'put',
           data: {
-            loginName: txtId.value,
-            password: txtPassword.value,
-            name: txtName.value
+            foodId: foodId,
+            price: priceInput.value
           }
         })
         .then(function (response) {
           let status = response.status;
-          if (status == 201) {
-            alert("회원가입에 성공하였습니다.");
-            window.location.href="http://localhost:8080/delivery-service";
+          if (status == 200) {
+            alert("음식 가격 변경에 성공했습니다.")
+            window.location.href = referrer;
           }
         })
         .catch(function (error) {
-          let status = error.response.status;
-          if (status == 409) {
-            alert("[실패]중복된 아이디 입니다.")
-          }else if (status == 400) {
-            alert("[실패]아이디 비밀번호 이름은 공백을 허용하지 않습니다.");
+          let errorTitle = error.response.data.title;
+          if (errorTitle == 'BlackException') {
+            alert("[실패]음식 가격을 입력하세요.");
+          } else if (errorTitle == 'NotDigitException') {
+            alert("[실패]음식 가격은 숫자여야 합니다");
           } else {
             alert("[실패] 잠시 후 시도해 주세요");
           }
         });
+
       };
-
-
     }
   </script>
 

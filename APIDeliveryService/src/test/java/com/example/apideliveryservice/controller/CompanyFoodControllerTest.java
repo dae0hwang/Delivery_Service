@@ -3,6 +3,7 @@ package com.example.apideliveryservice.controller;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.log;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -10,11 +11,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.example.apideliveryservice.RepositoryResetHelper;
 import com.example.apideliveryservice.dto.CompanyFoodDto;
 import com.example.apideliveryservice.dto.RequestCompanyFoodDto;
+import com.example.apideliveryservice.dto.RequestCompanyFoodPriceDto;
 import com.example.apideliveryservice.dto.ResponseCompanyFoodError;
 import com.example.apideliveryservice.dto.ResponseCompanyFoodSuccess;
 import com.example.apideliveryservice.dto.ResponseCompanyMemberSuccess;
 import com.example.apideliveryservice.repository.CompanyFoodRepository;
 import com.example.apideliveryservice.service.CompanyFoodService;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -222,6 +225,75 @@ class CompanyFoodControllerTest {
         //then
         mockMvc.perform(get(url).param("foodId", foodId))
             .andExpect(status().isNotFound())
+            .andExpect(content().json(responseContent))
+            .andDo(log());
+    }
+
+    @Test
+    @DisplayName("음식 가격 update 성공 Test")
+    void updatePrice1() throws Exception {
+        //given
+        String url = baseUrl + "/food/update";
+
+        RequestCompanyFoodPriceDto request = new RequestCompanyFoodPriceDto("1", "5000");
+        String requestJson = objectMapper.writeValueAsString(request);
+        ResponseCompanyFoodSuccess success = new ResponseCompanyFoodSuccess(200, null, null);
+        String responseContent = objectMapper.writeValueAsString(success);
+        //when
+
+        //then
+        mockMvc.perform(put(url)
+                .contentType("application/json")
+                .content(requestJson))
+            .andExpect(status().isOk())
+            .andExpect(content().json(responseContent))
+            .andDo(log());
+    }
+
+    @Test
+    @DisplayName("음식 가격 update 실패 빈 price request Test")
+    void updatePrice2() throws Exception {
+        //given
+        String url = baseUrl + "/food/update";
+
+        RequestCompanyFoodPriceDto request = new RequestCompanyFoodPriceDto("1", "");
+        String requestJson = objectMapper.writeValueAsString(request);
+        ResponseCompanyFoodError error = new ResponseCompanyFoodError(
+            "/errors/food/update/black-input"
+            , "BlackException", 400, "update food price fail due to black request input"
+            , "/api/delivery-service/company/food/update");
+        String responseContent = objectMapper.writeValueAsString(error);
+        //when
+
+        //then
+        mockMvc.perform(put(url)
+                .contentType("application/json")
+                .content(requestJson))
+            .andExpect(status().isBadRequest())
+            .andExpect(content().json(responseContent))
+            .andDo(log());
+    }
+
+    @Test
+    @DisplayName("음식 가격 update 실패 숫자가 아닌 price input Test")
+    void updatePrice3() throws Exception {
+        //given
+        String url = baseUrl + "/food/update";
+
+        RequestCompanyFoodPriceDto request = new RequestCompanyFoodPriceDto("1", "a2a2");
+        String requestJson = objectMapper.writeValueAsString(request);
+        ResponseCompanyFoodError error = new ResponseCompanyFoodError(
+            "/errors/food/update/not-digit"
+            , "NotDigitException", 400, "update food price fail due not digit price input"
+            , "/api/delivery-service/company/food/update");
+        String responseContent = objectMapper.writeValueAsString(error);
+        //when
+
+        //then
+        mockMvc.perform(put(url)
+                .contentType("application/json")
+                .content(requestJson))
+            .andExpect(status().isBadRequest())
             .andExpect(content().json(responseContent))
             .andDo(log());
     }

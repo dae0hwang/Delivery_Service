@@ -9,11 +9,13 @@ import com.example.apideliveryservice.dto.CompanyFoodDto;
 import com.example.apideliveryservice.exception.BlackException;
 import com.example.apideliveryservice.exception.DuplicatedFoodNameException;
 import com.example.apideliveryservice.exception.NonExistentFoodIdException;
+import com.example.apideliveryservice.exception.NotDigitException;
 import com.example.apideliveryservice.repository.CompanyFoodRepository;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.Connection;
 import java.sql.SQLException;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -22,6 +24,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
 @SpringBootTest
+@Slf4j
 @ActiveProfiles("db-h2")
 class CompanyFoodServiceTest {
 
@@ -113,5 +116,23 @@ class CompanyFoodServiceTest {
             .isInstanceOf(NonExistentFoodIdException.class);
     }
 
-
+    @Test
+    @DisplayName("food price 변경 Test")
+    void updatePrice() throws SQLException {
+        //given
+        CompanyFoodDto saveFood = new CompanyFoodDto(new BigInteger("1"), new BigInteger("11"),
+            "foodName", new BigDecimal("3000"));
+        repository.add(connection, saveFood);
+        //when
+        service.updatePrice("1", "5000");
+        CompanyFoodDto findFood = repository.findById(connection, new BigInteger("1")).orElse(null);
+        //then
+        assertThat(findFood.getPrice()).isEqualTo("5000");
+        assertThatThrownBy(() ->
+            service.updatePrice("1", ""))
+            .isInstanceOf(BlackException.class);
+        assertThatThrownBy(() ->
+            service.updatePrice("1", "a11a"))
+            .isInstanceOf(NotDigitException.class);
+    }
 }

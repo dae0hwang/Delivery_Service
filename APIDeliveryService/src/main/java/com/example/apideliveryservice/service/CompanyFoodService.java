@@ -4,7 +4,9 @@ import com.example.apideliveryservice.dto.CompanyFoodDto;
 import com.example.apideliveryservice.exception.BlackException;
 import com.example.apideliveryservice.exception.DuplicatedFoodNameException;
 import com.example.apideliveryservice.exception.NonExistentFoodIdException;
+import com.example.apideliveryservice.exception.NotDigitException;
 import com.example.apideliveryservice.repository.CompanyFoodRepository;
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -13,6 +15,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 
 @Service
@@ -95,6 +98,27 @@ public class CompanyFoodService {
                 throw new NonExistentFoodIdException();
             }
             return findFood;
+        }
+    }
+
+    /**
+     *
+     * @param foodId
+     * @param price
+     * @throws SQLException
+     * @throws BlackException
+     * @throws NotDigitException
+     */
+    public void updatePrice(String foodId, String price) throws SQLException {
+        try (Connection connection = companyFoodRepository.connectJdbc()) {
+            if (price == "") {
+                throw new BlackException();
+            } else if (!price.chars().allMatch(Character::isDigit)) {
+                throw new NotDigitException();
+            } else {
+                companyFoodRepository.updatePrice(connection, new BigInteger(foodId),
+                    new BigDecimal(price));
+            }
         }
     }
 }
