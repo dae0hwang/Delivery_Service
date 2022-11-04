@@ -11,8 +11,6 @@ import com.example.apideliveryservice.exception.NonExistentFoodIdException;
 import com.example.apideliveryservice.exception.NotDigitException;
 import com.example.apideliveryservice.service.CompanyFoodService;
 import com.example.apideliveryservice.exception.DuplicatedFoodNameException;
-import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.sql.SQLException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -40,17 +38,10 @@ public class CompanyFoodController {
     @PostMapping("food/addFood")
     public ResponseEntity<ResponseCompanyFood> addFood(
         @RequestBody RequestCompanyFoodDto requestCompanyFood) throws SQLException {
-
-        CompanyFoodDto companyFoodDto = new CompanyFoodDto(null
-            , requestCompanyFood.getMemberId().isBlank() ?
-            null : new BigInteger(requestCompanyFood.getMemberId())
-            , requestCompanyFood.getName()
-            , requestCompanyFood.getPrice().isBlank() ?
-            null : new BigDecimal(requestCompanyFood.getPrice()));
         ResponseCompanyFoodSuccess success;
         ResponseCompanyFoodError error;
         try {
-            companyFoodService.addFood(companyFoodDto);
+            companyFoodService.addFood(requestCompanyFood);
             success = new ResponseCompanyFoodSuccess(201, null, null);
             return ResponseEntity.status(HttpStatus.CREATED).body(success);
         } catch (DuplicatedFoodNameException e) {
@@ -64,6 +55,12 @@ public class CompanyFoodController {
             log.info("ex", e);
             error = new ResponseCompanyFoodError("/errors/food/add/blank-input"
                 , "BlackException", 400, "company food add fail due to blank input"
+                , "/api/delivery-service/company/food/addFood");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+        } catch (NotDigitException e) {
+            log.info("ex", e);
+            error = new ResponseCompanyFoodError("/errors/food/add/not-digit"
+                , "NotDigitException", 400, "company food add fail due to not digit input"
                 , "/api/delivery-service/company/food/addFood");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
         }

@@ -160,6 +160,48 @@ class CompanyFoodControllerTest {
     }
 
     @Test
+    @DisplayName("숫자가 아닌 memberId, price input 회원 가입 실패 Test")
+    void joinMember4() throws Exception {
+        //given
+        String url = baseUrl + "/food/addFood";
+
+        RequestCompanyFoodDto requestCompanyFoodDto1 = new RequestCompanyFoodDto(
+            "1", "foodName", "notDigit");
+        String requestJson1 = objectMapper.writeValueAsString(requestCompanyFoodDto1);
+        RequestCompanyFoodDto requestCompanyFoodDto2 = new RequestCompanyFoodDto(
+            "notDigit", "foodName", "5000");
+        String requestJson2 = objectMapper.writeValueAsString(requestCompanyFoodDto2);
+        RequestCompanyFoodDto requestCompanyFoodDto3 = new RequestCompanyFoodDto(
+            "notDigit", "foodName", "notDigit");
+        String requestJson3 = objectMapper.writeValueAsString(requestCompanyFoodDto3);
+
+        ResponseCompanyFoodError error = new ResponseCompanyFoodError("/errors/food/add/not-digit"
+            , "NotDigitException", 400, "company food add fail due to not digit input"
+            , "/api/delivery-service/company/food/addFood");
+        String responseContent = objectMapper.writeValueAsString(error);
+        //when
+        //then
+        mockMvc.perform(post(url)
+                .contentType("application/json")
+                .content(requestJson1))
+            .andExpect(status().isBadRequest())
+            .andExpect(content().json(responseContent))
+            .andDo(log());
+        mockMvc.perform(post(url)
+                .contentType("application/json")
+                .content(requestJson2))
+            .andExpect(status().isBadRequest())
+            .andExpect(content().json(responseContent))
+            .andDo(log());
+        mockMvc.perform(post(url)
+                .contentType("application/json")
+                .content(requestJson3))
+            .andExpect(status().isBadRequest())
+            .andExpect(content().json(responseContent))
+            .andDo(log());
+    }
+
+    @Test
     @DisplayName("memberId 별 음식 리스트 가져오기 Test")
     void allFood() throws Exception {
         //given

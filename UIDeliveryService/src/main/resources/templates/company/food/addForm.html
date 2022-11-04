@@ -35,12 +35,14 @@
           }
         })
         .catch(function (error) {
-          let status = error.response.status;
-          if (status == 409) {
+          let errorTitle = error.response.data.title;
+          if (errorTitle == 'DuplicatedFoodNameException') {
             alert("[실패]중복된 음식 입니다.")
-          }else if (status == 400) {
+          }else if (errorTitle == 'BlackException') {
             alert("[실패]음식이름과 가격은 공백을 허용하지 않습니다.");
-          } else {
+          }else if (errorTitle == 'NotDigitException') {
+            alert("[실패]가격은 숫자를 입력해야 합니다.");
+          }else {
             alert("[실패] 잠시 후 시도해 주세요");
           }
         });
