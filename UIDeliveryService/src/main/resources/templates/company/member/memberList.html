@@ -5,24 +5,28 @@
   <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
   <script>
     window.onload = function () {
-      var tBody = document.querySelector('#tBody');
+
+      let tBody = document.querySelector('#tBody');
 
       function makeTable(dataList) {
         for (i in dataList) {
-          var url = 'http://localhost:8080/delivery-service/company/members/'+dataList[i].id;
-          function buttonClick() {
-            location.href = url;
-          }
-          var textNode = document.createTextNode(dataList[i].name);
-          var tdNode = document.createElement("td");
-          tdNode.appendChild(textNode);
-          var inputNode = document.createElement("input");
-          inputNode.type = "button";
-          inputNode.value = "상세페이지";
-          inputNode.onclick=buttonClick;
-          var tdNode2 = document.createElement("td");
-          tdNode2.appendChild(inputNode);
-          var trNode = document.createElement("tr");
+
+          let textNode = document.createTextNode(dataList[i].name);
+          let tdNode = document.createElement("td");
+          tdNode.appendChild(textNode)
+          // let inputNode = document.createElement("input");
+          // inputNode.type = "button";
+          // inputNode.value = "상세페이지";
+          // inputNode.onclick = function () {
+          //   location.href = 'http://localhost:8080/delivery-service/company/member/members/'+dataList[i].id
+          // };
+          let aNode = document.createElement("a");
+          aNode.text="상세페이지"
+          aNode.href='http://localhost:8080/delivery-service/company/member/members/'+dataList[i].id
+          let tdNode2 = document.createElement("td");
+          tdNode2.appendChild(aNode)
+          // tdNode2.appendChild(inputNode);
+          let trNode = document.createElement("tr");
           trNode.appendChild(tdNode);
           trNode.appendChild(tdNode2);
           tBody.appendChild(trNode);
@@ -30,24 +34,21 @@
       }
 
       axios({
-        url: 'http://127.0.0.1:5510/api/delivery-service/company/allMember',
+        url: 'http://127.0.0.1:5510/api/delivery-service/company/member/allMember',
         method: 'get'
       })
       .then(function a(response) {
         let responseData = response.data;
-        let status = responseData["status"];
+        let status = response.status;
         let memberList = responseData["list"];
         console.log(memberList)
-
-        if (status == "success") {
+        if (status == 200) {
           makeTable(memberList);
-        } else {
-          alert("서버에 문제가 있습니다. 잠시 후 시도해주세요.")
         }
       })
       .catch(function (error) {
         console.log(error);
-        alert("실패")
+        alert("서버에 문제가 있습니다. 잠시후 시도해 주세요.")
       });
     }
   </script>

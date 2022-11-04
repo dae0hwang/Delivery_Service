@@ -7,10 +7,10 @@
     window.onload = function () {
       //취소버튼 함수
       let url = window.location.href;
-      let id = url.replace("http://localhost:8080/delivery-service/company/addFood/", "");
+      let id = url.replace("http://localhost:8080/delivery-service/company/food/addFood/", "");
       var cancelBtn = document.getElementById('cancel');
       cancelBtn.onclick = function () {
-        location.href = "http://localhost:8080/delivery-service/company/members/" + id;
+        location.href = "http://localhost:8080/delivery-service/company/member/members/" + id;
       }
 
       //음식등록 함수
@@ -19,7 +19,7 @@
       let btnSubmit = document.getElementById("submit");
       btnSubmit.onclick = function () {
         axios({
-          url: 'http://127.0.0.1:5510/api/delivery-service/company/addFood',
+          url: 'http://127.0.0.1:5510/api/delivery-service/company/food/addFood',
           method: 'post',
           data: {
             memberId: id,
@@ -28,23 +28,21 @@
           }
         })
         .then(function a(response) {
-          let responseData = response.data;
-          let status = responseData["status"];
-          if (status == "success") {
-            alert("음식등록에 성공했습니다..")
-            window.location.href = "http://localhost:8080/delivery-service/company/members/" + id;
-          } else {
-            let error = responseData["errorMessage"];
-            if (error == "duplicatedFoodNameException") {
-              alert("[실패]중복된 음식입니다.")
-            } else if (error == "SQLException") {
-              alert("서버에 문제가 있습니다. 잠시 후 시도해주세요.")
-            }
+          let status = response.status;
+          if (status == 201) {
+            alert("음식등록에 성공했습니다.");
+            window.location.href = "http://localhost:8080/delivery-service/company/member/members/" + id;
           }
         })
         .catch(function (error) {
-          console.log(error);
-          alert("실패")
+          let status = error.response.status;
+          if (status == 409) {
+            alert("[실패]중복된 음식 입니다.")
+          }else if (status == 400) {
+            alert("[실패]음식이름과 가격은 공백을 허용하지 않습니다.");
+          } else {
+            alert("[실패] 잠시 후 시도해 주세요");
+          }
         });
       };
     };

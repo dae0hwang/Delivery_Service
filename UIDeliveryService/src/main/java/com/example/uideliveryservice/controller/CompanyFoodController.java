@@ -8,8 +8,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("/delivery-service/company")
 public class CompanyFoodController {
 
-    @GetMapping("/addFood/{memberId}")
-    public String addForm22() {
+    @GetMapping("food/addFood/{memberId}")
+    public String addForm() {
         return "company/food/addForm";
+    }
+
+    @GetMapping("food/updatePrice/{memberId}")
+    public String updatePriceForm() {
+        return "company/food/updatePriceForm";
     }
 }

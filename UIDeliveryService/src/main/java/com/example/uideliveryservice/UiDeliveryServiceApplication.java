@@ -9,5 +9,4 @@ public class UiDeliveryServiceApplication {
     public static void main(String[] args) {
         SpringApplication.run(UiDeliveryServiceApplication.class, args);
     }
-
 }

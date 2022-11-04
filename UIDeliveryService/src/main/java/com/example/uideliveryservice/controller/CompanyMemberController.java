@@ -8,17 +8,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("/delivery-service/company")
 public class CompanyMemberController {
 
-    @GetMapping("/join")
+    @GetMapping("member/join")
     public String joinForm() {
         return "company/member/joinForm";
     }
 
-    @GetMapping("/members")
+    @GetMapping("member/members")
     public String memberList() {
         return "company/member/memberList";
     }
 
-    @GetMapping("/members/{memberId}")
+    @GetMapping("member/members/{memberId}")
     public String memberPage() {
         return "company/member/memberPage";
     }
