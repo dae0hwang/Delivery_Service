@@ -3,7 +3,6 @@ package com.example.apideliveryservice.controller;
 import com.example.apideliveryservice.dto.CompanyFoodDto;
 import com.example.apideliveryservice.dto.RequestCompanyFoodDto;
 import com.example.apideliveryservice.dto.RequestCompanyFoodPriceDto;
-import com.example.apideliveryservice.dto.ResponseCompanyFood;
 import com.example.apideliveryservice.dto.ResponseCompanyFoodError;
 import com.example.apideliveryservice.dto.ResponseCompanyFoodSuccess;
 import com.example.apideliveryservice.exception.BlackException;
@@ -36,7 +35,7 @@ public class CompanyFoodController {
     private final CompanyFoodService companyFoodService;
 
     @PostMapping("food/addFood")
-    public ResponseEntity<ResponseCompanyFood> addFood(
+    public ResponseEntity addFood(
         @RequestBody RequestCompanyFoodDto requestCompanyFood) throws SQLException {
         ResponseCompanyFoodSuccess success;
         ResponseCompanyFoodError error;
@@ -67,7 +66,7 @@ public class CompanyFoodController {
     }
 
     @GetMapping("/food/allFood")
-    public ResponseEntity<ResponseCompanyFood> allFood(@RequestParam("memberId") String memberId)
+    public ResponseEntity allFood(@RequestParam("memberId") String memberId)
         throws SQLException {
         List<CompanyFoodDto> allFood = companyFoodService.findAllFood(memberId);
         ResponseCompanyFoodSuccess success = new ResponseCompanyFoodSuccess(200, allFood, null);
@@ -75,7 +74,7 @@ public class CompanyFoodController {
     }
 
     @GetMapping("/food/information")
-    public ResponseEntity<ResponseCompanyFood> foodInformation(
+    public ResponseEntity foodInformation(
         @RequestParam("foodId") String foodId) throws SQLException {
         try {
             CompanyFoodDto findFood = companyFoodService.findFood(foodId);
@@ -92,7 +91,7 @@ public class CompanyFoodController {
     }
 
     @PutMapping("/food/update")
-    public ResponseEntity<ResponseCompanyFood> updatePrice(
+    public ResponseEntity updatePrice(
         @RequestBody RequestCompanyFoodPriceDto request) throws SQLException {
         try {
             companyFoodService.updatePrice(request.getFoodId(), request.getPrice());

@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ResponseCompanyMemberSuccess implements ResponseCompanyMember{
+public class ResponseCompanyMemberSuccess {
 
     private int status;
     private List<CompanyMemberDto> list;

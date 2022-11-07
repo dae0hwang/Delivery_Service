@@ -2,7 +2,6 @@ package com.example.apideliveryservice.controller;
 
 import com.example.apideliveryservice.dto.CompanyMemberDto;
 import com.example.apideliveryservice.dto.RequestCompanyMemberDto;
-import com.example.apideliveryservice.dto.ResponseCompanyMember;
 import com.example.apideliveryservice.dto.ResponseCompanyMemberError;
 import com.example.apideliveryservice.dto.ResponseCompanyMemberSuccess;
 import com.example.apideliveryservice.exception.BlackException;
@@ -34,7 +33,7 @@ public class CompanyMemberController {
     private final CompanyMemberService companyMemberService;
 
     @PostMapping("/member/join")
-    public ResponseEntity<ResponseCompanyMember> joinMember(
+    public ResponseEntity joinMember(
         @RequestBody RequestCompanyMemberDto requestCompanyMember) throws SQLException {
 
         CompanyMemberDto companyMemberDto = new CompanyMemberDto(null
@@ -65,7 +64,7 @@ public class CompanyMemberController {
     }
 
     @GetMapping("/member/allMember")
-    public ResponseEntity<ResponseCompanyMember> findAllMember() throws SQLException{
+    public ResponseEntity findAllMember() throws SQLException{
         List<CompanyMemberDto> allMember = companyMemberService.findAllMember();
         ResponseCompanyMemberSuccess success = new ResponseCompanyMemberSuccess(200, allMember,
             null);
@@ -73,7 +72,7 @@ public class CompanyMemberController {
     }
 
     @GetMapping("/member/information")
-    public ResponseEntity<ResponseCompanyMember> findMember
+    public ResponseEntity findMember
         (@RequestParam("memberId") String MemberId) throws SQLException {
         try {
             CompanyMemberDto findMember = companyMemberService.findMember(MemberId);

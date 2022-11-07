@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ResponseCompanyFoodSuccess implements ResponseCompanyFood{
+public class ResponseCompanyFoodSuccess  {
 
     private int status;
     private List<CompanyFoodDto> list;

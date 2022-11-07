@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ResponseCompanyMemberError implements ResponseCompanyMember{
+public class ResponseCompanyMemberError {
 
     private String type;
     private String title;
