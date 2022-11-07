@@ -21,20 +21,21 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
 @SpringBootTest
-@ActiveProfiles("db-mysql")
+@ActiveProfiles("db-h2")
 class CompanyMemberRepositoryTest {
 
     @Autowired
     CompanyMemberRepository repository;
     @Autowired
     RepositoryResetHelper resetHelper;
+
     Connection connection;
 
+    //Mockito.spy 사용하기.
     @BeforeEach
     void beforeEach() throws SQLException {
         repository = Mockito.spy(new CompanyMemberRepository());
-        connection = DriverManager.getConnection("jdbc:h2:tcp://localhost/~/test"
-            , "sa", "");
+        connection = DriverManager.getConnection("jdbc:h2:mem:test;MODE=MySQL", "sa", "");
         Mockito.doReturn(connection).when(repository).connectJdbc();
 
         resetHelper.ifExistDeleteCompanyMembers(connection);

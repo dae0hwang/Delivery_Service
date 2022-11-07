@@ -90,25 +90,4 @@ public class CompanyMemberController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
         }
     }
-
-    //
-//    @GetMapping("/information/{memberId}")
-//    public CompanyMemberRequestStatus getMember(@PathVariable int memberId) {
-//        try {
-//            CompanyMemberDto companyMemberDto = companyMemberService.findMember(memberId);
-//            CompanyMemberRequestStatus success = new CompanyMemberRequestStatus("success"
-//                , null, "200OK", null, companyMemberDto);
-//            return success;
-//        } catch (IllegalStateException e) {
-//            CompanyMemberRequestStatus fail = new CompanyMemberRequestStatus("fail"
-//                , "IllegalStateException", "404 Not Found"
-//                , null,null);
-//            return fail;
-//        } catch (SQLException e) {
-//            CompanyMemberRequestStatus fail = new CompanyMemberRequestStatus("fail"
-//                , "SQLException", "500 Internal Server Error", null
-//                ,null);
-//            return fail;
-//        }
-//    }
 }

@@ -34,7 +34,7 @@ public class RepositoryResetHelper {
     }
 
     public void ifExistDeleteCompanyMembers(Connection connection) {
-        String sql ="DROP TABLE IF EXISTS company_members;";
+        String sql ="DROP TABLE IF EXISTS company_members";
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
@@ -50,7 +50,7 @@ public class RepositoryResetHelper {
             + "    name VARCHAR(30) NOT NULL ,\n"
             + "    phone_verification TINYINT(1) NOT NULL,\n"
             + "    registration_date DATE NOT NULL\n"
-            + ")";
+            + ");";
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.executeUpdate();
         }catch (SQLException e) {
