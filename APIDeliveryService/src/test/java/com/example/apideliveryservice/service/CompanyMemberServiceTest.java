@@ -1,18 +1,16 @@
 package com.example.apideliveryservice.service;
 
 import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
 
 import com.example.apideliveryservice.RepositoryResetHelper;
 import com.example.apideliveryservice.dto.CompanyMemberDto;
-import com.example.apideliveryservice.exception.BlackException;
+import com.example.apideliveryservice.dto.RequestCompanyMemberDto;
 import com.example.apideliveryservice.exception.DuplicatedLoginNameException;
 import com.example.apideliveryservice.exception.NonExistentMemberIdException;
 import com.example.apideliveryservice.repository.CompanyMemberRepository;
-import java.math.BigInteger;
 import java.sql.Connection;
-import java.sql.Date;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -46,78 +44,45 @@ class CompanyMemberServiceTest {
     @DisplayName("정상 회원 가입 테스트")
     void joinTest1() throws SQLException {
         //given
-        CompanyMemberDto companyMemberDto = new CompanyMemberDto(new BigInteger("1")
-            , "loginName", "password", "name", 0
-            , new Date(System.currentTimeMillis()));
+        RequestCompanyMemberDto requestCompanyMember = new RequestCompanyMemberDto("loginName",
+            "password", "name");
         //when
-        service.join(companyMemberDto);
+        service.join(requestCompanyMember.getLoginName(), requestCompanyMember.getPassword(),
+            requestCompanyMember.getName());
         CompanyMemberDto findMember
             = repository.findByLoginName(connection, "loginName").orElse(null);
         //then
-        assertThat(companyMemberDto.toString()).isEqualTo(findMember.toString());
+        assertThat(findMember).isNotNull();
     }
 
     @Test
     @DisplayName("중복된 loginName 회원 가입 실패 테스트")
     void joinTest2() throws SQLException {
         //given
-        CompanyMemberDto companyMemberDto1 = new CompanyMemberDto(new BigInteger("1")
-            , "loginName", "password1", "name1", 0
-            , new Date(System.currentTimeMillis()));
+        CompanyMemberDto companyMemberDto1 = new CompanyMemberDto(1l, "loginName", "password1",
+            "name1", false, new Timestamp(System.currentTimeMillis()));
         repository.save(connection, companyMemberDto1);
 
-        CompanyMemberDto companyMemberDto2 = new CompanyMemberDto(new BigInteger("2")
-            , "loginName", "password2", "name2", 0
-            , new Date(System.currentTimeMillis()));
+        RequestCompanyMemberDto requestCompanyMember = new RequestCompanyMemberDto("loginName",
+            "password2", "name2");
         //then
         assertThatThrownBy(() ->
             //when
-            service.join(companyMemberDto2))
+            service.join(requestCompanyMember.getLoginName(), requestCompanyMember.getPassword(),
+                requestCompanyMember.getName()))
             .isInstanceOf(DuplicatedLoginNameException.class);
-    }
-
-    @Test
-    @DisplayName("비어진 Request input으로 회원 가입 실패 테스트")
-    void joinTest3() throws SQLException {
-        //given
-        CompanyMemberDto companyMemberDto1 = new CompanyMemberDto(new BigInteger("1")
-            , "", "password", "name", 0
-            , new Date(System.currentTimeMillis()));
-        CompanyMemberDto companyMemberDto2 = new CompanyMemberDto(new BigInteger("1")
-            , "loginName", "", "name", 0
-            , new Date(System.currentTimeMillis()));
-        CompanyMemberDto companyMemberDto3 = new CompanyMemberDto(new BigInteger("1")
-            , "loginName", "password", "", 0
-            , new Date(System.currentTimeMillis()));
-
-        //then
-        assertThatThrownBy(() ->
-            //when
-            service.join(companyMemberDto1))
-            .isInstanceOf(BlackException.class);
-        assertThatThrownBy(() ->
-            //when
-            service.join(companyMemberDto2))
-            .isInstanceOf(BlackException.class);
-        assertThatThrownBy(() ->
-            //when
-            service.join(companyMemberDto3))
-            .isInstanceOf(BlackException.class);
     }
 
     @Test
     @DisplayName("모든 company member 찾기 test")
     void findAllMember() throws SQLException {
         //given
-        CompanyMemberDto companyMemberDto1 = new CompanyMemberDto(new BigInteger("1")
-            , "loginName1", "password", "name", 0
-            , new Date(System.currentTimeMillis()));
-        CompanyMemberDto companyMemberDto2 = new CompanyMemberDto(new BigInteger("2")
-            , "loginName2", "password", "name", 0
-            , new Date(System.currentTimeMillis()));
-        CompanyMemberDto companyMemberDto3 = new CompanyMemberDto(new BigInteger("3")
-            , "loginName3", "password", "name", 0
-            , new Date(System.currentTimeMillis()));
+        CompanyMemberDto companyMemberDto1 = new CompanyMemberDto(1l, "loginName1", "password",
+            "name", false, new Timestamp(System.currentTimeMillis()));
+        CompanyMemberDto companyMemberDto2 = new CompanyMemberDto(2l, "loginName2", "password",
+            "name", false, new Timestamp(System.currentTimeMillis()));
+        CompanyMemberDto companyMemberDto3 = new CompanyMemberDto(3l, "loginName3", "password"
+            , "name", false, new Timestamp(System.currentTimeMillis()));
         repository.save(connection, companyMemberDto1);
         repository.save(connection, companyMemberDto2);
         repository.save(connection, companyMemberDto3);
@@ -137,9 +102,8 @@ class CompanyMemberServiceTest {
     @DisplayName("company member 찾기 test")
     void findMember1() throws SQLException {
         //given
-        CompanyMemberDto result = new CompanyMemberDto(new BigInteger("1")
-            , "loginName1", "password", "name", 0
-            , new Date(System.currentTimeMillis()));
+        CompanyMemberDto result = new CompanyMemberDto(1l, "loginName1", "password", "name", false
+            , new Timestamp(System.currentTimeMillis()));
 
         repository.save(connection, result);
         //when
@@ -152,9 +116,8 @@ class CompanyMemberServiceTest {
     @DisplayName("company member 실패 test")
     void findMember2() throws SQLException {
         //given
-        CompanyMemberDto result = new CompanyMemberDto(new BigInteger("1")
-            , "loginName1", "password", "name", 0
-            , new Date(System.currentTimeMillis()));
+        CompanyMemberDto result = new CompanyMemberDto(1l, "loginName1", "password", "name", false
+            , new Timestamp(System.currentTimeMillis()));
 
         repository.save(connection, result);
         //when

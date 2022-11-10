@@ -1,6 +1,5 @@
 package com.example.apideliveryservice.controller;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -9,18 +8,16 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.example.apideliveryservice.RepositoryResetHelper;
+import com.example.apideliveryservice.controllerExceptionAdvice.CompanyFoodControllerExceptionAdvice;
 import com.example.apideliveryservice.dto.CompanyFoodDto;
 import com.example.apideliveryservice.dto.RequestCompanyFoodDto;
 import com.example.apideliveryservice.dto.RequestCompanyFoodPriceDto;
 import com.example.apideliveryservice.dto.ResponseCompanyFoodError;
 import com.example.apideliveryservice.dto.ResponseCompanyFoodSuccess;
-import com.example.apideliveryservice.dto.ResponseCompanyMemberSuccess;
 import com.example.apideliveryservice.repository.CompanyFoodRepository;
 import com.example.apideliveryservice.service.CompanyFoodService;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -58,7 +55,8 @@ class CompanyFoodControllerTest {
         baseUrl = "/api/delivery-service/company";
         objectMapper = new ObjectMapper();
 
-        mockMvc = MockMvcBuilders.standaloneSetup(controller).build();
+        mockMvc = MockMvcBuilders.standaloneSetup(controller).setControllerAdvice(
+            CompanyFoodControllerExceptionAdvice.class).build();
 
         connection = repository.connectJdbc();
         resetHelper.ifExistDeleteCompanyFood(connection);
@@ -92,8 +90,8 @@ class CompanyFoodControllerTest {
         //given
         String url = baseUrl + "/food/addFood";
 
-        CompanyFoodDto firstSaveFood = new CompanyFoodDto(null, new BigInteger("1")
-            , "foodName", new BigDecimal("3000"));
+        CompanyFoodDto firstSaveFood = new CompanyFoodDto(null, 1l, "foodName",
+            new BigDecimal("3000"));
         repository.add(connection, firstSaveFood);
 
         RequestCompanyFoodDto requestCompanyFoodDto = new RequestCompanyFoodDto(
@@ -117,24 +115,21 @@ class CompanyFoodControllerTest {
     }
 
     @Test
-    @DisplayName("공백 input 회원 가입 실패 Test")
+    @DisplayName("이름 공백 회원 가입 실패 Test")
     void joinMember3() throws Exception {
         //given
         String url = baseUrl + "/food/addFood";
 
         RequestCompanyFoodDto requestCompanyFoodDto1 = new RequestCompanyFoodDto(
-            "", "foodName", "5000");
+            "1", "", "5000");
         String requestJson1 = objectMapper.writeValueAsString(requestCompanyFoodDto1);
         RequestCompanyFoodDto requestCompanyFoodDto2 = new RequestCompanyFoodDto(
-            "1", "", "5000");
+            "1", "   ", "50000");
         String requestJson2 = objectMapper.writeValueAsString(requestCompanyFoodDto2);
-        RequestCompanyFoodDto requestCompanyFoodDto3 = new RequestCompanyFoodDto(
-            "1", "foodName", "");
-        String requestJson3 = objectMapper.writeValueAsString(requestCompanyFoodDto3);
 
         ResponseCompanyFoodError error
-            = new ResponseCompanyFoodError("/errors/food/add/blank-input"
-            , "BlackException", 400, "company food add fail due to blank input"
+            = new ResponseCompanyFoodError("/errors/food/add/name-blank"
+            , "MethodArgumentNotValidException", 400, "requestCompanyFood name must not be blank"
             , "/api/delivery-service/company/food/addFood");
         String responseContent = objectMapper.writeValueAsString(error);
         //when
@@ -151,16 +146,10 @@ class CompanyFoodControllerTest {
             .andExpect(status().isBadRequest())
             .andExpect(content().json(responseContent))
             .andDo(log());
-        mockMvc.perform(post(url)
-                .contentType("application/json")
-                .content(requestJson3))
-            .andExpect(status().isBadRequest())
-            .andExpect(content().json(responseContent))
-            .andDo(log());
     }
 
     @Test
-    @DisplayName("숫자가 아닌 memberId, price input 회원 가입 실패 Test")
+    @DisplayName("숫자가 price 회원 가입 실패 Test")
     void joinMember4() throws Exception {
         //given
         String url = baseUrl + "/food/addFood";
@@ -168,15 +157,10 @@ class CompanyFoodControllerTest {
         RequestCompanyFoodDto requestCompanyFoodDto1 = new RequestCompanyFoodDto(
             "1", "foodName", "notDigit");
         String requestJson1 = objectMapper.writeValueAsString(requestCompanyFoodDto1);
-        RequestCompanyFoodDto requestCompanyFoodDto2 = new RequestCompanyFoodDto(
-            "notDigit", "foodName", "5000");
-        String requestJson2 = objectMapper.writeValueAsString(requestCompanyFoodDto2);
-        RequestCompanyFoodDto requestCompanyFoodDto3 = new RequestCompanyFoodDto(
-            "notDigit", "foodName", "notDigit");
-        String requestJson3 = objectMapper.writeValueAsString(requestCompanyFoodDto3);
 
-        ResponseCompanyFoodError error = new ResponseCompanyFoodError("/errors/food/add/not-digit"
-            , "NotDigitException", 400, "company food add fail due to not digit input"
+        ResponseCompanyFoodError error = new ResponseCompanyFoodError(
+            "/errors/food/add/price-notDigit", "MethodArgumentNotValidException", 400,
+            "requestCompanyFood price must be digit"
             , "/api/delivery-service/company/food/addFood");
         String responseContent = objectMapper.writeValueAsString(error);
         //when
@@ -184,18 +168,6 @@ class CompanyFoodControllerTest {
         mockMvc.perform(post(url)
                 .contentType("application/json")
                 .content(requestJson1))
-            .andExpect(status().isBadRequest())
-            .andExpect(content().json(responseContent))
-            .andDo(log());
-        mockMvc.perform(post(url)
-                .contentType("application/json")
-                .content(requestJson2))
-            .andExpect(status().isBadRequest())
-            .andExpect(content().json(responseContent))
-            .andDo(log());
-        mockMvc.perform(post(url)
-                .contentType("application/json")
-                .content(requestJson3))
             .andExpect(status().isBadRequest())
             .andExpect(content().json(responseContent))
             .andDo(log());
@@ -206,10 +178,8 @@ class CompanyFoodControllerTest {
     void allFood() throws Exception {
         //given
         String url = baseUrl + "/food/allFood";
-        CompanyFoodDto food1 = new CompanyFoodDto(new BigInteger("1"), new BigInteger("1")
-            , "ramen", new BigDecimal("3000"));
-        CompanyFoodDto food2 = new CompanyFoodDto(new BigInteger("2"), new BigInteger("1")
-            , "spaghetti", new BigDecimal("4000"));
+        CompanyFoodDto food1 = new CompanyFoodDto(1l, 1l, "ramen", new BigDecimal("3000"));
+        CompanyFoodDto food2 = new CompanyFoodDto(2l, 1l, "spaghetti", new BigDecimal("4000"));
         repository.add(connection, food1);
         repository.add(connection, food2);
         List<CompanyFoodDto> list = new ArrayList<>();
@@ -232,8 +202,7 @@ class CompanyFoodControllerTest {
         //given
         String url = baseUrl + "/food/information";
 
-        CompanyFoodDto saveFood = new CompanyFoodDto(null, new BigInteger("1"), "foodName",
-            new BigDecimal("3000"));
+        CompanyFoodDto saveFood = new CompanyFoodDto(null, 1l, "foodName", new BigDecimal("3000"));
         repository.add(connection, saveFood);
 
         String foodId = "1";
@@ -298,35 +267,11 @@ class CompanyFoodControllerTest {
         //given
         String url = baseUrl + "/food/update";
 
-        RequestCompanyFoodPriceDto request = new RequestCompanyFoodPriceDto("1", "");
+        RequestCompanyFoodPriceDto request = new RequestCompanyFoodPriceDto("1", "notDigit");
         String requestJson = objectMapper.writeValueAsString(request);
         ResponseCompanyFoodError error = new ResponseCompanyFoodError(
-            "/errors/food/update/black-input"
-            , "BlackException", 400, "update food price fail due to black request input"
-            , "/api/delivery-service/company/food/update");
-        String responseContent = objectMapper.writeValueAsString(error);
-        //when
-
-        //then
-        mockMvc.perform(put(url)
-                .contentType("application/json")
-                .content(requestJson))
-            .andExpect(status().isBadRequest())
-            .andExpect(content().json(responseContent))
-            .andDo(log());
-    }
-
-    @Test
-    @DisplayName("음식 가격 update 실패 숫자가 아닌 price input Test")
-    void updatePrice3() throws Exception {
-        //given
-        String url = baseUrl + "/food/update";
-
-        RequestCompanyFoodPriceDto request = new RequestCompanyFoodPriceDto("1", "a2a2");
-        String requestJson = objectMapper.writeValueAsString(request);
-        ResponseCompanyFoodError error = new ResponseCompanyFoodError(
-            "/errors/food/update/not-digit"
-            , "NotDigitException", 400, "update food price fail due not digit price input"
+            "/errors/food/update/price-notDigit"
+            , "MethodArgumentNotValidException", 400, "requestCompanyFoodPrice price must be digit"
             , "/api/delivery-service/company/food/update");
         String responseContent = objectMapper.writeValueAsString(error);
         //when

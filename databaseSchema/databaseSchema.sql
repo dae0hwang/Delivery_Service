@@ -6,7 +6,7 @@ CREATE TABLE company_members(
     password VARCHAR(128) NOT NULL ,
     name VARCHAR(30) NOT NULL ,
     phone_verification TINYINT(1) NOT NULL,
-    registration_date DATE NOT NULL
+    registration_date TIMESTAMP NOT NULL
 );
 
 DROP TABLE IF EXISTS company_food;

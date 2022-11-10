@@ -1,9 +1,7 @@
 package com.example.apideliveryservice.repository;
 
 import com.example.apideliveryservice.dto.CompanyFoodDto;
-import com.example.apideliveryservice.dto.CompanyMemberDto;
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -35,19 +33,18 @@ public class CompanyFoodRepository {
         String sql = "INSERT INTO company_food "
             + "(member_id, name, price) VALUES(?,?,?)";
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-            preparedStatement
-                .setBigDecimal(1, new BigDecimal(companyFoodDto.getMemberId()));
+            preparedStatement.setLong(1, companyFoodDto.getMemberId());
             preparedStatement.setString(2, companyFoodDto.getName());
             preparedStatement.setBigDecimal(3, companyFoodDto.getPrice());
             preparedStatement.executeUpdate();
         }
     }
 
-    public Optional<CompanyFoodDto> findByNameAndMemberId(Connection connection, BigInteger memberId
+    public Optional<CompanyFoodDto> findByNameAndMemberId(Connection connection, Long memberId
         , String findName) throws SQLException {
         String sql = "SELECT * FROM company_food WHERE member_id=? AND name=?";
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-            preparedStatement.setBigDecimal(1, new BigDecimal(memberId));
+            preparedStatement.setLong(1, memberId);
             preparedStatement.setString(2, findName);
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 if (resultSet.next()) {
@@ -60,19 +57,19 @@ public class CompanyFoodRepository {
     }
 
     private CompanyFoodDto getCompanyFoodDto(ResultSet resultSet) throws SQLException {
-        BigInteger id = resultSet.getBigDecimal(1).toBigInteger();
-        BigInteger memberId = resultSet.getBigDecimal(2).toBigInteger();
+        Long id = resultSet.getLong(1);
+        Long memberId = resultSet.getLong(2);
         String name = resultSet.getString(3);
         BigDecimal price = resultSet.getBigDecimal(4);
         return new CompanyFoodDto(id, memberId, name, price);
     }
 
-    public Optional<List<CompanyFoodDto>> findAllFood(Connection connection, BigInteger id)
+    public Optional<List<CompanyFoodDto>> findAllFood(Connection connection, Long id)
         throws SQLException {
         String sql = "SELECT * FROM company_food WHERE member_id = ?";
         List<CompanyFoodDto> list = new ArrayList<>();
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-            preparedStatement.setBigDecimal(1, new BigDecimal(id));
+            preparedStatement.setLong(1, id);
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 while (resultSet.next()) {
                     CompanyFoodDto companyFoodDto = getCompanyFoodDto(resultSet);
@@ -83,11 +80,11 @@ public class CompanyFoodRepository {
         }
     }
 
-    public Optional<CompanyFoodDto> findById(Connection connection, BigInteger id)
+    public Optional<CompanyFoodDto> findById(Connection connection, Long id)
         throws SQLException {
         String sql = "SELECT * FROM company_food WHERE id = ?";
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-            preparedStatement.setBigDecimal(1, new BigDecimal(id));
+            preparedStatement.setLong(1, id);
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 if (resultSet.next()) {
                     CompanyFoodDto companyFoodDto = getCompanyFoodDto(resultSet);
@@ -98,7 +95,7 @@ public class CompanyFoodRepository {
         }
     }
 
-    public void updatePrice(Connection connection, BigInteger id,
+    public void updatePrice(Connection connection, Long id,
         BigDecimal price) throws SQLException {
         String sql = "UPDATE company_food SET price=? WHERE id=?";
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {

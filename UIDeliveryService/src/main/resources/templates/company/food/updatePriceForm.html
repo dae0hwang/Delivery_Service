@@ -55,11 +55,11 @@
           }
         })
         .catch(function (error) {
-          let errorTitle = error.response.data.title;
-          if (errorTitle == 'BlackException') {
-            alert("[실패]음식 가격을 입력하세요.");
-          } else if (errorTitle == 'NotDigitException') {
-            alert("[실패]음식 가격은 숫자여야 합니다");
+          let errorType = error.response.data.type
+          if (errorType == "/errors/food/update/foodId-blank") {
+            alert("[실패] foodId는 공백을 허용하지 않습니다.")
+          } else if (errorType == "/errors/food/update/price-notDigit") {
+            alert("[실패]가격은 숫자로만 입력 가능합니다.");
           } else {
             alert("[실패] 잠시 후 시도해 주세요");
           }

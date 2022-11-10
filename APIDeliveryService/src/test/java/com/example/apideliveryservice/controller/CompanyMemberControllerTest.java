@@ -1,6 +1,5 @@
 package com.example.apideliveryservice.controller;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.log;
@@ -8,20 +7,17 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.example.apideliveryservice.RepositoryResetHelper;
+import com.example.apideliveryservice.controllerExceptionAdvice.CompanyMemberControllerExceptionAdvice;
 import com.example.apideliveryservice.dto.CompanyMemberDto;
 import com.example.apideliveryservice.dto.RequestCompanyMemberDto;
-import com.example.apideliveryservice.dto.ResponseCompanyFoodSuccess;
 import com.example.apideliveryservice.dto.ResponseCompanyMemberError;
 import com.example.apideliveryservice.dto.ResponseCompanyMemberSuccess;
 import com.example.apideliveryservice.repository.CompanyMemberRepository;
 import com.example.apideliveryservice.service.CompanyMemberService;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.math.BigInteger;
 import java.sql.Connection;
-import java.sql.Date;
 import java.sql.SQLException;
-import java.util.ArrayList;
+import java.sql.Timestamp;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
@@ -29,8 +25,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -58,7 +52,9 @@ class CompanyMemberControllerTest {
         baseUrl = "/api/delivery-service/company";
         objectMapper = new ObjectMapper();
 
-        mockMvc = MockMvcBuilders.standaloneSetup(controller).build();
+        mockMvc = MockMvcBuilders.standaloneSetup(controller)
+            .setControllerAdvice(new CompanyMemberControllerExceptionAdvice())
+            .build();
 
         connection = repository.connectJdbc();
         resetHelper.ifExistDeleteCompanyMembers(connection);
@@ -71,7 +67,7 @@ class CompanyMemberControllerTest {
         //given
         String url = baseUrl + "/member/join";
         RequestCompanyMemberDto requestCompanyMemberDto = new RequestCompanyMemberDto
-            ("loginName", "password", "name");
+            ("loginName", "aA!1111111111", "name");
         String requestJson = objectMapper.writeValueAsString(requestCompanyMemberDto);
         ResponseCompanyMemberSuccess success
             = new ResponseCompanyMemberSuccess(201, null, null);
@@ -92,12 +88,12 @@ class CompanyMemberControllerTest {
         //given
         String url = baseUrl + "/member/join";
 
-        CompanyMemberDto firstSaveMember = new CompanyMemberDto(null, "loginName", "password"
-            , "name1", 0, new Date(System.currentTimeMillis()));
+        CompanyMemberDto firstSaveMember = new CompanyMemberDto(null, "loginName", "123123123"
+            , "name1", false, new Timestamp(System.currentTimeMillis()));
         repository.save(connection, firstSaveMember);
 
         RequestCompanyMemberDto requestCompanyMemberDto = new RequestCompanyMemberDto
-            ("loginName", "password", "name2");
+            ("loginName", "aA!123123123", "name2");
         String requestJson = objectMapper.writeValueAsString(requestCompanyMemberDto);
 
         ResponseCompanyMemberError error
@@ -117,24 +113,22 @@ class CompanyMemberControllerTest {
     }
 
     @Test
-    @DisplayName("공백 input 회원 가입 실패 Test")
-    void joinMember3() throws Exception {
+    @DisplayName("validation loginName 5자이상 20자 이하 회원가입 실패 Test")
+    void JoinMember3() throws Exception {
         //given
         String url = baseUrl + "/member/join";
 
-        RequestCompanyMemberDto requestCompanyMemberDto1 = new RequestCompanyMemberDto
-            ("", "password", "name");
+        RequestCompanyMemberDto requestCompanyMemberDto1 = new RequestCompanyMemberDto("        ",
+            "aA!1234123414", "storeName");
         String requestJson1 = objectMapper.writeValueAsString(requestCompanyMemberDto1);
-        RequestCompanyMemberDto requestCompanyMemberDto2 = new RequestCompanyMemberDto
-            ("longinName", "", "name");
+        RequestCompanyMemberDto requestCompanyMemberDto2 = new RequestCompanyMemberDto(
+            "asdfasdfasdfasdfasdfadsf",
+            "aA!1234123414", "storeName");
         String requestJson2 = objectMapper.writeValueAsString(requestCompanyMemberDto2);
-        RequestCompanyMemberDto requestCompanyMemberDto3 = new RequestCompanyMemberDto
-            ("longinName", "password", "");
-        String requestJson3 = objectMapper.writeValueAsString(requestCompanyMemberDto3);
-        ResponseCompanyMemberError error
-            = new ResponseCompanyMemberError("/errors/member/join/blank-input"
-            , "BlackException", 400
-            , "Company member join fail due to blank input request"
+        ResponseCompanyMemberError error = new ResponseCompanyMemberError(
+            "/errors/member/join/longinName-pattern"
+            , "MethodArgumentNotValidException", 400,
+            "requestCompanyMember loginName is 8 to 20 lowercase letters and numbers"
             , "/api/delivery-service/company/member/join");
         String responseContent = objectMapper.writeValueAsString(error);
         //when
@@ -151,9 +145,76 @@ class CompanyMemberControllerTest {
             .andExpect(status().isBadRequest())
             .andExpect(content().json(responseContent))
             .andDo(log());
+    }
+
+    @Test
+    @DisplayName("validation password 소문자 대문자 특수문자 숫자 하나이상 포함 8자 이상 회원가입 실패 Test")
+    void JoinMember4() throws Exception {
+        //given
+        String url = baseUrl + "/member/join";
+
+        RequestCompanyMemberDto requestCompanyMemberDto1 = new RequestCompanyMemberDto("longinName",
+            "ad12344123123", "storeName");
+        String requestJson1 = objectMapper.writeValueAsString(requestCompanyMemberDto1);
+        RequestCompanyMemberDto requestCompanyMemberDto2 = new RequestCompanyMemberDto("longinName",
+            "aA!2", "storeName");
+        String requestJson2 = objectMapper.writeValueAsString(requestCompanyMemberDto2);
+
+        ResponseCompanyMemberError error = new ResponseCompanyMemberError(
+            "/errors/member/join/password-pattern"
+            , "MethodArgumentNotValidException", 400,
+            "requestCompanyMember password is At least 8 characters, at least 1 uppercase"
+                + ", lowercase, number, and special character each"
+            , "/api/delivery-service/company/member/join");
+
+        String responseContent = objectMapper.writeValueAsString(error);
+        //when
+        //then
         mockMvc.perform(post(url)
                 .contentType("application/json")
-                .content(requestJson3))
+                .content(requestJson1))
+            .andExpect(status().isBadRequest())
+            .andExpect(content().json(responseContent))
+            .andDo(log());
+        mockMvc.perform(post(url)
+                .contentType("application/json")
+                .content(requestJson2))
+            .andExpect(status().isBadRequest())
+            .andExpect(content().json(responseContent))
+            .andDo(log());
+    }
+
+    @Test
+    @DisplayName("validation name 공백이면 회원가입 실패 Test")
+    void JoinMember5() throws Exception {
+        //given
+        String url = baseUrl + "/member/join";
+
+        RequestCompanyMemberDto requestCompanyMemberDto1 = new RequestCompanyMemberDto("longinName",
+            "aA!123123123", "");
+        String requestJson1 = objectMapper.writeValueAsString(requestCompanyMemberDto1);
+        RequestCompanyMemberDto requestCompanyMemberDto2 = new RequestCompanyMemberDto("longinName",
+            "aA!123123123", "   ");
+        String requestJson2 = objectMapper.writeValueAsString(requestCompanyMemberDto2);
+
+        ResponseCompanyMemberError error = new ResponseCompanyMemberError(
+            "/errors/member/join/name-blank"
+            , "MethodArgumentNotValidException", 400,
+            "requestCompanyMember name must not be blank"
+            , "/api/delivery-service/company/member/join");
+
+        String responseContent = objectMapper.writeValueAsString(error);
+        //when
+        //then
+        mockMvc.perform(post(url)
+                .contentType("application/json")
+                .content(requestJson1))
+            .andExpect(status().isBadRequest())
+            .andExpect(content().json(responseContent))
+            .andDo(log());
+        mockMvc.perform(post(url)
+                .contentType("application/json")
+                .content(requestJson2))
             .andExpect(status().isBadRequest())
             .andExpect(content().json(responseContent))
             .andDo(log());
@@ -165,12 +226,10 @@ class CompanyMemberControllerTest {
         //given
         String url = baseUrl + "/member/allMember";
 
-        CompanyMemberDto companyMemberDto1 = new CompanyMemberDto(new BigInteger("1")
-            , "loginName1", "password", "name", 0
-            , new Date(System.currentTimeMillis()));
-        CompanyMemberDto companyMemberDto2 = new CompanyMemberDto(new BigInteger("2")
-            , "loginName2", "password", "name", 0
-            , new Date(System.currentTimeMillis()));
+        CompanyMemberDto companyMemberDto1 = new CompanyMemberDto(1l, "loginName1", "password",
+            "name", false, new Timestamp(System.currentTimeMillis()));
+        CompanyMemberDto companyMemberDto2 = new CompanyMemberDto(2l, "loginName2", "password",
+            "name", false, new Timestamp(System.currentTimeMillis()));
         repository.save(connection, companyMemberDto1);
         repository.save(connection, companyMemberDto2);
         List<CompanyMemberDto> allMember = service.findAllMember();
@@ -194,7 +253,7 @@ class CompanyMemberControllerTest {
         String url = baseUrl + "/member/information";
 
         CompanyMemberDto firstSaveMember = new CompanyMemberDto(null, "loginName", "password"
-            , "name1", 0, new Date(System.currentTimeMillis()));
+            , "name1", false, new Timestamp(System.currentTimeMillis()));
         repository.save(connection, firstSaveMember);
 
         String findId = "1";
@@ -218,7 +277,7 @@ class CompanyMemberControllerTest {
         String url = baseUrl + "/member/information";
 
         CompanyMemberDto firstSaveMember = new CompanyMemberDto(null, "loginName", "password"
-            , "name1", 0, new Date(System.currentTimeMillis()));
+            , "name1", false, new Timestamp(System.currentTimeMillis()));
         repository.save(connection, firstSaveMember);
 
         String findId = "2";
@@ -236,6 +295,4 @@ class CompanyMemberControllerTest {
             .andExpect(content().json(responseContent))
             .andDo(log());
     }
-
-
 }

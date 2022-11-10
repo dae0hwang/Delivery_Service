@@ -1,13 +1,12 @@
 package com.example.apideliveryservice.service;
 
 import com.example.apideliveryservice.dto.CompanyMemberDto;
-import com.example.apideliveryservice.exception.BlackException;
 import com.example.apideliveryservice.exception.DuplicatedLoginNameException;
 import com.example.apideliveryservice.exception.NonExistentMemberIdException;
 import com.example.apideliveryservice.repository.CompanyMemberRepository;
-import java.math.BigInteger;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -20,23 +19,19 @@ public class CompanyMemberService {
     private final CompanyMemberRepository companyMemberRepository;
 
     /**
-     * @param companyMemberDto
+     * @param loginName, password, name
      * @throws SQLException
      * @throws DuplicatedLoginNameException
-     * @throws BlackException
      */
-    public void join(CompanyMemberDto companyMemberDto) throws SQLException {
+    public void join(String loginName, String password, String name) throws SQLException {
         Connection connection = companyMemberRepository.connectJdbc();
+        CompanyMemberDto companyMemberDto = getCompanyMemberDto(loginName, password, name);
         try {
             connection.setAutoCommit(false);
-            checkBlackRequestInput(companyMemberDto);
             validateDuplicateLoginName(connection, companyMemberDto);
             companyMemberRepository.save(connection, companyMemberDto);
             connection.commit();
         } catch (DuplicatedLoginNameException e) {
-            connection.rollback();
-            throw e;
-        } catch (BlackException e) {
             connection.rollback();
             throw e;
         } finally {
@@ -44,6 +39,12 @@ public class CompanyMemberService {
                 connection.close();
             }
         }
+    }
+
+    private CompanyMemberDto getCompanyMemberDto(String loginName, String password, String name) {
+        CompanyMemberDto companyMemberDto = new CompanyMemberDto(null, loginName, password, name,
+            false, new Timestamp(System.currentTimeMillis()));
+        return companyMemberDto;
     }
 
     private void validateDuplicateLoginName(Connection connection
@@ -54,15 +55,7 @@ public class CompanyMemberService {
             });
     }
 
-    private void checkBlackRequestInput(CompanyMemberDto companyMemberDto) {
-        if (companyMemberDto.getLoginName() == "" || companyMemberDto.getPassword() == ""
-            || companyMemberDto.getName() == "") {
-            throw new BlackException();
-        }
-    }
-
     /**
-     *
      * @return companyMemberList
      * @throws SQLException
      */
@@ -75,7 +68,6 @@ public class CompanyMemberService {
     }
 
     /**
-     *
      * @param id
      * @return findCompanyMember
      * @throws SQLException
@@ -84,7 +76,7 @@ public class CompanyMemberService {
     public CompanyMemberDto findMember(String id) throws SQLException {
         try (Connection connection = companyMemberRepository.connectJdbc()) {
             CompanyMemberDto member = companyMemberRepository.findById(
-                connection, new BigInteger(id)).orElse(null);
+                connection, Long.parseLong(id)).orElse(null);
             if (member == null) {
                 throw new NonExistentMemberIdException();
             }

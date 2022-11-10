@@ -28,12 +28,17 @@
           }
         })
         .catch(function (error) {
-          let status = error.response.status;
-          if (status == 409) {
-            alert("[실패]중복된 아이디 입니다.")
-          }else if (status == 400) {
-            alert("[실패]아이디 비밀번호 이름은 공백을 허용하지 않습니다.");
-          } else {
+          console.log(error)
+          let errorType = error.response.data.type
+          let errorStatus = error.response.status
+          if (errorType == "/errors/member/join/longinName-pattern") {
+            alert("[실패] 아이디는 소문자 숫자 8글자 이상 20글자 이하여야 합니다.")
+          }else if (errorType == "/errors/member/join/password-pattern") {
+            alert("[실패] 비밀번호는 소문자 대문자 숫자 특수문자를 최소 하나씩 포함한 8글자 이상이어야 합니다.")
+          } else if (errorType == "/errors/member/join/name-blank") {
+            alert("[실패] 이름은 공백이어서는 안됩니다.")
+          }
+          if (errorStatus == 500) {
             alert("[실패] 잠시 후 시도해 주세요");
           }
         });

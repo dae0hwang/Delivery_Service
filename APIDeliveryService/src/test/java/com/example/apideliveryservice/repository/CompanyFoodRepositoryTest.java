@@ -6,14 +6,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 import com.example.apideliveryservice.RepositoryResetHelper;
 import com.example.apideliveryservice.dto.CompanyFoodDto;
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -50,12 +48,12 @@ class CompanyFoodRepositoryTest {
     @DisplayName("음식등록하고 찾는 테스트")
     void addAndFind() throws SQLException {
         //given
-        CompanyFoodDto companyFoodDto = new CompanyFoodDto(new BigInteger("1")
-            , new BigInteger("1"), "name", new BigDecimal("3000"));
+        CompanyFoodDto companyFoodDto = new CompanyFoodDto(1l
+            , 1l, "name", new BigDecimal("3000"));
         //when
         repository.add(connection, companyFoodDto);
         Optional<CompanyFoodDto> findFoodDto = repository.findByNameAndMemberId(connection
-            , new BigInteger("1"), "name");
+            , 1l, "name");
         CompanyFoodDto expectedFoodDto = findFoodDto.get();
         //then
         assertThat(companyFoodDto).isEqualTo(expectedFoodDto);
@@ -67,7 +65,7 @@ class CompanyFoodRepositoryTest {
         //given
         //when
         Optional<CompanyFoodDto> findFoodDto = repository.findByNameAndMemberId(connection
-            , new BigInteger("1"), "name");
+            , 1l, "name");
         CompanyFoodDto expectedFoodDto = findFoodDto.orElse(null);
         //then
         assertThat(expectedFoodDto).isNull();
@@ -77,10 +75,10 @@ class CompanyFoodRepositoryTest {
     @DisplayName("memberId 일치하는 모든 음식 찾기 Test")
     void findAllFood() throws Exception {
         //given
-        CompanyFoodDto companyFoodDto1 = new CompanyFoodDto(new BigInteger("1")
-            , new BigInteger("1"), "name1", new BigDecimal("3000"));
-        CompanyFoodDto companyFoodDto2 = new CompanyFoodDto(new BigInteger("2")
-            , new BigInteger("1"), "name2", new BigDecimal("5000"));
+        CompanyFoodDto companyFoodDto1 = new CompanyFoodDto(1l
+            , 1l, "name1", new BigDecimal("3000"));
+        CompanyFoodDto companyFoodDto2 = new CompanyFoodDto(2l
+            , 1l, "name2", new BigDecimal("5000"));
         repository.add(connection, companyFoodDto1);
         repository.add(connection, companyFoodDto2);
         List<CompanyFoodDto> resultList = new ArrayList<>();
@@ -88,9 +86,9 @@ class CompanyFoodRepositoryTest {
         resultList.add(companyFoodDto2);
         //when
         List<CompanyFoodDto> allFood1 = repository.findAllFood(connection,
-            new BigInteger("1")).orElse(null);
+            1l).orElse(null);
         List<CompanyFoodDto> allFood2 = repository.findAllFood(connection,
-            new BigInteger("2")).orElse(null);
+            2l).orElse(null);
         //then
         assertThat(allFood1).isEqualTo(resultList);
         assertThat(allFood2).isEqualTo(new ArrayList<CompanyFoodDto>());
@@ -100,13 +98,13 @@ class CompanyFoodRepositoryTest {
     @DisplayName("foodId로 음식 정보 찾기 Test")
     void findById() throws SQLException {
         //given
-        CompanyFoodDto saveFood = new CompanyFoodDto(new BigInteger("1"), new BigInteger("1"),
+        CompanyFoodDto saveFood = new CompanyFoodDto(1l, 1l,
             "name", new BigDecimal("3000"));
         repository.add(connection, saveFood);
         //when
-        CompanyFoodDto findFood1 = repository.findById(connection, new BigInteger("1"))
+        CompanyFoodDto findFood1 = repository.findById(connection, 1l)
             .orElse(null);
-        CompanyFoodDto findFood2 = repository.findById(connection, new BigInteger("2"))
+        CompanyFoodDto findFood2 = repository.findById(connection, 2l)
             .orElse(null);
         //then
         assertThat(findFood1).isEqualTo(saveFood);
@@ -117,12 +115,12 @@ class CompanyFoodRepositoryTest {
     @DisplayName("가격 변경 Test")
     void updatePrice() throws SQLException {
         //given
-        CompanyFoodDto saveFood = new CompanyFoodDto(new BigInteger("1"), new BigInteger("11"),
+        CompanyFoodDto saveFood = new CompanyFoodDto(1l, 11l,
             "name", new BigDecimal("3000"));
         repository.add(connection, saveFood);
         //when
-        repository.updatePrice(connection, new BigInteger("1"), new BigDecimal("5000"));
-        CompanyFoodDto findFood = repository.findById(connection, new BigInteger("1"))
+        repository.updatePrice(connection, 1l, new BigDecimal("5000"));
+        CompanyFoodDto findFood = repository.findById(connection, 1l)
             .orElse(null);
         //then
         assertThat(findFood.getPrice()).isEqualTo(new BigDecimal("5000"));

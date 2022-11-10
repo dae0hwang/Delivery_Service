@@ -1,14 +1,12 @@
 package com.example.apideliveryservice.repository;
 
 import com.example.apideliveryservice.dto.CompanyMemberDto;
-import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.sql.Connection;
-import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -39,8 +37,8 @@ public class CompanyMemberRepository {
             preparedStatement.setString(1, companyMember.getLoginName());
             preparedStatement.setString(2, companyMember.getPassword());
             preparedStatement.setString(3, companyMember.getName());
-            preparedStatement.setInt(4, companyMember.getPhoneVerification());
-            preparedStatement.setDate(5, companyMember.getCreatedAt());
+            preparedStatement.setBoolean(4, companyMember.getPhoneVerification());
+            preparedStatement.setTimestamp(5, companyMember.getCreatedAt());
 
             preparedStatement.executeUpdate();
         }
@@ -61,11 +59,11 @@ public class CompanyMemberRepository {
         return Optional.empty();
     }
 
-    public Optional<CompanyMemberDto> findById(Connection connection, BigInteger id)
+    public Optional<CompanyMemberDto> findById(Connection connection, Long id)
     throws SQLException{
         String sql = "SELECT * FROM company_members WHERE id=?";
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-            preparedStatement.setBigDecimal(1, new BigDecimal(id));
+            preparedStatement.setLong(1, id);
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 if (resultSet.next()) {
                     CompanyMemberDto companyMemberDto = getCompanyMemberDto(resultSet);
@@ -92,12 +90,12 @@ public class CompanyMemberRepository {
     }
 
     private CompanyMemberDto getCompanyMemberDto(ResultSet resultSet) throws SQLException {
-        BigInteger id = resultSet.getBigDecimal(1).toBigInteger();
+        Long id = resultSet.getLong(1);
         String loginName = resultSet.getString(2);
         String password = resultSet.getString(3);
         String name = resultSet.getString(4);
-        int phoneVerification = resultSet.getInt(5);
-        Date createAt = resultSet.getDate(6);
+        Boolean phoneVerification = resultSet.getBoolean(5);
+        Timestamp createAt = resultSet.getTimestamp(6);
         return new CompanyMemberDto(id, loginName, password, name, phoneVerification
             , createAt);
     }

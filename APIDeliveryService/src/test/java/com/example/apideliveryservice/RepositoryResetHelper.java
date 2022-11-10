@@ -49,7 +49,7 @@ public class RepositoryResetHelper {
             + "    password VARCHAR(128) NOT NULL ,\n"
             + "    name VARCHAR(30) NOT NULL ,\n"
             + "    phone_verification TINYINT(1) NOT NULL,\n"
-            + "    registration_date DATE NOT NULL\n"
+            + "    registration_date TIMESTAMP NOT NULL\n"
             + ");";
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.executeUpdate();

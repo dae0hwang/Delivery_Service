@@ -1,7 +1,6 @@
 package com.example.apideliveryservice.dto;
 
-import java.math.BigInteger;
-import java.sql.Date;
+import java.sql.Timestamp;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -11,16 +10,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class CompanyMemberDto {
 
-    //bigint
-    private BigInteger id;
-    //varchar
+    private Long id;
     private String loginName;
-    //varchar
     private String password;
-    //varchar
     private String name;
-    //tinytint
-    private Integer phoneVerification;
-    //date
-    private Date createdAt;
+    private Boolean phoneVerification;
+    private Timestamp createdAt;
 }

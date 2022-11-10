@@ -9,6 +9,7 @@ import java.sql.Connection;
 import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -52,9 +53,8 @@ class CompanyMemberRepositoryTest {
     @DisplayName("save and findByLonginName Test")
     void save() throws SQLException {
         //given
-        CompanyMemberDto companyMemberDto = new CompanyMemberDto(new BigInteger("1")
-            , "loginName", "password", "name", 0
-            , new Date(System.currentTimeMillis()));
+        CompanyMemberDto companyMemberDto = new CompanyMemberDto(1l, "loginName", "password", "name"
+            , false, new Timestamp(System.currentTimeMillis()));
         //when
         repository.save(connection, companyMemberDto);
         Optional<CompanyMemberDto> findMember = repository.findByLoginName(connection
@@ -79,13 +79,11 @@ class CompanyMemberRepositoryTest {
     @DisplayName("Id가 존재했을 때 찾기")
     void findById1() throws SQLException {
         //given
-        CompanyMemberDto companyMemberDto = new CompanyMemberDto(new BigInteger("1")
-            , "loginName", "password", "name", 0
-            , new Date(System.currentTimeMillis()));
+        CompanyMemberDto companyMemberDto = new CompanyMemberDto(1l, "loginName", "password", "name"
+            , false, new Timestamp(System.currentTimeMillis()));
         //when
         repository.save(connection, companyMemberDto);
-        Optional<CompanyMemberDto> findMember = repository.findById(connection
-            , new BigInteger("1"));
+        Optional<CompanyMemberDto> findMember = repository.findById(connection,1l);
         CompanyMemberDto findMemberDto = findMember.get();
         //then
         assertThat(findMemberDto.toString()).isEqualTo(companyMemberDto.toString());
@@ -95,8 +93,7 @@ class CompanyMemberRepositoryTest {
     @DisplayName("Id가 존재하지 않을 때 찾기")
     void findById2() throws SQLException {
         //when
-        Optional<CompanyMemberDto> findMember = repository.findById(connection
-            , new BigInteger("1"));
+        Optional<CompanyMemberDto> findMember = repository.findById(connection, 1l);
         CompanyMemberDto findMemberDto = findMember.orElse(null);
         //then
         assertThat(findMemberDto).isNull();
@@ -105,12 +102,10 @@ class CompanyMemberRepositoryTest {
     @Test
     void findAllMember() throws SQLException {
         //given
-        CompanyMemberDto companyMemberDto1 = new CompanyMemberDto(new BigInteger("1")
-            , "loginName1", "password", "name", 0
-            , new Date(System.currentTimeMillis()));
-        CompanyMemberDto companyMemberDto2 = new CompanyMemberDto(new BigInteger("2")
-            , "loginName2", "password", "name", 0
-            , new Date(System.currentTimeMillis()));
+        CompanyMemberDto companyMemberDto1 = new CompanyMemberDto(1l, "loginName", "password", "name"
+            , false, new Timestamp(System.currentTimeMillis()));
+        CompanyMemberDto companyMemberDto2 = new CompanyMemberDto(2l, "loginName2", "password", "name"
+            , false, new Timestamp(System.currentTimeMillis()));
         repository.save(connection, companyMemberDto1);
         repository.save(connection, companyMemberDto2);
         List<CompanyMemberDto> resultLIst = new ArrayList<>();
