@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class RequestCompanyMemberDto {
 
-    @Pattern(regexp = "[a-z0-9]{8,20}]", message = "requestCompanyMember loginName is 8 to 20 "
+    @Pattern(regexp = "^[a-z0-9]{8,20}$", message = "requestCompanyMember loginName is 8 to 20 "
         + "lowercase letters and numbers")
     private String loginName;
     @Pattern(regexp = "^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$ %^&*-]).{8,}$"

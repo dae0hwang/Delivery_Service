@@ -10,8 +10,9 @@ import com.example.apideliveryservice.RepositoryResetHelper;
 import com.example.apideliveryservice.controllerExceptionAdvice.CompanyMemberControllerExceptionAdvice;
 import com.example.apideliveryservice.dto.CompanyMemberDto;
 import com.example.apideliveryservice.dto.RequestCompanyMemberDto;
-import com.example.apideliveryservice.dto.ResponseCompanyMemberError;
 import com.example.apideliveryservice.dto.ResponseCompanyMemberSuccess;
+import com.example.apideliveryservice.dto.ResponseError;
+import com.example.apideliveryservice.interceptor.ExceptionResponseInterceptor;
 import com.example.apideliveryservice.repository.CompanyMemberRepository;
 import com.example.apideliveryservice.service.CompanyMemberService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -54,6 +55,7 @@ class CompanyMemberControllerTest {
 
         mockMvc = MockMvcBuilders.standaloneSetup(controller)
             .setControllerAdvice(new CompanyMemberControllerExceptionAdvice())
+            .addInterceptors(new ExceptionResponseInterceptor())
             .build();
 
         connection = repository.connectJdbc();
@@ -67,7 +69,7 @@ class CompanyMemberControllerTest {
         //given
         String url = baseUrl + "/member/join";
         RequestCompanyMemberDto requestCompanyMemberDto = new RequestCompanyMemberDto
-            ("loginName", "aA!1111111111", "name");
+            ("loginname", "aA!1111111111", "name");
         String requestJson = objectMapper.writeValueAsString(requestCompanyMemberDto);
         ResponseCompanyMemberSuccess success
             = new ResponseCompanyMemberSuccess(201, null, null);
@@ -88,17 +90,17 @@ class CompanyMemberControllerTest {
         //given
         String url = baseUrl + "/member/join";
 
-        CompanyMemberDto firstSaveMember = new CompanyMemberDto(null, "loginName", "123123123"
+        CompanyMemberDto firstSaveMember = new CompanyMemberDto(null, "loginname", "123123123"
             , "name1", false, new Timestamp(System.currentTimeMillis()));
         repository.save(connection, firstSaveMember);
 
         RequestCompanyMemberDto requestCompanyMemberDto = new RequestCompanyMemberDto
-            ("loginName", "aA!123123123", "name2");
+            ("loginname", "aA!123123123", "name2");
         String requestJson = objectMapper.writeValueAsString(requestCompanyMemberDto);
 
-        ResponseCompanyMemberError error
-            = new ResponseCompanyMemberError("/errors/member/join/duplicate-login-name"
-            , "DuplicatedLoginName", 409
+        ResponseError error
+            = new ResponseError("/errors/member/join/duplicate-login-name"
+            , "DuplicatedLoginNameException", 409
             , "Company member join fail due to DuplicatedLoginName"
             , "/api/delivery-service/company/member/join");
         String responseContent = objectMapper.writeValueAsString(error);
@@ -125,7 +127,7 @@ class CompanyMemberControllerTest {
             "asdfasdfasdfasdfasdfadsf",
             "aA!1234123414", "storeName");
         String requestJson2 = objectMapper.writeValueAsString(requestCompanyMemberDto2);
-        ResponseCompanyMemberError error = new ResponseCompanyMemberError(
+        ResponseError error = new ResponseError(
             "/errors/member/join/longinName-pattern"
             , "MethodArgumentNotValidException", 400,
             "requestCompanyMember loginName is 8 to 20 lowercase letters and numbers"
@@ -153,14 +155,14 @@ class CompanyMemberControllerTest {
         //given
         String url = baseUrl + "/member/join";
 
-        RequestCompanyMemberDto requestCompanyMemberDto1 = new RequestCompanyMemberDto("longinName",
+        RequestCompanyMemberDto requestCompanyMemberDto1 = new RequestCompanyMemberDto("longinname",
             "ad12344123123", "storeName");
         String requestJson1 = objectMapper.writeValueAsString(requestCompanyMemberDto1);
-        RequestCompanyMemberDto requestCompanyMemberDto2 = new RequestCompanyMemberDto("longinName",
+        RequestCompanyMemberDto requestCompanyMemberDto2 = new RequestCompanyMemberDto("longinname",
             "aA!2", "storeName");
         String requestJson2 = objectMapper.writeValueAsString(requestCompanyMemberDto2);
 
-        ResponseCompanyMemberError error = new ResponseCompanyMemberError(
+        ResponseError error = new ResponseError(
             "/errors/member/join/password-pattern"
             , "MethodArgumentNotValidException", 400,
             "requestCompanyMember password is At least 8 characters, at least 1 uppercase"
@@ -190,14 +192,14 @@ class CompanyMemberControllerTest {
         //given
         String url = baseUrl + "/member/join";
 
-        RequestCompanyMemberDto requestCompanyMemberDto1 = new RequestCompanyMemberDto("longinName",
+        RequestCompanyMemberDto requestCompanyMemberDto1 = new RequestCompanyMemberDto("longinname",
             "aA!123123123", "");
         String requestJson1 = objectMapper.writeValueAsString(requestCompanyMemberDto1);
-        RequestCompanyMemberDto requestCompanyMemberDto2 = new RequestCompanyMemberDto("longinName",
+        RequestCompanyMemberDto requestCompanyMemberDto2 = new RequestCompanyMemberDto("longinname",
             "aA!123123123", "   ");
         String requestJson2 = objectMapper.writeValueAsString(requestCompanyMemberDto2);
 
-        ResponseCompanyMemberError error = new ResponseCompanyMemberError(
+        ResponseError error = new ResponseError(
             "/errors/member/join/name-blank"
             , "MethodArgumentNotValidException", 400,
             "requestCompanyMember name must not be blank"
@@ -281,8 +283,8 @@ class CompanyMemberControllerTest {
         repository.save(connection, firstSaveMember);
 
         String findId = "2";
-        ResponseCompanyMemberError error
-            = new ResponseCompanyMemberError("/errors/member/find/non-exist"
+        ResponseError error
+            = new ResponseError("/errors/member/find/non-exist"
             , "NonExistentMemberIdException", 404
             , "Company member find fail due to no exist member Id"
             , "/api/delivery-service/company/member/information");

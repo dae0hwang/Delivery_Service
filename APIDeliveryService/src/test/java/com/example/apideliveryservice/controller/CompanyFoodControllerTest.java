@@ -12,8 +12,9 @@ import com.example.apideliveryservice.controllerExceptionAdvice.CompanyFoodContr
 import com.example.apideliveryservice.dto.CompanyFoodDto;
 import com.example.apideliveryservice.dto.RequestCompanyFoodDto;
 import com.example.apideliveryservice.dto.RequestCompanyFoodPriceDto;
-import com.example.apideliveryservice.dto.ResponseCompanyFoodError;
 import com.example.apideliveryservice.dto.ResponseCompanyFoodSuccess;
+import com.example.apideliveryservice.dto.ResponseError;
+import com.example.apideliveryservice.interceptor.ExceptionResponseInterceptor;
 import com.example.apideliveryservice.repository.CompanyFoodRepository;
 import com.example.apideliveryservice.service.CompanyFoodService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -55,8 +56,10 @@ class CompanyFoodControllerTest {
         baseUrl = "/api/delivery-service/company";
         objectMapper = new ObjectMapper();
 
-        mockMvc = MockMvcBuilders.standaloneSetup(controller).setControllerAdvice(
-            CompanyFoodControllerExceptionAdvice.class).build();
+        mockMvc = MockMvcBuilders.standaloneSetup(controller)
+            .setControllerAdvice(new CompanyFoodControllerExceptionAdvice())
+            .addInterceptors(new ExceptionResponseInterceptor())
+            .build();
 
         connection = repository.connectJdbc();
         resetHelper.ifExistDeleteCompanyFood(connection);
@@ -98,7 +101,7 @@ class CompanyFoodControllerTest {
             "1", "foodName", "5000");
         String requestJson = objectMapper.writeValueAsString(requestCompanyFoodDto);
 
-        ResponseCompanyFoodError error = new ResponseCompanyFoodError(
+        ResponseError error = new ResponseError(
             "/errors/food/add/duplicate-name"
             , "DuplicatedFoodNameException", 409
             , "company food add fail due to duplicated name"
@@ -127,8 +130,8 @@ class CompanyFoodControllerTest {
             "1", "   ", "50000");
         String requestJson2 = objectMapper.writeValueAsString(requestCompanyFoodDto2);
 
-        ResponseCompanyFoodError error
-            = new ResponseCompanyFoodError("/errors/food/add/name-blank"
+        ResponseError error
+            = new ResponseError("/errors/food/add/name-blank"
             , "MethodArgumentNotValidException", 400, "requestCompanyFood name must not be blank"
             , "/api/delivery-service/company/food/addFood");
         String responseContent = objectMapper.writeValueAsString(error);
@@ -158,7 +161,7 @@ class CompanyFoodControllerTest {
             "1", "foodName", "notDigit");
         String requestJson1 = objectMapper.writeValueAsString(requestCompanyFoodDto1);
 
-        ResponseCompanyFoodError error = new ResponseCompanyFoodError(
+        ResponseError error = new ResponseError(
             "/errors/food/add/price-notDigit", "MethodArgumentNotValidException", 400,
             "requestCompanyFood price must be digit"
             , "/api/delivery-service/company/food/addFood");
@@ -227,7 +230,7 @@ class CompanyFoodControllerTest {
 
         String foodId = "1";
 
-        ResponseCompanyFoodError error = new ResponseCompanyFoodError("/errors/food/find/no-id"
+        ResponseError error = new ResponseError("/errors/food/find/no-id"
             , "NonExistentFoodIdException", 404, "find food fail due to no exist food id"
             , "/api/delivery-service/company/food/information");
         String responseContent = objectMapper.writeValueAsString(error);
@@ -269,7 +272,7 @@ class CompanyFoodControllerTest {
 
         RequestCompanyFoodPriceDto request = new RequestCompanyFoodPriceDto("1", "notDigit");
         String requestJson = objectMapper.writeValueAsString(request);
-        ResponseCompanyFoodError error = new ResponseCompanyFoodError(
+        ResponseError error = new ResponseError(
             "/errors/food/update/price-notDigit"
             , "MethodArgumentNotValidException", 400, "requestCompanyFoodPrice price must be digit"
             , "/api/delivery-service/company/food/update");

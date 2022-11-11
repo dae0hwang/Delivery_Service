@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ResponseCompanyFoodError {
+public class ResponseError {
 
     private String type;
     private String title;

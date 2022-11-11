@@ -1,9 +1,9 @@
 package com.example.apideliveryservice.controllerExceptionAdvice;
 
 import com.example.apideliveryservice.controller.CompanyMemberController;
-import com.example.apideliveryservice.dto.ResponseCompanyMemberError;
 import com.example.apideliveryservice.exception.DuplicatedLoginNameException;
 import com.example.apideliveryservice.exception.NonExistentMemberIdException;
+import javax.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,56 +16,61 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class CompanyMemberControllerExceptionAdvice {
 
     @ExceptionHandler(DuplicatedLoginNameException.class)
-    public ResponseEntity duplicatedLoginNameExHandle(DuplicatedLoginNameException e) {
+    public ResponseEntity duplicatedLoginNameExHandle(DuplicatedLoginNameException e,
+        HttpServletRequest request) {
         log.error("[exceptionHandle] ex", e);
-        ResponseCompanyMemberError error = new ResponseCompanyMemberError(
-            "/errors/member/join/duplicate-login-name"
-            , "DuplicatedLoginName", 409
-            , "Company member join fail due to DuplicatedLoginName"
-            , "/api/delivery-service/company/member/join");
-        return new ResponseEntity(error, HttpStatus.CONFLICT);
+
+        String errorName = e.getClass().getSimpleName();
+        request.setAttribute("errorType", "/errors/member/join/duplicate-login-name");
+        request.setAttribute("errorTitle", errorName);
+        request.setAttribute("errorDetail", "Company member join fail due to DuplicatedLoginName");
+        return new ResponseEntity(HttpStatus.CONFLICT);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity methodArgumentNotValidExHandle(MethodArgumentNotValidException e) {
+    public ResponseEntity methodArgumentNotValidExHandle(MethodArgumentNotValidException e,
+        HttpServletRequest request) {
         log.error("[exceptionHandle] ex", e);
-        ResponseEntity responseEntity = makeArgumentNotValidResponseBody(e);
+
+        ResponseEntity responseEntity = makeArgumentNotValidResponseBody(e, request);
         return responseEntity;
     }
 
 
-    private ResponseEntity makeArgumentNotValidResponseBody(MethodArgumentNotValidException e) {
-        ResponseCompanyMemberError error;
+    private ResponseEntity makeArgumentNotValidResponseBody(MethodArgumentNotValidException e,
+        HttpServletRequest request) {
         String errorMessage = e.getBindingResult().getAllErrors().get(0).getDefaultMessage();
+        String errorName = e.getClass().getSimpleName();
         switch (errorMessage) {
             case "requestCompanyMember loginName is 8 to 20 lowercase letters and numbers":
-                error = new ResponseCompanyMemberError("/errors/member/join/longinName-pattern"
-                    , "MethodArgumentNotValidException", 400, errorMessage,
-                    "/api/delivery-service/company/member/join");
-                return new ResponseEntity(error, HttpStatus.BAD_REQUEST);
+                request.setAttribute("errorType", "/errors/member/join/longinName-pattern");
+                request.setAttribute("errorTitle", errorName);
+                request.setAttribute("errorDetail", errorMessage);
+                return new ResponseEntity(HttpStatus.BAD_REQUEST);
             case "requestCompanyMember password is At least 8 characters, at least 1 uppercase"
                 + ", lowercase, number, and special character each":
-                error = new ResponseCompanyMemberError("/errors/member/join/password-pattern"
-                    , "MethodArgumentNotValidException", 400, errorMessage,
-                    "/api/delivery-service/company/member/join");
-                return new ResponseEntity(error, HttpStatus.BAD_REQUEST);
+                request.setAttribute("errorType", "/errors/member/join/password-pattern");
+                request.setAttribute("errorTitle", errorName);
+                request.setAttribute("errorDetail", errorMessage);
+                return new ResponseEntity(HttpStatus.BAD_REQUEST);
             case "requestCompanyMember name must not be blank":
-                error = new ResponseCompanyMemberError("/errors/member/join/name-blank"
-                    , "MethodArgumentNotValidException", 400, errorMessage,
-                    "/api/delivery-service/company/member/join");
-                return new ResponseEntity(error, HttpStatus.BAD_REQUEST);
+                request.setAttribute("errorType", "/errors/member/join/name-blank");
+                request.setAttribute("errorTitle", errorName);
+                request.setAttribute("errorDetail", errorMessage);
+                return new ResponseEntity(HttpStatus.BAD_REQUEST);
         }
         return null;
     }
 
     @ExceptionHandler(NonExistentMemberIdException.class)
-    public ResponseEntity nonExistentMemberIdExHandle(NonExistentMemberIdException e) {
+    public ResponseEntity nonExistentMemberIdExHandle(NonExistentMemberIdException e,
+        HttpServletRequest request) {
         log.error("[exceptionHandle] ex", e);
-        ResponseCompanyMemberError error = new ResponseCompanyMemberError(
-            "/errors/member/find/non-exist"
-            , "NonExistentMemberIdException", 404
-            , "Company member find fail due to no exist member Id"
-            , "/api/delivery-service/company/member/information");
-        return new ResponseEntity(error, HttpStatus.NOT_FOUND);
+
+        String errorName = e.getClass().getSimpleName();
+        request.setAttribute("errorType", "/errors/member/find/non-exist");
+        request.setAttribute("errorTitle", errorName);
+        request.setAttribute("errorDetail", "Company member find fail due to no exist member Id");
+        return new ResponseEntity(HttpStatus.NOT_FOUND);
     }
 }
