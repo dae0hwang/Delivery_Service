@@ -30,7 +30,6 @@ datasource:
   username: sa
   password:
 
-
 ---
 spring:
   config:

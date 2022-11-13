@@ -18,11 +18,11 @@ import org.springframework.stereotype.Service;
 @Service
 public class CompanyFoodRepository {
 
-    @Value("${datasource.url}")
+    @Value("${datasource.url:@null}")
     private String url;
-    @Value("${datasource.username}")
+    @Value("${datasource.username:@null}")
     private String username;
-    @Value("${datasource.password}")
+    @Value("${datasource.password:@null}")
     private String password;
 
     public Connection connectJdbc() throws SQLException {

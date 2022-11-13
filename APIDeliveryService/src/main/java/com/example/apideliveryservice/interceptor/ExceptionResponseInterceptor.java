@@ -17,11 +17,11 @@ public class ExceptionResponseInterceptor implements HandlerInterceptor {
         Object handler, Exception ex) throws Exception {
 //        HandlerMethod handlerMethod = (HandlerMethod) handler;
 //        String controllerName = handlerMethod.getBeanType().getSimpleName().replace("Controller", "");
-        String errorType = request.getAttribute("errorType").toString();
-        String errorDetail = request.getAttribute("errorDetail").toString();
-        String errorTitle = request.getAttribute("errorTitle").toString();
 
-        if (errorType != null) {
+        if (request.getAttribute("errorType") != null) {
+            String errorType = request.getAttribute("errorType").toString();
+            String errorDetail = request.getAttribute("errorDetail").toString();
+            String errorTitle = request.getAttribute("errorTitle").toString();
             log.info("ExceptionResponseInterceptor, error type={}", errorType);
             ResponseError error = new ResponseError(errorType, errorTitle,
                 response.getStatus(), errorDetail, request.getRequestURI());
