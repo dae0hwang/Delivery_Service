@@ -17,3 +17,14 @@ CREATE TABLE company_food(
      name VARCHAR(30) NOT NULL ,
      price DECIMAL NOT NULL
 );
+
+DROP TABLE IF EXISTS general_members;
+
+CREATE TABLE general_members(
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    login_name VARCHAR(30) NOT NULL UNIQUE ,
+    password VARCHAR(128) NOT NULL ,
+    name VARCHAR(30) NOT NULL ,
+    phone_verification TINYINT(1) NOT NULL,
+    registration_date TIMESTAMP NOT NULL
+);

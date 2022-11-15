@@ -39,7 +39,6 @@ public class CompanyMemberRepository {
             preparedStatement.setString(3, companyMember.getName());
             preparedStatement.setBoolean(4, companyMember.getPhoneVerification());
             preparedStatement.setTimestamp(5, companyMember.getCreatedAt());
-
             preparedStatement.executeUpdate();
         }
     }

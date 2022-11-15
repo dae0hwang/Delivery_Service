@@ -57,4 +57,29 @@ public class RepositoryResetHelper {
             log.error("error message={}", e.getMessage(), e);
         }
     }
+
+    public void ifExistDeleteGeneralMembers(Connection connection) {
+        String sql ="DROP TABLE IF EXISTS general_members";
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            log.error("error message={}", e.getMessage(), e);
+        }
+    }
+
+    public void createGeneralMembersTable(Connection connection) {
+        String sql = "CREATE TABLE general_members(\n"
+            + "    id BIGINT AUTO_INCREMENT PRIMARY KEY ,\n"
+            + "    login_name VARCHAR(30) NOT NULL UNIQUE ,\n"
+            + "    password VARCHAR(128) NOT NULL ,\n"
+            + "    name VARCHAR(30) NOT NULL ,\n"
+            + "    phone_verification TINYINT(1) NOT NULL,\n"
+            + "    registration_date TIMESTAMP NOT NULL\n"
+            + ");";
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.executeUpdate();
+        }catch (SQLException e) {
+            log.error("error message={}", e.getMessage(), e);
+        }
+    }
 }

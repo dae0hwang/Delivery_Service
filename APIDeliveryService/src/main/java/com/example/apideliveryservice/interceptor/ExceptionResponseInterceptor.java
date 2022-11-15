@@ -1,6 +1,7 @@
 package com.example.apideliveryservice.interceptor;
 
 import com.example.apideliveryservice.dto.ResponseError;
+import com.example.apideliveryservice.threadLocalStorage.ThreadLocalStorage;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -11,12 +12,11 @@ import org.springframework.web.servlet.HandlerInterceptor;
 public class ExceptionResponseInterceptor implements HandlerInterceptor {
 
     private ObjectMapper objectMapper = new ObjectMapper();
+    private ThreadLocalStorage threadLocalStorage = new ThreadLocalStorage();
 
     @Override
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response,
         Object handler, Exception ex) throws Exception {
-//        HandlerMethod handlerMethod = (HandlerMethod) handler;
-//        String controllerName = handlerMethod.getBeanType().getSimpleName().replace("Controller", "");
 
         if (request.getAttribute("errorType") != null) {
             String errorType = request.getAttribute("errorType").toString();
@@ -26,8 +26,21 @@ public class ExceptionResponseInterceptor implements HandlerInterceptor {
             ResponseError error = new ResponseError(errorType, errorTitle,
                 response.getStatus(), errorDetail, request.getRequestURI());
             String errorResponseBody = objectMapper.writeValueAsString(error);
-//            response.setContentType("application/json");
-//            response.setCharacterEncoding("utf-8");
+            response.setContentType("application/json;charset=utf-8");
+            response.getWriter().write(errorResponseBody);
+        }
+
+        if (threadLocalStorage.getErrorType() != null) {
+            String errorType = threadLocalStorage.getErrorType();
+            String errorDetail = threadLocalStorage.getErrorDetail();
+            String errorTitle = threadLocalStorage.getErrorTitle();
+            threadLocalStorage.removeErrorType();
+            threadLocalStorage.removeErrorDetail();
+            threadLocalStorage.removeErrorTitle();
+            log.warn("TLSExceptionResponseInterceptor, error type={}", errorType);
+            ResponseError error = new ResponseError(errorType, errorTitle,
+                response.getStatus(), errorDetail, request.getRequestURI());
+            String errorResponseBody = objectMapper.writeValueAsString(error);
             response.setContentType("application/json;charset=utf-8");
             response.getWriter().write(errorResponseBody);
         }
