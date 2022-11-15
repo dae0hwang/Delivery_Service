@@ -12,5 +12,5 @@ public class ResponseGeneralMemberSuccess {
 
     private int status;
     private List<GeneralMemberDto> list;
-    private GeneralMemberDto companyMemberDto;
+    private GeneralMemberDto generalMemberDto;
 }

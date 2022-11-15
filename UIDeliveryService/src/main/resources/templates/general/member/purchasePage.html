@@ -1,10 +1,144 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
-  <meta charset="UTF-8">
-  <title>Title</title>
+  <meta charset="utf-8">
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <script>
+    window.onload = function () {
+      //requestParam 가져오기 함수
+      function getParam(sname) {
+        var params = location.search.substr(location.search.indexOf("?") + 1);
+        var sval = "";
+        params = params.split("&");
+        for (var i = 0; i < params.length; i++) {
+          temp = params[i].split("=");
+          if ([temp[0]] == sname) { sval = temp[1]; }
+        }
+        return sval;
+      }
+
+      //requestParam generalMemberId 가져오기.
+      let generalMemberId = getParam("generalMemberId");
+      //requestParam companyMemberId 가져오기.
+      let companyMemberId = getParam("companyMemberId");
+
+      //제네럴멤버 h2 나타내기
+      let generalH2 = document.getElementById("generalH2");
+      axios({
+        url: 'http://127.0.0.1:5510/api/delivery-service/general/member/information',
+        method: 'get',
+        params: {
+          memberId: generalMemberId
+        }
+      })
+      .then(function (response) {
+        let generalMemberName = response.data.generalMemberDto.name;
+        let textNode = document.createTextNode(generalMemberName+" 음식 주문 페이지");
+        generalH2.appendChild(textNode);
+      })
+      .catch(function (error) {
+        console.log(error);
+        alert("서버에 문제가 있습니다. 잠시후 시도해 주세요.")
+      });
+
+      //컴패니멤버 h2 나타내기
+      let companyH2 = document.getElementById("companyH2");
+      axios({
+        url: 'http://127.0.0.1:5510/api/delivery-service/company/member/information',
+        method: 'get',
+        params: {
+          memberId: companyMemberId
+        }
+      })
+      .then(function (response) {
+        let companyMemberDto = response.data.companyMemberDto.name;
+        let textNode = document.createTextNode(companyMemberDto+" 음식 리스트");
+        companyH2.appendChild(textNode);
+      })
+      .catch(function (error) {
+        console.log(error);
+        alert("서버에 문제가 있습니다. 잠시후 시도해 주세요.")
+      });
+
+      //컴패니 음식리스트 출력 그리고 주문하기 버튼 완성하기.
+      //먼저 음식 리스트 출력 memberid에 해당하는 음식 목록 전체 가져오기.
+      let tBody = document.getElementById("tBody");
+
+      function makeTable(dataList) {
+        for (i in dataList) {
+
+          let textNode = document.createTextNode(dataList[i].memberId);
+          let tdNode = document.createElement("td");
+          tdNode.appendChild(textNode)
+          let textNode2 = document.createTextNode(dataList[i].id);
+          let tdNode2 = document.createElement("td");
+          tdNode2.appendChild(textNode2)
+          let textNode3 = document.createTextNode(dataList[i].name);
+          let tdNode3 = document.createElement("td");
+          tdNode3.appendChild(textNode3)
+          let textNode4 = document.createTextNode(dataList[i].price);
+          let tdNode4 = document.createElement("td");
+          tdNode4.appendChild(textNode4)
+          let aNode = document.createElement("a");
+          aNode.text = "해당음식주문"
+          //해당음식버튼
+          aNode.href = ""
+          let tdNode5 = document.createElement("td");
+          tdNode5.appendChild(aNode)
+          let trNode = document.createElement("tr");
+          trNode.appendChild(tdNode);
+          trNode.appendChild(tdNode2);
+          trNode.appendChild(tdNode3);
+          trNode.appendChild(tdNode4);
+          trNode.appendChild(tdNode5);
+          tBody.appendChild(trNode);
+        }
+      }
+
+      axios({
+        url: 'http://127.0.0.1:5510/api/delivery-service/company/food/allFood',
+        method: 'get',
+        params: {
+          memberId: companyMemberId
+        }
+      })
+      .then(function (response) {
+        let status = response.status;
+        let foodList = response.data.list;
+        if (status == 200) {
+          makeTable(foodList);
+        }
+      })
+      .catch(function (error) {
+        console.log(error);
+        alert("서버에 문제가 있습니다. 잠시후 시도해 주세요.")
+      });
+
+    };
+  </script>
+
 </head>
+
 <body>
-제대로 파라미터 되는 것인지 테스트하기.
+<div>
+  <h2 id="generalH2"></h2>
+</div>
+<div>
+  <h2 id="companyH2"></h2>
+</div>
+
+<table id="table" border="1">
+  <thead>
+  <tr>
+    <th>멤버 id</th>
+    <th>음식 id</th>
+    <th>음식 이름</th>
+    <th>음식 가격</th>
+    <th>음식 주문하기</th>
+  </tr>
+  </thead>
+  <tbody id="tBody"></tbody>
+</table>
+
 </body>
 </html>
