@@ -6,6 +6,8 @@ import com.example.apideliveryservice.repository.GeneralMemberRepository;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -52,32 +54,34 @@ public class GeneralMemberService {
                     "general member join fail due to DuplicatedLoginName");
             });
     }
-//    /**
-//     * @return companyMemberList
-//     * @throws SQLException
-//     */
-//    public List<CompanyMemberDto> findAllMember() throws SQLException {
-//        try (Connection connection = companyMemberRepository.connectJdbc()) {
-//            List<CompanyMemberDto> allMember = companyMemberRepository.findAllMember(
-//                connection).orElse(new ArrayList<>());
-//            return allMember;
-//        }
-//    }
-//
-//    /**
-//     * @param id
-//     * @return findCompanyMember
-//     * @throws SQLException
-//     * @throws NonExistentMemberIdException
-//     */
-//    public CompanyMemberDto findMember(String id) throws SQLException {
-//        try (Connection connection = companyMemberRepository.connectJdbc()) {
-//            CompanyMemberDto member = companyMemberRepository.findById(
-//                connection, Long.parseLong(id)).orElse(null);
-//            if (member == null) {
-//                throw new NonExistentMemberIdException();
-//            }
-//            return member;
-//        }
-//    }
+
+    /**
+     * @return generalMemberList
+     * @throws SQLException
+     */
+    public List<GeneralMemberDto> findAllMember() throws SQLException {
+        try (Connection connection = generalMemberRepository.connectJdbc()) {
+            List<GeneralMemberDto> allMember = generalMemberRepository.findAll(connection)
+                .orElse(new ArrayList<>());
+            return allMember;
+        }
+    }
+
+    /**
+     * @param id
+     * @return findCompanyMember
+     * @throws SQLException
+     * @throws DeliveryServiceException-general member findById fail due to NonExistentMemberIdException
+     */
+    public GeneralMemberDto findById(String id) throws SQLException {
+        try (Connection connection = generalMemberRepository.connectJdbc()) {
+            GeneralMemberDto member = generalMemberRepository.findById(
+                connection, Long.parseLong(id)).orElse(null);
+            if (member == null) {
+                throw new DeliveryServiceException(
+                    "general member findById fail due to NonExistentMemberIdException");
+            }
+            return member;
+        }
+    }
 }

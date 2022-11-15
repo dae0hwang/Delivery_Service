@@ -1,0 +1,113 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="utf-8">
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <script>
+    window.onload = function () {
+      // id 가져오기.
+      let url = window.location.href;
+      let id = url.replace('http://localhost:8080/delivery-service/general/member/list/', '');
+
+      // let addFoodFormUrl = 'http://localhost:8080/delivery-service/company/food/addFood/'+id;
+      // let addFoodBtn = document.getElementById('addFoodBtn');
+      // addFoodBtn.onclick =function () {
+      //   location.href = addFoodFormUrl;
+      // }
+
+
+      //generalMember 정보 가져오기 name 적용하기
+      let generalMemberInfo;
+      axios({
+        url: 'http://127.0.0.1:5510/api/delivery-service/general/member/information',
+        method: 'get',
+        params: {
+          memberId: id
+        }
+      })
+      .then(function a(response) {
+        generalMemberInfo = response.data.companyMemberDto;
+        console.log(response)
+        let innerName = generalMemberInfo.name;
+        let innerText = document.createTextNode(innerName+" 페이지");
+        let h2 = document.getElementById("h2");
+        h2.appendChild(innerText)
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+
+      //기업 회원 리스트 가져오고, 상호명, 주문하기 테이블 만들기.
+      let tBody = document.getElementById("tBody");
+
+      function makeTable(dataList) {
+        for (i in dataList) {
+          let companyMemberIdText = document.createTextNode(dataList[i].id);
+          let tdNode0 = document.createElement("td");
+          tdNode0.appendChild(companyMemberIdText)
+          let textNode = document.createTextNode(dataList[i].name);
+          let tdNode = document.createElement("td");
+          tdNode.appendChild(textNode)
+          let aNode = document.createElement("a");
+          aNode.text = "음식주문페이지";
+          //해당 generalmember id 해당 음식점 id 사용해서 음식주문 페이지 이동
+          //아직 만들지 못함 구상해야함.
+          aNode.href = 'http://localhost:8080/delivery-service/general/member/purchase?generalMemberId='
+              +id+'&companyMemberId='+dataList[i].id
+          let tdNode2 = document.createElement("td");
+          tdNode2.appendChild(aNode)
+          let trNode = document.createElement("tr");
+          trNode.appendChild(tdNode0);
+          trNode.appendChild(tdNode);
+          trNode.appendChild(tdNode2);
+          tBody.appendChild(trNode);
+        }
+      }
+
+      //모든 기업 정보 가져와서,
+      axios({
+        url: 'http://127.0.0.1:5510/api/delivery-service/company/member/allMember',
+        method: 'get',
+      })
+      .then(function (response) {
+        let status = response.status;
+        let responseData = response.data;
+        console.log(responseData)
+        let companyMemberList = responseData["list"];
+        console.log(companyMemberList)
+        if (status == 200) {
+          makeTable(companyMemberList);
+        }
+      })
+      .catch(function (error) {
+        console.log(error);
+        alert("서버에 문제가 있습니다. 잠시후 시도해 주세요.")
+      });
+
+    };
+  </script>
+
+</head>
+
+<body>
+  <div>
+    <h2 id="h2"></h2>
+    <input type="button" value="돌아가기" onclick="location.href='/delivery-service/general/member/list'">
+    //편하게 a태그로 하자
+    <input id="addFoodBtn" type="button" value="1개월 사용 금액">
+  </div>
+
+
+  <table id="table" border="1">
+    <thead>
+    <tr>
+      <th>companyMemberId</th>
+      <th>음식상호면</th>
+      <th>음식주문페이지가기</th>
+    </tr>
+    </thead>
+    <tbody id="tBody"></tbody>
+  </table>
+
+</body>
+</html>

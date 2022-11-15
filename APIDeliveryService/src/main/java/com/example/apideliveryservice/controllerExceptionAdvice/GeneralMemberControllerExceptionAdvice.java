@@ -35,6 +35,11 @@ public class GeneralMemberControllerExceptionAdvice {
                 threadLocalStorage.setErrorTitle(errorName);
                 threadLocalStorage.setErrorDetail(errorMessage);
                 return new ResponseEntity(HttpStatus.CONFLICT);
+            case "general member findById fail due to NonExistentMemberIdException":
+                threadLocalStorage.setErrorType("/errors/general/member/find/non-exist");
+                threadLocalStorage.setErrorTitle(errorName);
+                threadLocalStorage.setErrorDetail(errorMessage);
+                return new ResponseEntity(HttpStatus.NOT_FOUND);
         }
         return null;
     }

@@ -1,5 +1,6 @@
 package com.example.apideliveryservice.controller;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.log;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -18,6 +19,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -215,6 +217,82 @@ class GeneralMemberControllerTest {
                 .contentType("application/json")
                 .content(requestJson2))
             .andExpect(status().isBadRequest())
+            .andExpect(content().json(responseContent))
+            .andDo(log());
+    }
+
+    @Test
+    @DisplayName("모든 멤버 가져오기 Test")
+    void findAllMember() throws Exception {
+        //given
+        String url = baseUrl + "/member/all";
+
+        GeneralMemberDto companyMemberDto1 = new GeneralMemberDto(1l, "loginName1", "password",
+            "name", false, new Timestamp(System.currentTimeMillis()));
+        GeneralMemberDto companyMemberDto2 = new GeneralMemberDto(2l, "loginName2", "password",
+            "name", false, new Timestamp(System.currentTimeMillis()));
+        repository.create(connection, companyMemberDto1);
+        repository.create(connection, companyMemberDto2);
+        List<GeneralMemberDto> allMember = service.findAllMember();
+
+        ResponseGeneralMemberSuccess success = new ResponseGeneralMemberSuccess(200, allMember,
+            null);
+        String responseContent = objectMapper.writeValueAsString(success);
+        //when
+
+        //then
+        mockMvc.perform(get(url))
+            .andExpect(status().isOk())
+            .andExpect(content().json(responseContent))
+            .andDo(log());
+    }
+
+    @Test
+    @DisplayName("개인 멤버 정보 가져오기 성공 Test")
+    void findMember1() throws Exception {
+        //given
+        String url = baseUrl + "/member/information";
+
+        GeneralMemberDto firstSaveMember = new GeneralMemberDto(null, "loginName", "password"
+            , "name1", false, new Timestamp(System.currentTimeMillis()));
+        repository.create(connection, firstSaveMember);
+
+        String findId = "1";
+        GeneralMemberDto findMember = service.findById(findId);
+        ResponseGeneralMemberSuccess success = new ResponseGeneralMemberSuccess(200
+            , null, findMember);
+        String responseContent = objectMapper.writeValueAsString(success);
+        //when
+
+        //then
+        mockMvc.perform(get(url).param("memberId", findId))
+            .andExpect(status().isOk())
+            .andExpect(content().json(responseContent))
+            .andDo(log());
+    }
+
+    @Test
+    @DisplayName("개인 멤버 정보 가져오기 존재하지 않는 id 실패 Test")
+    void findMember2() throws Exception {
+        //given
+        String url = baseUrl + "/member/information";
+
+        GeneralMemberDto firstSaveMember = new GeneralMemberDto(null, "loginName", "password"
+            , "name1", false, new Timestamp(System.currentTimeMillis()));
+        repository.create(connection, firstSaveMember);
+
+        String findId = "2";
+        ResponseError error
+            = new ResponseError("/errors/general/member/find/non-exist"
+            , "DeliveryServiceException", 404
+            , "general member findById fail due to NonExistentMemberIdException"
+            , "/api/delivery-service/general/member/information");
+        String responseContent = objectMapper.writeValueAsString(error);
+        //when
+
+        //then
+        mockMvc.perform(get(url).param("memberId", findId))
+            .andExpect(status().isNotFound())
             .andExpect(content().json(responseContent))
             .andDo(log());
     }

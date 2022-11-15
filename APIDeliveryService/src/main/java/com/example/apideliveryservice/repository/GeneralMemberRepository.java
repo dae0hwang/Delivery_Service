@@ -7,6 +7,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -67,5 +69,33 @@ public class GeneralMemberRepository {
         Timestamp createAt = resultSet.getTimestamp(6);
         return new GeneralMemberDto(id, loginName, password, name, phoneVerification
             , createAt);
+    }
+
+    public Optional<List<GeneralMemberDto>> findAll(Connection connection) throws SQLException {
+        String sql = "SELECT * FROM general_members";
+        List<GeneralMemberDto> list = new ArrayList<>();
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                while (resultSet.next()) {
+                    GeneralMemberDto generalMember = getGeneralMember(resultSet);
+                    list.add(generalMember);
+                }
+                return Optional.of(list);
+            }
+        }
+    }
+
+    public Optional<GeneralMemberDto> findById(Connection connection, Long id) throws SQLException {
+        String sql = "SELECT * FROM general_members WHERE id=?";
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.setLong(1, id);
+            try (ResultSet resultSet = preparedStatement.executeQuery()){
+                if (resultSet.next()) {
+                    GeneralMemberDto generalMemberDto = getGeneralMember(resultSet);
+                    return Optional.ofNullable(generalMemberDto);
+                }
+            }
+        }
+        return Optional.empty();
     }
 }
