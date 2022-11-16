@@ -84,6 +84,9 @@
         alert("서버에 문제가 있습니다. 잠시후 시도해 주세요.")
       });
 
+      //1개월 사용금액 a태그 href설정하기.
+      let aTag = document.getElementById("atag");
+      aTag.href = '/delivery-service/general/member/used/'+id
     };
   </script>
 
@@ -93,8 +96,7 @@
   <div>
     <h2 id="h2"></h2>
     <input type="button" value="돌아가기" onclick="location.href='/delivery-service/general/member/list'">
-    //편하게 a태그로 하자
-    <input id="addFoodBtn" type="button" value="1개월 사용 금액">
+    <a id="atag" >1개월 사용 금액 알아보기</a>
   </div>
 
 

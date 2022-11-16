@@ -11,24 +11,29 @@ import org.springframework.web.bind.annotation.RequestParam;
 @RequestMapping("/delivery-service/general")
 public class GeneralMemberController {
 
-    @GetMapping("member/join")
+    @GetMapping("/member/join")
     public String joinForm() {
         return "general/member/joinForm";
     }
 
-    @GetMapping("member/list")
+    @GetMapping("/member/list")
     public String memberList() {
         return "general/member/memberList";
     }
 
-    @GetMapping("member/list/{memberId}")
+    @GetMapping("/member/list/{memberId}")
     public String memberPage() {
         return "general/member/memberPage";
     }
 
-    @GetMapping("member/purchase")
+    @GetMapping("/member/purchase")
     public String purchasePage(@RequestParam("generalMemberId") String general,
         @RequestParam("companyMemberId") String company) {
         return "general/member/purchasePage";
+    }
+
+    @GetMapping("/member/used/{memberId}")
+    public String usedAmount() {
+        return "general/member/usedAmount";
     }
 }

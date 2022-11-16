@@ -55,30 +55,34 @@
         trNode.appendChild(tdNode);
         trNode.appendChild(tdNode2);
         tBody.appendChild(trNode);
+        }
       }
-    }
 
-    axios({
-      url: 'http://127.0.0.1:5510/api/delivery-service/company/food/allFood',
-      method: 'get',
-      params: {
-        memberId: id
-      }
-    })
-    .then(function (response) {
-      let status = response.status;
-      let responseData = response.data;
-      console.log(responseData)
-      let foodList = responseData["list"];
-      console.log(foodList)
-      if (status == 200) {
-        makeTable(foodList);
-      }
-    })
-    .catch(function (error) {
-      console.log(error);
-      alert("서버에 문제가 있습니다. 잠시후 시도해 주세요.")
-    });
+      axios({
+        url: 'http://127.0.0.1:5510/api/delivery-service/company/food/allFood',
+        method: 'get',
+        params: {
+          memberId: id
+        }
+      })
+      .then(function (response) {
+        let status = response.status;
+        let responseData = response.data;
+        console.log(responseData)
+        let foodList = responseData["list"];
+        console.log(foodList)
+        if (status == 200) {
+          makeTable(foodList);
+        }
+      })
+      .catch(function (error) {
+        console.log(error);
+        alert("서버에 문제가 있습니다. 잠시후 시도해 주세요.")
+      });
+
+      //1개월 매출 a태그 href설정하기.
+      let aTag = document.getElementById("atag");
+      aTag.href = '/delivery-service/company/member/sales/'+id
     };
   </script>
 
@@ -89,6 +93,7 @@
     <h2 id="h2"></h2>
     <input type="button" value="돌아가기" onclick="location.href='/delivery-service/company/member/members'">
     <input id="addFoodBtn" type="button" value="음식 등록하기">
+    <a id="atag" >1개월 매출 금액 알아보기</a>
   </div>
 
 
