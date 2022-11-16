@@ -2,8 +2,11 @@ package com.example.apideliveryservice.controller;
 
 import com.example.apideliveryservice.dto.GeneralMemberDto;
 import com.example.apideliveryservice.dto.RequestGeneralMemberDto;
+import com.example.apideliveryservice.dto.RequestPurchaseListDto;
 import com.example.apideliveryservice.dto.ResponseGeneralMemberSuccess;
+import com.example.apideliveryservice.dto.ResponsePurchaseListSuccess;
 import com.example.apideliveryservice.service.GeneralMemberService;
+import com.example.apideliveryservice.service.PurchaseListService;
 import com.example.apideliveryservice.threadLocalStorage.ThreadLocalStorage;
 import java.sql.SQLException;
 import java.util.List;
@@ -28,6 +31,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class GeneralMemberController {
 
     private final GeneralMemberService generalMemberService;
+    private final PurchaseListService purchaseListService;
     private ThreadLocalStorage threadLocalStorage = new ThreadLocalStorage();
 
     @PostMapping("/member/join")
@@ -54,5 +58,15 @@ public class GeneralMemberController {
         ResponseGeneralMemberSuccess success = new ResponseGeneralMemberSuccess(200, null,
             findMember);
         return ResponseEntity.status(HttpStatus.OK).body(success);
+    }
+
+    @PostMapping("/member/purchase")
+    public ResponseEntity foodPurchase(
+        @Validated @RequestBody RequestPurchaseListDto requestPurchaseList) throws SQLException {
+        purchaseListService.addList(requestPurchaseList.getGeneralMemberId(),
+            requestPurchaseList.getCompanyMemberId(), requestPurchaseList.getFoodId(),
+            requestPurchaseList.getFoodPrice());
+        ResponsePurchaseListSuccess success = new ResponsePurchaseListSuccess(201, null);
+        return new ResponseEntity(success, HttpStatus.CREATED);
     }
 }

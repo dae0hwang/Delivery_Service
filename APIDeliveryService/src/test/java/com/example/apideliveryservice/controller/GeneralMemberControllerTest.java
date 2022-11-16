@@ -1,21 +1,27 @@
 package com.example.apideliveryservice.controller;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.log;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.example.apideliveryservice.PurchaseListTestHelper;
 import com.example.apideliveryservice.RepositoryResetHelper;
 import com.example.apideliveryservice.controllerExceptionAdvice.GeneralMemberControllerExceptionAdvice;
 import com.example.apideliveryservice.dto.GeneralMemberDto;
+import com.example.apideliveryservice.dto.PurchaseListDto;
 import com.example.apideliveryservice.dto.RequestGeneralMemberDto;
+import com.example.apideliveryservice.dto.RequestPurchaseListDto;
 import com.example.apideliveryservice.dto.ResponseError;
 import com.example.apideliveryservice.dto.ResponseGeneralMemberSuccess;
+import com.example.apideliveryservice.dto.ResponsePurchaseListSuccess;
 import com.example.apideliveryservice.interceptor.ExceptionResponseInterceptor;
 import com.example.apideliveryservice.repository.GeneralMemberRepository;
 import com.example.apideliveryservice.service.GeneralMemberService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Timestamp;
@@ -41,6 +47,8 @@ class GeneralMemberControllerTest {
     GeneralMemberRepository repository;
     @Autowired
     RepositoryResetHelper resetHelper;
+    @Autowired
+    PurchaseListTestHelper purchaseListTestHelper;
     Connection connection;
     MockMvc mockMvc;
     ObjectMapper objectMapper;
@@ -59,6 +67,8 @@ class GeneralMemberControllerTest {
         connection = repository.connectJdbc();
         resetHelper.ifExistDeleteGeneralMembers(connection);
         resetHelper.createGeneralMembersTable(connection);
+        resetHelper.ifExistDeletePurchaseList(connection);
+        resetHelper.createPurchaseListTable(connection);
     }
 
     @Test
@@ -294,6 +304,97 @@ class GeneralMemberControllerTest {
         mockMvc.perform(get(url).param("memberId", findId))
             .andExpect(status().isNotFound())
             .andExpect(content().json(responseContent))
+            .andDo(log());
+    }
+
+    @Test
+    @DisplayName("구매 리스트 등록 성공 Test")
+    void foodPurchase1() throws Exception {
+        //given
+        String url = baseUrl + "/member/purchase";
+        RequestPurchaseListDto requestPurchaseListDto = new RequestPurchaseListDto("1", "2", "3",
+            "3000");
+        String requestJson = objectMapper.writeValueAsString(requestPurchaseListDto);
+
+        ResponsePurchaseListSuccess success = new ResponsePurchaseListSuccess(201, null);
+        String responseContent = objectMapper.writeValueAsString(success);
+        //when
+        //then
+        mockMvc.perform(post(url)
+            .contentType("application/json")
+            .content(requestJson))
+            .andExpect(status().isCreated())
+            .andExpect(content().json(responseContent))
+            .andDo(log());
+    }
+
+    @Test
+    @DisplayName("validation not digit 구매 리스트 등록 실패 Test")
+    void foodPurchase2() throws Exception {
+        //given
+        String url = baseUrl + "/member/purchase";
+        RequestPurchaseListDto requestPurchaseListDto1 = new RequestPurchaseListDto(" ", "2", "3",
+            "3000");
+        String requestJson1 = objectMapper.writeValueAsString(requestPurchaseListDto1);
+        RequestPurchaseListDto requestPurchaseListDto2 = new RequestPurchaseListDto("1", "notDigit",
+            "3", "3000");
+        String requestJson2 = objectMapper.writeValueAsString(requestPurchaseListDto2);
+        RequestPurchaseListDto requestPurchaseListDto3 = new RequestPurchaseListDto("1", "2", " ",
+            "3000");
+        String requestJson3 = objectMapper.writeValueAsString(requestPurchaseListDto3);
+        RequestPurchaseListDto requestPurchaseListDto4 = new RequestPurchaseListDto("1", "2", "3",
+            "notDigit");
+        String requestJson4 = objectMapper.writeValueAsString(requestPurchaseListDto4);
+
+        ResponseError error1 = new ResponseError(
+            "/errors/general/member/purchase/generalMemberId-notDigit",
+            "MethodArgumentNotValidException",
+            400, "requestPurchaseListDto generalMemberId must be digit",
+            "/api/delivery-service/general/member/purchase");
+        String responseContent1 = objectMapper.writeValueAsString(error1);
+        ResponseError error2 = new ResponseError(
+            "/errors/general/member/purchase/companyMemberId-notDigit",
+            "MethodArgumentNotValidException",
+            400, "requestPurchaseListDto companyMemberId must be digit",
+            "/api/delivery-service/general/member/purchase");
+        String responseContent2 = objectMapper.writeValueAsString(error2);
+        ResponseError error3 = new ResponseError(
+            "/errors/general/member/purchase/foodId-notDigit",
+            "MethodArgumentNotValidException",
+            400, "requestPurchaseListDto foodId must be digit",
+            "/api/delivery-service/general/member/purchase");
+        String responseContent3 = objectMapper.writeValueAsString(error3);
+        ResponseError error4 = new ResponseError(
+            "/errors/general/member/purchase/foodPrice-notDigit",
+            "MethodArgumentNotValidException",
+            400, "requestPurchaseListDto foodPrice must be digit",
+            "/api/delivery-service/general/member/purchase");
+        String responseContent4 = objectMapper.writeValueAsString(error4);
+        //when
+        //then
+        mockMvc.perform(post(url)
+                .contentType("application/json")
+                .content(requestJson1))
+            .andExpect(status().isBadRequest())
+            .andExpect(content().json(responseContent1))
+            .andDo(log());
+        mockMvc.perform(post(url)
+                .contentType("application/json")
+                .content(requestJson2))
+            .andExpect(status().isBadRequest())
+            .andExpect(content().json(responseContent2))
+            .andDo(log());
+        mockMvc.perform(post(url)
+                .contentType("application/json")
+                .content(requestJson3))
+            .andExpect(status().isBadRequest())
+            .andExpect(content().json(responseContent3))
+            .andDo(log());
+        mockMvc.perform(post(url)
+                .contentType("application/json")
+                .content(requestJson4))
+            .andExpect(status().isBadRequest())
+            .andExpect(content().json(responseContent4))
             .andDo(log());
     }
 }

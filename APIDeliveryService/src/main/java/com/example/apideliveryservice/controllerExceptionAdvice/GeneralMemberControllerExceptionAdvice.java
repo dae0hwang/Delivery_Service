@@ -73,6 +73,30 @@ public class GeneralMemberControllerExceptionAdvice {
                 threadLocalStorage.setErrorTitle(errorName);
                 threadLocalStorage.setErrorDetail(errorMessage);
                 return new ResponseEntity(HttpStatus.BAD_REQUEST);
+            case "requestPurchaseListDto generalMemberId must be digit":
+                threadLocalStorage.setErrorType(
+                    "/errors/general/member/purchase/generalMemberId-notDigit");
+                threadLocalStorage.setErrorTitle(errorName);
+                threadLocalStorage.setErrorDetail(errorMessage);
+                return new ResponseEntity(HttpStatus.BAD_REQUEST);
+            case "requestPurchaseListDto companyMemberId must be digit":
+                threadLocalStorage.setErrorType(
+                    "/errors/general/member/purchase/companyMemberId-notDigit");
+                threadLocalStorage.setErrorTitle(errorName);
+                threadLocalStorage.setErrorDetail(errorMessage);
+                return new ResponseEntity(HttpStatus.BAD_REQUEST);
+            case "requestPurchaseListDto foodId must be digit":
+                threadLocalStorage.setErrorType(
+                    "/errors/general/member/purchase/foodId-notDigit");
+                threadLocalStorage.setErrorTitle(errorName);
+                threadLocalStorage.setErrorDetail(errorMessage);
+                return new ResponseEntity(HttpStatus.BAD_REQUEST);
+            case "requestPurchaseListDto foodPrice must be digit":
+                threadLocalStorage.setErrorType(
+                    "/errors/general/member/purchase/foodPrice-notDigit");
+                threadLocalStorage.setErrorTitle(errorName);
+                threadLocalStorage.setErrorDetail(errorMessage);
+                return new ResponseEntity(HttpStatus.BAD_REQUEST);
         }
         return null;
     }

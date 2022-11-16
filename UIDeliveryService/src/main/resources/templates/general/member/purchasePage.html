@@ -60,11 +60,35 @@
         alert("서버에 문제가 있습니다. 잠시후 시도해 주세요.")
       });
 
+      //음식주문 함수
+      let purchaseFunction = function (generalMemberId, companyMemberId, foodId, foodPrice) {
+        axios({
+          url: 'http://127.0.0.1:5510/api/delivery-service/general/member/purchase',
+          method: 'post',
+          data: {
+            generalMemberId: generalMemberId,
+            companyMemberId: companyMemberId,
+            foodId: foodId,
+            foodPrice: foodPrice
+          }
+        })
+        .then(function (response) {
+          console.log("버튼 성공이다.")
+          console.log(response)
+          console.log(response.status)
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+      };
+
       //컴패니 음식리스트 출력 그리고 주문하기 버튼 완성하기.
       //먼저 음식 리스트 출력 memberid에 해당하는 음식 목록 전체 가져오기.
       let tBody = document.getElementById("tBody");
 
       function makeTable(dataList) {
+        event.stopPropagation()
+        event.preventDefault()
         for (i in dataList) {
 
           let textNode = document.createTextNode(dataList[i].memberId);
@@ -79,12 +103,19 @@
           let textNode4 = document.createTextNode(dataList[i].price);
           let tdNode4 = document.createElement("td");
           tdNode4.appendChild(textNode4)
-          let aNode = document.createElement("a");
-          aNode.text = "해당음식주문"
-          //해당음식버튼
-          aNode.href = ""
+
+
+          let inputElement = document.createElement("input");
+          inputElement.type = "button"
+          inputElement.value = "음식주문"
+          inputElement.id = "purchaseButton"
+          //onclick 함수 넣어주면된다.
+          inputElement.onclick = purchaseFunction(generalMemberId, companyMemberId,
+              dataList[i].id, dataList[i].price);
           let tdNode5 = document.createElement("td");
-          tdNode5.appendChild(aNode)
+          tdNode5.appendChild(inputElement)
+
+
           let trNode = document.createElement("tr");
           trNode.appendChild(tdNode);
           trNode.appendChild(tdNode2);
@@ -113,6 +144,9 @@
         console.log(error);
         alert("서버에 문제가 있습니다. 잠시후 시도해 주세요.")
       });
+
+      //음식 주문 버튼
+
 
     };
   </script>

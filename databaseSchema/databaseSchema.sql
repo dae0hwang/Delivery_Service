@@ -28,3 +28,14 @@ CREATE TABLE general_members(
     phone_verification TINYINT(1) NOT NULL,
     registration_date TIMESTAMP NOT NULL
 );
+
+DROP TABLE IF EXISTS purchase_list;
+
+CREATE TABLE purchase_list(
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    general_id BIGINT NOT NULL ,
+    company_id BIGINT NOT NULL ,
+    food_id BIGINT NOT NULL ,
+    food_price DECIMAL NOT NULL,
+    registration_date TIMESTAMP NOT NULL
+);

@@ -82,4 +82,29 @@ public class RepositoryResetHelper {
             log.error("error message={}", e.getMessage(), e);
         }
     }
+
+    public void ifExistDeletePurchaseList(Connection connection) {
+        String sql ="DROP TABLE IF EXISTS purchase_list";
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            log.error("error message={}", e.getMessage(), e);
+        }
+    }
+
+    public void createPurchaseListTable(Connection connection) {
+        String sql = "CREATE TABLE purchase_list(\n"
+            + "    id BIGINT AUTO_INCREMENT PRIMARY KEY,\n"
+            + "    general_id BIGINT NOT NULL ,\n"
+            + "    company_id BIGINT NOT NULL ,\n"
+            + "    food_id BIGINT NOT NULL ,\n"
+            + "    food_price DECIMAL NOT NULL,\n"
+            + "    registration_date TIMESTAMP NOT NULL\n"
+            + ")";
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.executeUpdate();
+        }catch (SQLException e) {
+            log.error("error message={}", e.getMessage(), e);
+        }
+    }
 }
