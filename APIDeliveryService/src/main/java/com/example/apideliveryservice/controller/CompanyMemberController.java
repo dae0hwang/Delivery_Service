@@ -1,13 +1,17 @@
 package com.example.apideliveryservice.controller;
 
 import com.example.apideliveryservice.dto.CompanyMemberDto;
+import com.example.apideliveryservice.dto.PurchaseListDto;
 import com.example.apideliveryservice.dto.RequestCompanyMemberDto;
 import com.example.apideliveryservice.dto.ResponseCompanyMemberSuccess;
+import com.example.apideliveryservice.dto.ResponsePurchaseListSuccess;
 import com.example.apideliveryservice.service.CompanyMemberService;
+import com.example.apideliveryservice.service.PurchaseListService;
 import java.sql.SQLException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.coyote.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -27,6 +31,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class CompanyMemberController {
 
     private final CompanyMemberService companyMemberService;
+    private final PurchaseListService purchaseListService;
 
     @PostMapping("/member/join")
     public ResponseEntity joinMember(
@@ -52,5 +57,14 @@ public class CompanyMemberController {
         ResponseCompanyMemberSuccess success = new ResponseCompanyMemberSuccess(200, null,
             findMember);
         return ResponseEntity.status(HttpStatus.OK).body(success);
+    }
+
+    @GetMapping("/member/sales")
+    public ResponseEntity findSalesLIst(@RequestParam("companyMemberId") String companyMemberId)
+        throws SQLException {
+        List<PurchaseListDto> salesList = purchaseListService.findByCompanyMemberIdAndThisMonth(
+            companyMemberId);
+        ResponsePurchaseListSuccess success = new ResponsePurchaseListSuccess(200, salesList);
+        return new ResponseEntity(success, HttpStatus.OK);
     }
 }

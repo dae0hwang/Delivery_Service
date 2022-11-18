@@ -56,14 +56,6 @@ public class CompanyFoodRepository {
         return Optional.empty();
     }
 
-    private CompanyFoodDto getCompanyFoodDto(ResultSet resultSet) throws SQLException {
-        Long id = resultSet.getLong(1);
-        Long memberId = resultSet.getLong(2);
-        String name = resultSet.getString(3);
-        BigDecimal price = resultSet.getBigDecimal(4);
-        return new CompanyFoodDto(id, memberId, name, price);
-    }
-
     public Optional<List<CompanyFoodDto>> findAllFood(Connection connection, Long id)
         throws SQLException {
         String sql = "SELECT * FROM company_food WHERE member_id = ?";
@@ -103,5 +95,13 @@ public class CompanyFoodRepository {
             preparedStatement.setBigDecimal(2, new BigDecimal(id));
             preparedStatement.executeUpdate();
         }
+    }
+
+    private CompanyFoodDto getCompanyFoodDto(ResultSet resultSet) throws SQLException {
+        Long id = resultSet.getLong(1);
+        Long memberId = resultSet.getLong(2);
+        String name = resultSet.getString(3);
+        BigDecimal price = resultSet.getBigDecimal(4);
+        return new CompanyFoodDto(id, memberId, name, price);
     }
 }

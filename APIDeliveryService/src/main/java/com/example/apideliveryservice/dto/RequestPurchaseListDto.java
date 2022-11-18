@@ -21,5 +21,4 @@ public class RequestPurchaseListDto {
     private String foodId;
     @Digits(message = "requestPurchaseListDto foodPrice must be digit", integer = 10, fraction = 0)
     private String foodPrice;
-
 }
