@@ -1,6 +1,7 @@
 package com.example.apideliveryservice.controller;
 
 import com.example.apideliveryservice.dto.GeneralMemberDto;
+import com.example.apideliveryservice.dto.PurchaseListDto;
 import com.example.apideliveryservice.dto.RequestGeneralMemberDto;
 import com.example.apideliveryservice.dto.RequestPurchaseListDto;
 import com.example.apideliveryservice.dto.ResponseGeneralMemberSuccess;
@@ -68,5 +69,14 @@ public class GeneralMemberController {
             requestPurchaseList.getFoodPrice());
         ResponsePurchaseListSuccess success = new ResponsePurchaseListSuccess(201, null);
         return new ResponseEntity(success, HttpStatus.CREATED);
+    }
+
+    @GetMapping("/member/sales")
+    public ResponseEntity findSalesLIst(@RequestParam("generalMemberId") String generalMemberId)
+        throws SQLException {
+        List<PurchaseListDto> salesList = purchaseListService.findByGeneralMemberIdAndThisMonth(
+            generalMemberId);
+        ResponsePurchaseListSuccess success = new ResponsePurchaseListSuccess(200, salesList);
+        return new ResponseEntity(success, HttpStatus.OK);
     }
 }

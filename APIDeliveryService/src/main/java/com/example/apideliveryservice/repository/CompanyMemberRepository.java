@@ -16,7 +16,8 @@ import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service
-public class CompanyMemberRepository {
+public class
+CompanyMemberRepository {
 
     @Value("${datasource.url:@null}")
     private String url;

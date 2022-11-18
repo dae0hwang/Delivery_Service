@@ -87,8 +87,6 @@
       let tBody = document.getElementById("tBody");
 
       function makeTable(dataList) {
-        event.stopPropagation()
-        event.preventDefault()
         for (i in dataList) {
 
           let textNode = document.createTextNode(dataList[i].memberId);
