@@ -1,10 +1,93 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
-  <meta charset="UTF-8">
-  <title>Title</title>
+  <meta charset="utf-8">
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <script>
+    window.onload = function () {
+      let url = window.location.href;
+      let memberId = url.replace('http://localhost:8080/delivery-service/general/member/used/', '');
+
+      //구매 내역 테이블 만드는 함수
+      function makeTable(salesList) {
+        for (i in salesList) {
+
+          let textNode1 = document.createTextNode(salesList[i].generalId);
+          let tdNode1 = document.createElement("td");
+          tdNode1.appendChild(textNode1)
+          let textNode2 = document.createTextNode(salesList[i].companyId);
+          let tdNode2 = document.createElement("td");
+          tdNode2.appendChild(textNode2)
+          let textNode3 = document.createTextNode(salesList[i].foodId);
+          let tdNode3 = document.createElement("td");
+          tdNode3.appendChild(textNode3)
+          let textNode4 = document.createTextNode(salesList[i].foodPrice);
+          let tdNode4 = document.createElement("td");
+          tdNode4.appendChild(textNode4)
+          let trNode = document.createElement("tr");
+          trNode.appendChild(tdNode1);
+          trNode.appendChild(tdNode2);
+          trNode.appendChild(tdNode3);
+          trNode.appendChild(tdNode4);
+          let tBody = document.getElementById("tBody");
+          tBody.appendChild(trNode);
+        }
+
+      }
+      //리스트 전달하면 총합 계산해주는 함수
+      function sumSales(salesList) {
+        let sum = 0;
+        for (i in salesList) {
+          sum += salesList[i].foodPrice;
+        }
+        return sum;
+      }
+
+      axios({
+        url: 'http://127.0.0.1:5510/api/delivery-service/general/member/sales',
+        method: 'get',
+        params: {
+          generalMemberId: memberId
+        }
+      })
+      .then(function (response) {
+        console.log(response);
+        let salesList = response.data.list;
+
+        //이번달 구매금액
+        let saleSum = sumSales(salesList);
+        let divSum = document.getElementById("sum");
+        let text = document.createTextNode("이번달 판매 금액 " + saleSum+"원");
+        divSum.appendChild(text);
+
+        //구매 내역 테이블 만들기
+        makeTable(salesList);
+      })
+      .catch(function (error) {
+        console.log(error);
+        alert("서버에 문제가 있습니다. 잠시후 시도해 주세요.")
+      });
+
+
+    };
+  </script>
+
 </head>
 <body>
-  사용된 양 들어옴.
+<h2>이번 달 구매 금액과 구매내역</h2>
+<div id="sum"></div>
+
+<div>이번 달 구매내역</div>
+<table id="table" border="1">
+  <thead>
+  <tr>
+    <th>generalMemberId</th>
+    <th>companyMemberId</th>
+    <th>foodId</th>
+    <th>foodPrice</th>
+  </tr>
+  </thead>
+  <tbody id="tBody"></tbody>
+</table>
 </body>
 </html>
