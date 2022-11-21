@@ -23,7 +23,7 @@ public class PurchaseListService {
         PurchaseListDto purchaseListDto = new PurchaseListDto(null, Long.valueOf(generalId),
             Long.valueOf(companyId), Long.valueOf(foodId), new BigDecimal(foodPrice),
             new Timestamp(System.currentTimeMillis()));
-        try (Connection connection = repository.connectJdbc();){
+        try (Connection connection = repository.connectJdbc()){
             repository.create(connection, purchaseListDto);
         }
     }

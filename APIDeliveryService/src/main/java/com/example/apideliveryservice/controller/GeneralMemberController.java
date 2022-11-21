@@ -8,7 +8,6 @@ import com.example.apideliveryservice.dto.ResponseGeneralMemberSuccess;
 import com.example.apideliveryservice.dto.ResponsePurchaseListSuccess;
 import com.example.apideliveryservice.service.GeneralMemberService;
 import com.example.apideliveryservice.service.PurchaseListService;
-import com.example.apideliveryservice.threadLocalStorage.ThreadLocalStorage;
 import java.sql.SQLException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -33,7 +32,6 @@ public class GeneralMemberController {
 
     private final GeneralMemberService generalMemberService;
     private final PurchaseListService purchaseListService;
-    private ThreadLocalStorage threadLocalStorage = new ThreadLocalStorage();
 
     @PostMapping("/member/join")
     public ResponseEntity joinMember(

@@ -12,8 +12,8 @@ import org.springframework.web.servlet.HandlerInterceptor;
 @Slf4j
 public class ExceptionResponseInterceptor implements HandlerInterceptor {
 
-    private ObjectMapper objectMapper = new ObjectMapper();
-    private ThreadLocalStorage threadLocalStorage = new ThreadLocalStorage();
+    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final ThreadLocalStorage threadLocalStorage = new ThreadLocalStorage();
 
     @Override
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response,
