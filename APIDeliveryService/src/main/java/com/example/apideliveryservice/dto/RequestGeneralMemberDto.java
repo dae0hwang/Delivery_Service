@@ -1,6 +1,7 @@
 package com.example.apideliveryservice.dto;
 
 import com.example.apideliveryservice.annotation.Password;
+import com.example.apideliveryservice.exception.ExceptionMessage;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
@@ -12,11 +13,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class RequestGeneralMemberDto {
 
-    @Pattern(regexp = "^[a-z0-9]{8,20}$", message = "requestGeneralMember loginName is 8 to 20 "
-        + "lowercase letters and numbers")
+    @Pattern(regexp = "^[a-z0-9]{8,20}$", message = ExceptionMessage.RequestGeneralMemberDtoLoginName)
     private String loginName;
     @Password
     private String password;
-    @NotBlank(message = "requestGeneralMember name must not be blank")
+    @NotBlank(message = ExceptionMessage.RequestGeneralMemberDtoName)
     private String name;
 }

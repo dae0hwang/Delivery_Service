@@ -1,5 +1,6 @@
 package com.example.apideliveryservice.annotation;
 
+import com.example.apideliveryservice.exception.ExceptionMessage;
 import java.util.Arrays;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
@@ -36,9 +37,7 @@ public class PasswordConstraintsValidator implements ConstraintValidator<Passwor
         }
         //Sending one message each time failed validation.
         constraintValidatorContext.buildConstraintViolationWithTemplate(
-                "password is At least 8 characters, at least 1 uppercase, lowercase,"
-                    + " number, and special character each")
-            .addConstraintViolation()
+                ExceptionMessage.RequestGeneralMemberDtoPassword).addConstraintViolation()
             .disableDefaultConstraintViolation();
         return false;
     }

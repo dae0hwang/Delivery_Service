@@ -1,12 +1,8 @@
 package com.example.apideliveryservice.dto;
 
+import com.example.apideliveryservice.exception.ExceptionMessage;
 import javax.validation.constraints.Digits;
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.Negative;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Positive;
-import javax.validation.constraints.PositiveOrZero;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -16,10 +12,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class RequestCompanyFoodDto {
 
-    @NotBlank(message = "requestCompanyFood memberId must not be blank")
+    @NotBlank(message = ExceptionMessage.RequestCompanyFoodDtoMemberId)
     private String memberId;
-    @NotBlank(message = "requestCompanyFood name must not be blank")
+    @NotBlank(message = ExceptionMessage.RequestCompanyFoodDtoName)
     private String name;
-    @Digits(message = "requestCompanyFood price must be digit", integer = 10, fraction = 0)
+    @Digits(message = ExceptionMessage.RequestCompanyFoodDtoPrice, integer = 10, fraction = 0)
     private String price;
 }

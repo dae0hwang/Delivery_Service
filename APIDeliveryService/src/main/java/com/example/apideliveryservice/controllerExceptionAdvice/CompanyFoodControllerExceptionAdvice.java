@@ -2,6 +2,7 @@ package com.example.apideliveryservice.controllerExceptionAdvice;
 
 import com.example.apideliveryservice.controller.CompanyFoodController;
 import com.example.apideliveryservice.exception.DuplicatedFoodNameException;
+import com.example.apideliveryservice.exception.ExceptionMessage;
 import com.example.apideliveryservice.exception.NonExistentFoodIdException;
 import javax.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
@@ -19,11 +20,10 @@ public class CompanyFoodControllerExceptionAdvice {
     public ResponseEntity duplicatedFoodNameExHandle(DuplicatedFoodNameException e,
         HttpServletRequest request) {
         log.error("[exceptionHandle] ex", e);
-
         String errorName = e.getClass().getSimpleName();
         request.setAttribute("errorType", "/errors/food/add/duplicate-name");
         request.setAttribute("errorTitle", errorName);
-        request.setAttribute("errorDetail", "company food add fail due to duplicated name");
+        request.setAttribute("errorDetail", ExceptionMessage.DuplicatedFoodNameException);
         return new ResponseEntity(HttpStatus.CONFLICT);
     }
 
@@ -35,7 +35,7 @@ public class CompanyFoodControllerExceptionAdvice {
         String errorName = e.getClass().getSimpleName();
         request.setAttribute("errorType", "/errors/food/find/no-id");
         request.setAttribute("errorTitle", errorName);
-        request.setAttribute("errorDetail", "find food fail due to no exist food id");
+        request.setAttribute("errorDetail",ExceptionMessage.NonExistentFoodIdException);
         return new ResponseEntity(HttpStatus.NOT_FOUND);
     }
 
@@ -45,6 +45,7 @@ public class CompanyFoodControllerExceptionAdvice {
         log.error("[exceptionHandle] ex", e);
 
         ResponseEntity responseEntity = makeArgumentNotValidResponse(e, request);
+
         return responseEntity;
     }
 
@@ -53,27 +54,27 @@ public class CompanyFoodControllerExceptionAdvice {
         String errorMessage = e.getBindingResult().getAllErrors().get(0).getDefaultMessage();
         String errorName = e.getClass().getSimpleName();
         switch (errorMessage) {
-            case "requestCompanyFood memberId must not be blank":
+            case ExceptionMessage.DuplicatedFoodNameException:
                 request.setAttribute("errorType", "/errors/food/add/memberId-blank");
                 request.setAttribute("errorTitle", errorName);
                 request.setAttribute("errorDetail", errorMessage);
                 return new ResponseEntity(HttpStatus.BAD_REQUEST);
-            case "requestCompanyFood name must not be blank":
+            case ExceptionMessage.RequestCompanyFoodDtoName:
                 request.setAttribute("errorType", "/errors/food/add/name-blank");
                 request.setAttribute("errorTitle", errorName);
                 request.setAttribute("errorDetail", errorMessage);
                 return new ResponseEntity(HttpStatus.BAD_REQUEST);
-            case "requestCompanyFood price must be digit":
+            case ExceptionMessage.RequestCompanyFoodDtoPrice:
                 request.setAttribute("errorType", "/errors/food/add/price-notDigit");
                 request.setAttribute("errorTitle", errorName);
                 request.setAttribute("errorDetail", errorMessage);
                 return new ResponseEntity(HttpStatus.BAD_REQUEST);
-            case "requestCompanyFoodPrice foodId must not be blank":
+            case ExceptionMessage.RequestCompanyFoodPriceDtoFoodId:
                 request.setAttribute("errorType", "/errors/food/update/foodId-blank");
                 request.setAttribute("errorTitle", errorName);
                 request.setAttribute("errorDetail", errorMessage);
                 return new ResponseEntity(HttpStatus.BAD_REQUEST);
-            case "requestCompanyFoodPrice price must be digit":
+            case ExceptionMessage.RequestCompanyFoodPriceDtoFoodPrice:
                 request.setAttribute("errorType", "/errors/food/update/price-notDigit");
                 request.setAttribute("errorTitle", errorName);
                 request.setAttribute("errorDetail", errorMessage);
