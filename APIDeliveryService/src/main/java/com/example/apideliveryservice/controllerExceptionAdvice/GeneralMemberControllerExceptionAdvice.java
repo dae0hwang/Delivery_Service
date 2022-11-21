@@ -2,6 +2,7 @@ package com.example.apideliveryservice.controllerExceptionAdvice;
 
 import com.example.apideliveryservice.controller.GeneralMemberController;
 import com.example.apideliveryservice.exception.DeliveryServiceException;
+import com.example.apideliveryservice.exception.ExceptionMessage;
 import com.example.apideliveryservice.threadLocalStorage.ThreadLocalStorage;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -30,12 +31,12 @@ public class GeneralMemberControllerExceptionAdvice {
         String errorMessage = e.getMessage();
         String errorName = e.getClass().getSimpleName();
         switch (errorMessage) {
-            case "general member join fail due to DuplicatedLoginName":
+            case ExceptionMessage.DeliveryExceptionDuplicatedName:
                 threadLocalStorage.setErrorType("/errors/general/member/join/duplicate-login-name");
                 threadLocalStorage.setErrorTitle(errorName);
                 threadLocalStorage.setErrorDetail(errorMessage);
                 return new ResponseEntity(HttpStatus.CONFLICT);
-            case "general member findById fail due to NonExistentMemberIdException":
+            case ExceptionMessage.DeliveryExceptionNonExistentMemberId:
                 threadLocalStorage.setErrorType("/errors/general/member/find/non-exist");
                 threadLocalStorage.setErrorTitle(errorName);
                 threadLocalStorage.setErrorDetail(errorMessage);
@@ -53,45 +54,44 @@ public class GeneralMemberControllerExceptionAdvice {
     }
 
 
-    private ResponseEntity makeArgumentNotValidResponseAndSetTls(MethodArgumentNotValidException e) {
+    private ResponseEntity makeArgumentNotValidResponseAndSetTls(
+        MethodArgumentNotValidException e) {
         String errorName = e.getClass().getSimpleName();
         String errorMessage = e.getBindingResult().getAllErrors().get(0).getDefaultMessage();
         switch (errorMessage) {
-            case "requestGeneralMember loginName is 8 to 20 lowercase letters and numbers":
+            case ExceptionMessage.RequestGeneralMemberDtoLoginName:
                 threadLocalStorage.setErrorType("/errors/general/member/join/longinName-pattern");
                 threadLocalStorage.setErrorTitle(errorName);
                 threadLocalStorage.setErrorDetail(errorMessage);
                 return new ResponseEntity(HttpStatus.BAD_REQUEST);
-            case "password is At least 8 characters, at least 1 uppercase, lowercase, "
-                + "number, and special character each":
+            case ExceptionMessage.RequestGeneralMemberDtoPassword:
                 threadLocalStorage.setErrorType("/errors/general/member/join/password-pattern");
                 threadLocalStorage.setErrorTitle(errorName);
                 threadLocalStorage.setErrorDetail(errorMessage);
                 return new ResponseEntity(HttpStatus.BAD_REQUEST);
-            case "requestGeneralMember name must not be blank":
+            case ExceptionMessage.RequestGeneralMemberDtoName:
                 threadLocalStorage.setErrorType("/errors/general/member/join/name-blank");
                 threadLocalStorage.setErrorTitle(errorName);
                 threadLocalStorage.setErrorDetail(errorMessage);
                 return new ResponseEntity(HttpStatus.BAD_REQUEST);
-            case "requestPurchaseListDto generalMemberId must be digit":
+            case ExceptionMessage.RequestPurchaseListDtoGeneralMemberId:
                 threadLocalStorage.setErrorType(
                     "/errors/general/member/purchase/generalMemberId-notDigit");
                 threadLocalStorage.setErrorTitle(errorName);
                 threadLocalStorage.setErrorDetail(errorMessage);
                 return new ResponseEntity(HttpStatus.BAD_REQUEST);
-            case "requestPurchaseListDto companyMemberId must be digit":
+            case ExceptionMessage.RequestPurchaseListDtoCompanyMemberId:
                 threadLocalStorage.setErrorType(
                     "/errors/general/member/purchase/companyMemberId-notDigit");
                 threadLocalStorage.setErrorTitle(errorName);
                 threadLocalStorage.setErrorDetail(errorMessage);
                 return new ResponseEntity(HttpStatus.BAD_REQUEST);
-            case "requestPurchaseListDto foodId must be digit":
-                threadLocalStorage.setErrorType(
-                    "/errors/general/member/purchase/foodId-notDigit");
+            case ExceptionMessage.RequestPurchaseListDtoGeneralFoodId:
+                threadLocalStorage.setErrorType("/errors/general/member/purchase/foodId-notDigit");
                 threadLocalStorage.setErrorTitle(errorName);
                 threadLocalStorage.setErrorDetail(errorMessage);
                 return new ResponseEntity(HttpStatus.BAD_REQUEST);
-            case "requestPurchaseListDto foodPrice must be digit":
+            case ExceptionMessage.RequestPurchaseListDtoGeneralFoodPrice:
                 threadLocalStorage.setErrorType(
                     "/errors/general/member/purchase/foodPrice-notDigit");
                 threadLocalStorage.setErrorTitle(errorName);

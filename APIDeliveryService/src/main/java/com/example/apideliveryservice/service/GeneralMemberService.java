@@ -2,6 +2,7 @@ package com.example.apideliveryservice.service;
 
 import com.example.apideliveryservice.dto.GeneralMemberDto;
 import com.example.apideliveryservice.exception.DeliveryServiceException;
+import com.example.apideliveryservice.exception.ExceptionMessage;
 import com.example.apideliveryservice.repository.GeneralMemberRepository;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -51,7 +52,7 @@ public class GeneralMemberService {
         generalMemberRepository.findByLoginName(connection, generalMemberDto.getLoginName())
             .ifPresent(m -> {
                 throw new DeliveryServiceException(
-                    "general member join fail due to DuplicatedLoginName");
+                    ExceptionMessage.DeliveryExceptionDuplicatedName);
             });
     }
 
@@ -79,7 +80,7 @@ public class GeneralMemberService {
                 connection, Long.parseLong(id)).orElse(null);
             if (member == null) {
                 throw new DeliveryServiceException(
-                    "general member findById fail due to NonExistentMemberIdException");
+                    ExceptionMessage.DeliveryExceptionNonExistentMemberId);
             }
             return member;
         }
