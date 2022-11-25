@@ -4,63 +4,69 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import com.example.apideliveryservice.RepositoryResetHelper;
 import com.example.apideliveryservice.dto.CompanyMemberDto;
-import java.math.BigInteger;
 import java.sql.Connection;
-import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.EntityTransaction;
+import javax.persistence.Persistence;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
 @SpringBootTest
-@ActiveProfiles("db-h2")
+@ActiveProfiles("jpa-h2")
 @Slf4j
 class CompanyMemberRepositoryTest {
 
+    @Value("${persistenceName:@null}")
+    private String persistenceName;
     @Autowired
     CompanyMemberRepository repository;
     @Autowired
     RepositoryResetHelper resetHelper;
-
     Connection connection;
+    EntityManagerFactory emf;
+    EntityManager em;
+    EntityTransaction tx;
 
-    //Mockito.spy 사용하기.
     @BeforeEach
     void beforeEach() throws SQLException {
-        repository = Mockito.spy(new CompanyMemberRepository());
         connection = DriverManager.getConnection("jdbc:h2:mem:test;MODE=MySQL", "sa", "");
-        Mockito.doReturn(connection).when(repository).connectJdbc();
-
         resetHelper.ifExistDeleteCompanyMembers(connection);
         resetHelper.createCompanyMembersTable(connection);
+
+        emf = Persistence.createEntityManagerFactory(persistenceName);
+        em = emf.createEntityManager();
+        tx = em.getTransaction();
+        tx.begin();
     }
 
-    @Test
-    void connectJdbc() {
-        //then
-        assertThat(connection).isNotNull();
+    @AfterEach
+    void afterEach() {
+        tx.rollback();
     }
 
     @Test
     @DisplayName("save and findByLonginName Test")
-    void save() throws SQLException {
+    void save() throws Exception {
         //given
-        CompanyMemberDto companyMemberDto = new CompanyMemberDto(1l, "loginName", "password", "name"
-            , false, new Timestamp(System.currentTimeMillis()));
+        CompanyMemberDto companyMemberDto = new CompanyMemberDto(null, "loginName", "password",
+            "name", false, new Timestamp(System.currentTimeMillis()));
         //when
-        repository.save(connection, companyMemberDto);
-        Optional<CompanyMemberDto> findMember = repository.findByLoginName(connection
-            , "loginName");
+        repository.save(em, companyMemberDto);
+        Optional<CompanyMemberDto> findMember = repository.findByLoginName(em, "loginName");
         CompanyMemberDto findMemberDto = findMember.get();
         //then
         assertThat(findMemberDto.toString()).isEqualTo(companyMemberDto.toString());
@@ -68,10 +74,9 @@ class CompanyMemberRepositoryTest {
 
     @Test
     @DisplayName("loginName 이 존재하지 않을 때")
-    void findByLoginName2() throws SQLException {
+    void findByLoginName2() throws Exception {
         //when
-        Optional<CompanyMemberDto> findMember = repository.findByLoginName(connection
-            , "loginName");
+        Optional<CompanyMemberDto> findMember = repository.findByLoginName(em, "loginName");
         CompanyMemberDto findMemberDto = findMember.orElse(null);
         //then
         assertThat(findMemberDto).isNull();
@@ -79,44 +84,43 @@ class CompanyMemberRepositoryTest {
 
     @Test
     @DisplayName("Id가 존재했을 때 찾기")
-    void findById1() throws SQLException {
+    void findById1() throws Exception {
         //given
-        CompanyMemberDto companyMemberDto = new CompanyMemberDto(1l, "loginName", "password", "name"
-            , false, new Timestamp(System.currentTimeMillis()));
+        CompanyMemberDto companyMemberDto = new CompanyMemberDto(null, "loginName", "password",
+            "name", false, new Timestamp(System.currentTimeMillis()));
         //when
-        repository.save(connection, companyMemberDto);
-        Optional<CompanyMemberDto> findMember = repository.findById(connection,1l);
+        repository.save(em, companyMemberDto);
+        Optional<CompanyMemberDto> findMember = repository.findById(em, 1l);
         CompanyMemberDto findMemberDto = findMember.get();
         //then
-        assertThat(findMemberDto.toString()).isEqualTo(companyMemberDto.toString());
+        assertThat(findMemberDto).isEqualTo(companyMemberDto);
     }
 
     @Test
     @DisplayName("Id가 존재하지 않을 때 찾기")
-    void findById2() throws SQLException {
+    void findById2() throws Exception {
         //when
-        Optional<CompanyMemberDto> findMember = repository.findById(connection, 1l);
+        Optional<CompanyMemberDto> findMember = repository.findById(em, 1l);
         CompanyMemberDto findMemberDto = findMember.orElse(null);
         //then
         assertThat(findMemberDto).isNull();
     }
 
     @Test
-    void findAllMember() throws SQLException {
+    void findAllMember() throws Exception {
         //given
-        CompanyMemberDto companyMemberDto1 = new CompanyMemberDto(1l, "loginName", "password", "name"
-            , false, new Timestamp(System.currentTimeMillis()));
-        CompanyMemberDto companyMemberDto2 = new CompanyMemberDto(2l, "loginName2", "password", "name"
-            , false, new Timestamp(System.currentTimeMillis()));
-        repository.save(connection, companyMemberDto1);
-        repository.save(connection, companyMemberDto2);
+        CompanyMemberDto companyMemberDto1 = new CompanyMemberDto(null, "loginName", "password",
+            "name", false, new Timestamp(System.currentTimeMillis()));
+        CompanyMemberDto companyMemberDto2 = new CompanyMemberDto(null, "loginName2", "password",
+            "name", false, new Timestamp(System.currentTimeMillis()));
+        repository.save(em, companyMemberDto1);
+        repository.save(em, companyMemberDto2);
         List<CompanyMemberDto> resultLIst = new ArrayList<>();
         resultLIst.add(companyMemberDto1);
         resultLIst.add(companyMemberDto2);
         //when
-        Optional<List<CompanyMemberDto>> allMember = repository.findAllMember(connection);
-        List<CompanyMemberDto> expectedList = allMember.orElse(null);
+        List<CompanyMemberDto> allMember = repository.findAllMember(em);
         //then
-        assertThat(expectedList.toString()).isEqualTo(resultLIst.toString());
+        assertThat(resultLIst).isEqualTo(allMember);
     }
 }

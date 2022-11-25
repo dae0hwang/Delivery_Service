@@ -10,25 +10,26 @@
 
       function makeTable(dataList) {
         for (i in dataList) {
-
-          let textNode = document.createTextNode(dataList[i].name);
-          let tdNode = document.createElement("td");
-          tdNode.appendChild(textNode)
-          // let inputNode = document.createElement("input");
-          // inputNode.type = "button";
-          // inputNode.value = "상세페이지";
-          // inputNode.onclick = function () {
-          //   location.href = 'http://localhost:8080/delivery-service/company/member/members/'+dataList[i].id
-          // };
+          let textNode1 = document.createTextNode(dataList[i].id);
+          let tdNode1 = document.createElement("td");
+          tdNode1.appendChild(textNode1)
+          let textNode2 = document.createTextNode(dataList[i].name);
+          let tdNode2= document.createElement("td");
+          tdNode2.appendChild(textNode2)
+          let timeTextNode
+              = document.createTextNode(new Date(Date.parse(dataList[i].createdAt)));
+          let tdNode3= document.createElement("td");
+          tdNode3.appendChild(timeTextNode)
           let aNode = document.createElement("a");
           aNode.text="상세페이지"
           aNode.href='http://localhost:8080/delivery-service/company/member/members/'+dataList[i].id
-          let tdNode2 = document.createElement("td");
-          tdNode2.appendChild(aNode)
-          // tdNode2.appendChild(inputNode);
+          let tdNode4 = document.createElement("td");
+          tdNode4.appendChild(aNode)
           let trNode = document.createElement("tr");
-          trNode.appendChild(tdNode);
+          trNode.appendChild(tdNode1);
           trNode.appendChild(tdNode2);
+          trNode.appendChild(tdNode3);
+          trNode.appendChild(tdNode4);
           tBody.appendChild(trNode);
         }
       }
@@ -64,7 +65,9 @@
 <table id="table" border="1">
   <thead>
   <tr>
+    <th>company_member_id</th>
     <th>상호명</th>
+    <th>가입 날짜</th>
     <th>상세 페이지</th>
   </tr>
   </thead>

@@ -21,11 +21,32 @@ public class RepositoryResetHelper {
 
     public void createCompanyFoodTable(Connection connection) {
         String sql = "CREATE TABLE company_food(\n"
-            + "     id BIGINT AUTO_INCREMENT PRIMARY KEY ,\n"
-            + "     member_id BIGINT NOT NULL ,\n"
-            + "     name VARCHAR(30) NOT NULL ,\n"
-            + "     price DECIMAL NOT NULL\n"
-            + ")";
+            + "id BIGINT AUTO_INCREMENT PRIMARY KEY ,\n"
+            + "member_id BIGINT NOT NULL ,\n"
+            + "name VARCHAR(30) NOT NULL ,\n"
+            + "registration_date TIMESTAMP NOT NULL)";
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.executeUpdate();
+        }catch (SQLException e) {
+            log.error("error message={}", e.getMessage(), e);
+        }
+    }
+
+    public void ifExistDeleteCompanyFoodPrice(Connection connection) {
+        String sql ="DROP TABLE IF EXISTS company_food_price";
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            log.error("error message={}", e.getMessage(), e);
+        }
+    }
+
+    public void createCompanyFoodPriceTable(Connection connection) {
+        String sql = "CREATE TABLE company_food_price(\n"
+            + "id BIGINT AUTO_INCREMENT PRIMARY KEY ,\n"
+            + "food_id BIGINT NOT NULL ,\n"
+            + "price DECIMAL NOT NULL,\n"
+            + "update_date TIMESTAMP NOT NULL\n" + ")";
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.executeUpdate();
         }catch (SQLException e) {

@@ -4,40 +4,45 @@ import com.example.apideliveryservice.dto.GeneralMemberDto;
 import com.example.apideliveryservice.exception.DeliveryServiceException;
 import com.example.apideliveryservice.exception.ExceptionMessage;
 import com.example.apideliveryservice.repository.GeneralMemberRepository;
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.util.ArrayList;
 import java.util.List;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.EntityTransaction;
+import javax.persistence.Persistence;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
 public class GeneralMemberService {
 
+    @Value("${persistenceName:@null}")
+    private String persistenceName;
     private final GeneralMemberRepository generalMemberRepository;
 
     /**
      * @param loginName, password, name
-     * @throws SQLException
+     * @throws Exception
      * @throws DeliveryServiceException-general member join fail due to DuplicatedLoginName
      */
-    public void join(String loginName, String password, String name) throws SQLException {
-        Connection connection = generalMemberRepository.connectJdbc();
+    public void join(String loginName, String password, String name) throws Exception {
         GeneralMemberDto generalMemberDto = getGeneralMember(loginName, password, name);
+        EntityManagerFactory emf = Persistence.createEntityManagerFactory(persistenceName);
+        EntityManager em = emf.createEntityManager();
+        EntityTransaction tx = em.getTransaction();
         try {
-            connection.setAutoCommit(false);
-            validateDuplicateLoginName(connection, generalMemberDto);
-            generalMemberRepository.create(connection, generalMemberDto);
-            connection.commit();
-        } catch (DeliveryServiceException e) {
-            connection.rollback();
+            tx.begin();
+            validateDuplicateLoginName(em, generalMemberDto);
+            generalMemberRepository.create(em, generalMemberDto);
+            tx.commit();
+        } catch (Exception e) {
+            tx.rollback();
             throw e;
         } finally {
-            if (connection != null) {
-                connection.close();
-            }
+            em.close();
+            emf.close();
         }
     }
 
@@ -47,9 +52,8 @@ public class GeneralMemberService {
         return generalMemberDto;
     }
 
-    private void validateDuplicateLoginName(Connection connection
-        , GeneralMemberDto generalMemberDto) throws SQLException {
-        generalMemberRepository.findByLoginName(connection, generalMemberDto.getLoginName())
+    private void validateDuplicateLoginName(EntityManager em, GeneralMemberDto generalMemberDto) {
+        generalMemberRepository.findByLoginName(em, generalMemberDto.getLoginName())
             .ifPresent(m -> {
                 throw new DeliveryServiceException(
                     ExceptionMessage.DeliveryExceptionDuplicatedName);
@@ -58,31 +62,53 @@ public class GeneralMemberService {
 
     /**
      * @return generalMemberList
-     * @throws SQLException
+     * @throws Exception
      */
-    public List<GeneralMemberDto> findAllMember() throws SQLException {
-        try (Connection connection = generalMemberRepository.connectJdbc()) {
-            List<GeneralMemberDto> allMember = generalMemberRepository.findAll(connection)
-                .orElse(new ArrayList<>());
+    public List<GeneralMemberDto> findAllMember() throws Exception {
+        EntityManagerFactory emf = Persistence.createEntityManagerFactory(persistenceName);
+        EntityManager em = emf.createEntityManager();
+        EntityTransaction tx = em.getTransaction();
+        try {
+            tx.begin();
+            List<GeneralMemberDto> allMember = generalMemberRepository.findAll(em);
+            tx.commit();
             return allMember;
+        } catch (Exception e) {
+            tx.rollback();
+            throw e;
+        } finally {
+            em.close();
+            emf.close();
         }
     }
 
     /**
      * @param id
      * @return findCompanyMember
-     * @throws SQLException
-     * @throws DeliveryServiceException-general member findById fail due to NonExistentMemberIdException
+     * @throws Exception
+     * @throws DeliveryServiceException-general member findById fail due to
+     *                                          NonExistentMemberIdException
      */
-    public GeneralMemberDto findById(String id) throws SQLException {
-        try (Connection connection = generalMemberRepository.connectJdbc()) {
-            GeneralMemberDto member = generalMemberRepository.findById(
-                connection, Long.parseLong(id)).orElse(null);
+    public GeneralMemberDto findById(String id) throws Exception {
+        EntityManagerFactory emf = Persistence.createEntityManagerFactory(persistenceName);
+        EntityManager em = emf.createEntityManager();
+        EntityTransaction tx = em.getTransaction();
+        try {
+            tx.begin();
+            GeneralMemberDto member = generalMemberRepository.findById(em, Long.parseLong(id))
+                .orElse(null);
             if (member == null) {
                 throw new DeliveryServiceException(
                     ExceptionMessage.DeliveryExceptionNonExistentMemberId);
             }
+            tx.commit();
             return member;
+        } catch (Exception e) {
+            tx.rollback();
+            throw e;
+        } finally {
+            em.close();
+            emf.close();
         }
     }
 }

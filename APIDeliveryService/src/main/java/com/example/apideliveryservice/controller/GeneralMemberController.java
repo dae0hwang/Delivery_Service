@@ -35,7 +35,7 @@ public class GeneralMemberController {
 
     @PostMapping("/member/join")
     public ResponseEntity joinMember(
-        @Validated @RequestBody RequestGeneralMemberDto requestGeneralMember) throws SQLException {
+        @Validated @RequestBody RequestGeneralMemberDto requestGeneralMember) throws Exception {
         generalMemberService.join(requestGeneralMember.getLoginName(),
             requestGeneralMember.getPassword(), requestGeneralMember.getName());
         ResponseGeneralMemberSuccess success = new ResponseGeneralMemberSuccess(201, null, null);
@@ -43,7 +43,7 @@ public class GeneralMemberController {
     }
 
     @GetMapping("/member/all")
-    public ResponseEntity findAllMember() throws SQLException {
+    public ResponseEntity findAllMember() throws Exception {
         List<GeneralMemberDto> allMember = generalMemberService.findAllMember();
         ResponseGeneralMemberSuccess success = new ResponseGeneralMemberSuccess(200, allMember,
             null);
@@ -51,30 +51,29 @@ public class GeneralMemberController {
     }
 
     @GetMapping("/member/information")
-    public ResponseEntity findMember(@RequestParam("memberId") String memberId)
-        throws SQLException {
+    public ResponseEntity findMember(@RequestParam("memberId") String memberId) throws Exception {
         GeneralMemberDto findMember = generalMemberService.findById(memberId);
         ResponseGeneralMemberSuccess success = new ResponseGeneralMemberSuccess(200, null,
             findMember);
         return ResponseEntity.status(HttpStatus.OK).body(success);
     }
 
-    @PostMapping("/member/purchase")
-    public ResponseEntity foodPurchase(
-        @Validated @RequestBody RequestPurchaseListDto requestPurchaseList) throws SQLException {
-        purchaseListService.addList(requestPurchaseList.getGeneralMemberId(),
-            requestPurchaseList.getCompanyMemberId(), requestPurchaseList.getFoodId(),
-            requestPurchaseList.getFoodPrice());
-        ResponsePurchaseListSuccess success = new ResponsePurchaseListSuccess(201, null);
-        return new ResponseEntity(success, HttpStatus.CREATED);
-    }
-
-    @GetMapping("/member/sales")
-    public ResponseEntity findSalesLIst(@RequestParam("generalMemberId") String generalMemberId)
-        throws SQLException {
-        List<PurchaseListDto> salesList = purchaseListService.findByGeneralMemberIdAndThisMonth(
-            generalMemberId);
-        ResponsePurchaseListSuccess success = new ResponsePurchaseListSuccess(200, salesList);
-        return new ResponseEntity(success, HttpStatus.OK);
-    }
+//    @PostMapping("/member/purchase")
+//    public ResponseEntity foodPurchase(
+//        @Validated @RequestBody RequestPurchaseListDto requestPurchaseList) throws Exception {
+//        purchaseListService.addList(requestPurchaseList.getGeneralMemberId(),
+//            requestPurchaseList.getCompanyMemberId(), requestPurchaseList.getFoodId(),
+//            requestPurchaseList.getFoodPrice());
+//        ResponsePurchaseListSuccess success = new ResponsePurchaseListSuccess(201, null, null);
+//        return new ResponseEntity(success, HttpStatus.CREATED);
+//    }
+//
+//    @GetMapping("/member/sales")
+//    public ResponseEntity findSalesLIst(@RequestParam("generalMemberId") String generalMemberId)
+//        throws SQLException {
+//        List<PurchaseListDto> salesList = purchaseListService.findByGeneralMemberIdAndThisMonth(
+//            generalMemberId);
+//        ResponsePurchaseListSuccess success = new ResponsePurchaseListSuccess(200, salesList, null);
+//        return new ResponseEntity(success, HttpStatus.OK);
+//    }
 }
