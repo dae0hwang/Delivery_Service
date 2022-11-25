@@ -32,7 +32,7 @@ public class CompanyFoodController {
 
     @PostMapping("food/addFood")
     public ResponseEntity addFood(@Validated @RequestBody RequestCompanyFoodDto requestCompanyFood)
-        throws SQLException {
+        throws Exception {
         companyFoodService.addFood(requestCompanyFood.getMemberId(), requestCompanyFood.getName(),
             requestCompanyFood.getPrice());
         ResponseCompanyFoodSuccess success = new ResponseCompanyFoodSuccess(201, null, null);
@@ -40,8 +40,7 @@ public class CompanyFoodController {
     }
 
     @GetMapping("/food/allFood")
-    public ResponseEntity allFood(@RequestParam("memberId") String memberId)
-        throws SQLException {
+    public ResponseEntity allFood(@RequestParam("memberId") String memberId) throws Exception {
         List<CompanyFoodDto> allFood = companyFoodService.findAllFood(memberId);
         ResponseCompanyFoodSuccess success = new ResponseCompanyFoodSuccess(200, allFood, null);
         return ResponseEntity.status(HttpStatus.OK).body(success);
@@ -49,7 +48,7 @@ public class CompanyFoodController {
 
     @GetMapping("/food/information")
     public ResponseEntity foodInformation(
-        @RequestParam("foodId") String foodId) throws SQLException {
+        @RequestParam("foodId") String foodId) throws Exception {
         CompanyFoodDto findFood = companyFoodService.findFood(foodId);
         ResponseCompanyFoodSuccess success = new ResponseCompanyFoodSuccess(200, null,
             findFood);
@@ -58,7 +57,7 @@ public class CompanyFoodController {
 
     @PutMapping("/food/update")
     public ResponseEntity updatePrice(@Validated @RequestBody RequestCompanyFoodPriceDto request)
-        throws SQLException {
+        throws Exception {
         companyFoodService.updatePrice(request.getFoodId(), request.getPrice());
         ResponseCompanyFoodSuccess success = new ResponseCompanyFoodSuccess(200, null, null);
         return new ResponseEntity(success, HttpStatus.OK);

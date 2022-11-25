@@ -6,7 +6,7 @@ import com.example.apideliveryservice.dto.RequestCompanyMemberDto;
 import com.example.apideliveryservice.dto.ResponseCompanyMemberSuccess;
 import com.example.apideliveryservice.dto.ResponsePurchaseListSuccess;
 import com.example.apideliveryservice.service.CompanyMemberService;
-import com.example.apideliveryservice.service.PurchaseListService;
+//import com.example.apideliveryservice.service.PurchaseListService;
 import java.sql.SQLException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -31,11 +31,11 @@ import org.springframework.web.bind.annotation.RestController;
 public class CompanyMemberController {
 
     private final CompanyMemberService companyMemberService;
-    private final PurchaseListService purchaseListService;
+//    private final PurchaseListService purchaseListService;
 
     @PostMapping("/member/join")
     public ResponseEntity joinMember(
-        @Validated @RequestBody RequestCompanyMemberDto requestCompanyMember) throws SQLException {
+        @Validated @RequestBody RequestCompanyMemberDto requestCompanyMember) throws Exception {
         companyMemberService.join(requestCompanyMember.getLoginName(),
             requestCompanyMember.getPassword(), requestCompanyMember.getName());
         ResponseCompanyMemberSuccess success = new ResponseCompanyMemberSuccess(201, null, null);
@@ -43,7 +43,7 @@ public class CompanyMemberController {
     }
 
     @GetMapping("/member/allMember")
-    public ResponseEntity findAllMember() throws SQLException {
+    public ResponseEntity findAllMember() throws Exception {
         List<CompanyMemberDto> allMember = companyMemberService.findAllMember();
         ResponseCompanyMemberSuccess success = new ResponseCompanyMemberSuccess(200, allMember,
             null);
@@ -51,20 +51,19 @@ public class CompanyMemberController {
     }
 
     @GetMapping("/member/information")
-    public ResponseEntity findMember(@RequestParam("memberId") String MemberId)
-        throws SQLException {
+    public ResponseEntity findMember(@RequestParam("memberId") String MemberId) throws Exception {
         CompanyMemberDto findMember = companyMemberService.findMember(MemberId);
         ResponseCompanyMemberSuccess success = new ResponseCompanyMemberSuccess(200, null,
             findMember);
         return ResponseEntity.status(HttpStatus.OK).body(success);
     }
 
-    @GetMapping("/member/sales")
-    public ResponseEntity findSalesLIst(@RequestParam("companyMemberId") String companyMemberId)
-        throws SQLException {
-        List<PurchaseListDto> salesList = purchaseListService.findByCompanyMemberIdAndThisMonth(
-            companyMemberId);
-        ResponsePurchaseListSuccess success = new ResponsePurchaseListSuccess(200, salesList);
-        return new ResponseEntity(success, HttpStatus.OK);
-    }
+//    @GetMapping("/member/sales")
+//    public ResponseEntity findSalesLIst(@RequestParam("companyMemberId") String companyMemberId)
+//        throws SQLException {
+//        List<PurchaseListDto> salesList = purchaseListService.findByCompanyMemberIdAndThisMonth(
+//            companyMemberId);
+//        ResponsePurchaseListSuccess success = new ResponsePurchaseListSuccess(200, salesList, null);
+//        return new ResponseEntity(success, HttpStatus.OK);
+//    }
 }

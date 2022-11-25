@@ -4,40 +4,47 @@ import com.example.apideliveryservice.dto.CompanyMemberDto;
 import com.example.apideliveryservice.exception.DuplicatedLoginNameException;
 import com.example.apideliveryservice.exception.NonExistentMemberIdException;
 import com.example.apideliveryservice.repository.CompanyMemberRepository;
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.util.ArrayList;
 import java.util.List;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.EntityTransaction;
+import javax.persistence.Persistence;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class CompanyMemberService {
 
+    @Value("${persistenceName:@null}")
+    private String persistenceName;
     private final CompanyMemberRepository companyMemberRepository;
 
     /**
      * @param loginName, password, name
-     * @throws SQLException
+     * @throws Exception
      * @throws DuplicatedLoginNameException
      */
-    public void join(String loginName, String password, String name) throws SQLException {
-        Connection connection = companyMemberRepository.connectJdbc();
+    public void join(String loginName, String password, String name) throws Exception {
         CompanyMemberDto companyMemberDto = getCompanyMemberDto(loginName, password, name);
+        EntityManagerFactory emf = Persistence.createEntityManagerFactory(persistenceName);
+        EntityManager em = emf.createEntityManager();
+        EntityTransaction tx = em.getTransaction();
         try {
-            connection.setAutoCommit(false);
-            validateDuplicateLoginName(connection, companyMemberDto);
-            companyMemberRepository.save(connection, companyMemberDto);
-            connection.commit();
-        } catch (DuplicatedLoginNameException e) {
-            connection.rollback();
+            tx.begin();
+            validateDuplicateLoginName(em, companyMemberDto);
+            companyMemberRepository.save(em, companyMemberDto);
+            tx.commit();
+        } catch (Exception e) {
+            tx.rollback();
             throw e;
         } finally {
-            if (connection != null) {
-                connection.close();
-            }
+            em.close();
+            emf.close();
         }
     }
 
@@ -47,9 +54,8 @@ public class CompanyMemberService {
         return companyMemberDto;
     }
 
-    private void validateDuplicateLoginName(Connection connection
-        , CompanyMemberDto companyMemberDto) throws SQLException {
-        companyMemberRepository.findByLoginName(connection, companyMemberDto.getLoginName())
+    private void validateDuplicateLoginName(EntityManager em, CompanyMemberDto companyMemberDto) {
+        companyMemberRepository.findByLoginName(em, companyMemberDto.getLoginName())
             .ifPresent(m -> {
                 throw new DuplicatedLoginNameException();
             });
@@ -57,30 +63,51 @@ public class CompanyMemberService {
 
     /**
      * @return companyMemberList
-     * @throws SQLException
+     * @throws Exception
      */
-    public List<CompanyMemberDto> findAllMember() throws SQLException {
-        try (Connection connection = companyMemberRepository.connectJdbc()) {
-            List<CompanyMemberDto> allMember = companyMemberRepository.findAllMember(
-                connection).orElse(new ArrayList<>());
-            return allMember;
+    public List<CompanyMemberDto> findAllMember() throws Exception {
+        EntityManagerFactory emf = Persistence.createEntityManagerFactory(persistenceName);
+        EntityManager em = emf.createEntityManager();
+        EntityTransaction tx = em.getTransaction();
+        try {
+            tx.begin();
+            List<CompanyMemberDto> memberList = companyMemberRepository.findAllMember(em);
+            tx.commit();
+            return memberList;
+        } catch (Exception e) {
+            tx.rollback();
+            throw e;
+        } finally {
+            em.close();
+            emf.close();
         }
     }
 
     /**
      * @param id
      * @return findCompanyMember
-     * @throws SQLException
+     * @throws Exception
      * @throws NonExistentMemberIdException
      */
-    public CompanyMemberDto findMember(String id) throws SQLException {
-        try (Connection connection = companyMemberRepository.connectJdbc()) {
-            CompanyMemberDto member = companyMemberRepository.findById(
-                connection, Long.parseLong(id)).orElse(null);
+    public CompanyMemberDto findMember(String id) throws Exception {
+        EntityManagerFactory emf = Persistence.createEntityManagerFactory(persistenceName);
+        EntityManager em = emf.createEntityManager();
+        EntityTransaction tx = em.getTransaction();
+        try {
+            tx.begin();
+            CompanyMemberDto member = companyMemberRepository.findById(em,
+                Long.valueOf(id)).orElse(null);
             if (member == null) {
                 throw new NonExistentMemberIdException();
             }
+            tx.commit();
             return member;
+        } catch (Exception e) {
+            tx.rollback();
+            throw e;
+        } finally {
+            em.close();
+            emf.close();
         }
     }
 }

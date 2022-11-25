@@ -15,7 +15,16 @@ CREATE TABLE company_food(
      id BIGINT AUTO_INCREMENT PRIMARY KEY ,
      member_id BIGINT NOT NULL ,
      name VARCHAR(30) NOT NULL ,
-     price DECIMAL NOT NULL
+     registration_date TIMESTAMP NOT NULL
+);
+
+DROP TABLE IF EXISTS company_food_price;
+
+CREATE TABLE company_food_price(
+     id BIGINT AUTO_INCREMENT PRIMARY KEY ,
+     food_id BIGINT NOT NULL ,
+     price DECIMAL NOT NULL,
+     update_date TIMESTAMP NOT NULL
 );
 
 DROP TABLE IF EXISTS general_members;
