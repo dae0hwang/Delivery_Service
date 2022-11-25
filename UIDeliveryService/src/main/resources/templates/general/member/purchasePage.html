@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
   <script>
-    window.onload = function () {
+    window.onload = async function () {
       //requestParam 가져오기 함수
       function getParam(sname) {
         var params = location.search.substr(location.search.indexOf("?") + 1);
@@ -12,10 +12,13 @@
         params = params.split("&");
         for (var i = 0; i < params.length; i++) {
           temp = params[i].split("=");
-          if ([temp[0]] == sname) { sval = temp[1]; }
+          if ([temp[0]] == sname) {
+            sval = temp[1];
+          }
         }
         return sval;
       }
+
 
       //requestParam generalMemberId 가져오기.
       let generalMemberId = getParam("generalMemberId");
@@ -31,9 +34,10 @@
           memberId: generalMemberId
         }
       })
+
       .then(function (response) {
         let generalMemberName = response.data.generalMemberDto.name;
-        let textNode = document.createTextNode(generalMemberName+" 음식 주문 페이지");
+        let textNode = document.createTextNode(generalMemberName + " 음식 주문 페이지");
         generalH2.appendChild(textNode);
       })
       .catch(function (error) {
@@ -52,7 +56,7 @@
       })
       .then(function (response) {
         let companyMemberDto = response.data.companyMemberDto.name;
-        let textNode = document.createTextNode(companyMemberDto+" 음식 리스트");
+        let textNode = document.createTextNode(companyMemberDto + " 음식 리스트");
         companyH2.appendChild(textNode);
       })
       .catch(function (error) {
@@ -60,8 +64,16 @@
         alert("서버에 문제가 있습니다. 잠시후 시도해 주세요.")
       });
 
+      //foodList
+      const data = await axios.get(
+          'http://127.0.0.1:5510/api/delivery-service/company/food/allFood',
+          {params: {memberId: companyMemberId}})
+      const dataList = data.data.list;
+      console.log(dataList);
+
       //음식주문 함수
-      let purchaseFunction = function (generalMemberId, companyMemberId, foodId, foodPrice) {
+      function purchaseFunction(generalMemberId, companyMemberId, foodId,
+          foodPrice) {
         axios({
           url: 'http://127.0.0.1:5510/api/delivery-service/general/member/purchase',
           method: 'post',
@@ -83,9 +95,7 @@
       };
 
       //컴패니 음식리스트 출력 그리고 주문하기 버튼 완성하기.
-      //먼저 음식 리스트 출력 memberid에 해당하는 음식 목록 전체 가져오기.
       let tBody = document.getElementById("tBody");
-
       function makeTable(dataList) {
         for (i in dataList) {
 
@@ -102,17 +112,15 @@
           let tdNode4 = document.createElement("td");
           tdNode4.appendChild(textNode4)
 
+          let purchaseButton = document.createElement("input");
+          purchaseButton.type = "button"
+          purchaseButton.value = "음식 주문";
+          purchaseButton.id = "purchaseButton";
+          purchaseButton.setAttribute("foodId", dataList[i].id);
+          purchaseButton.setAttribute("foodPrice", dataList[i].price);
 
-          let inputElement = document.createElement("input");
-          inputElement.type = "button"
-          inputElement.value = "음식주문"
-          inputElement.id = "purchaseButton"
-          //onclick 함수 넣어주면된다.
-          inputElement.onclick = purchaseFunction(generalMemberId, companyMemberId,
-              dataList[i].id, dataList[i].price);
           let tdNode5 = document.createElement("td");
-          tdNode5.appendChild(inputElement)
-
+          tdNode5.appendChild(purchaseButton);
 
           let trNode = document.createElement("tr");
           trNode.appendChild(tdNode);
@@ -124,28 +132,14 @@
         }
       }
 
-      axios({
-        url: 'http://127.0.0.1:5510/api/delivery-service/company/food/allFood',
-        method: 'get',
-        params: {
-          memberId: companyMemberId
-        }
-      })
-      .then(function (response) {
-        let status = response.status;
-        let foodList = response.data.list;
-        if (status == 200) {
-          makeTable(foodList);
-        }
-      })
-      .catch(function (error) {
-        console.log(error);
-        alert("서버에 문제가 있습니다. 잠시후 시도해 주세요.")
+      makeTable(dataList);
+
+      document.addEventListener('click', function (event) {
+        if (event.target.id!="purchaseButton") return;
+        let foodId = event.target.getAttribute("foodId");
+        let foodPrice = event.target.getAttribute("foodPrice");
+        purchaseFunction(generalMemberId, companyMemberId, foodId, foodPrice)
       });
-
-      //음식 주문 버튼
-
-
     };
   </script>
 
@@ -169,7 +163,8 @@
     <th>음식 주문하기</th>
   </tr>
   </thead>
-  <tbody id="tBody"></tbody>
+  <tbody id="tBody">
+  </tbody>
 </table>
 
 </body>
