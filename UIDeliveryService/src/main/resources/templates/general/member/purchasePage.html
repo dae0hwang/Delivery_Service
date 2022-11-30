@@ -108,7 +108,7 @@
           let textNode3 = document.createTextNode(dataList[i].name);
           let tdNode3 = document.createElement("td");
           tdNode3.appendChild(textNode3)
-          let textNode4 = document.createTextNode(dataList[i].price);
+          let textNode4 = document.createTextNode(dataList[i].tempPrice);
           let tdNode4 = document.createElement("td");
           tdNode4.appendChild(textNode4)
 
@@ -117,7 +117,7 @@
           purchaseButton.value = "음식 주문";
           purchaseButton.id = "purchaseButton";
           purchaseButton.setAttribute("foodId", dataList[i].id);
-          purchaseButton.setAttribute("foodPrice", dataList[i].price);
+          purchaseButton.setAttribute("foodPrice", dataList[i].tempPrice);
 
           let tdNode5 = document.createElement("td");
           tdNode5.appendChild(purchaseButton);
@@ -139,6 +139,7 @@
         let foodId = event.target.getAttribute("foodId");
         let foodPrice = event.target.getAttribute("foodPrice");
         purchaseFunction(generalMemberId, companyMemberId, foodId, foodPrice)
+        alert("주문이 완료되었습니다")
       });
     };
   </script>
