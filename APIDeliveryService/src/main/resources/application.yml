@@ -12,6 +12,7 @@ datasource:
   url: "jdbc:mysql://localhost:3307/delivery_service"
   username: "root"
   password: "111111"
+persistenceName: jpa-mysql
 
 ---
 
@@ -29,15 +30,27 @@ datasource:
   url: jdbc:h2:mem:test;MODE=MySQL
   username: sa
   password:
+persistenceName: jpa-mysql
 
 ---
+
 spring:
   config:
     activate:
-      on-profile: test
+      on-profile: jpa-mysql
 
+persistenceName: jpa-mysql
 
-datasource:
-  url: jdbc:h2:tcp://localhost/~/test
-  username: sa
-  password:
+---
+
+spring:
+  config:
+    activate:
+      on-profile: jpa-h2
+  datasource:
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:mem:test;MODE=MYSQL
+    username: sa
+    password:
+
+persistenceName: jpa-test
