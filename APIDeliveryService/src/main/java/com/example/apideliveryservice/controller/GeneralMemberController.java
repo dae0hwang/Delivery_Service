@@ -1,14 +1,12 @@
 package com.example.apideliveryservice.controller;
 
 import com.example.apideliveryservice.dto.GeneralMemberDto;
-import com.example.apideliveryservice.dto.PurchaseListDto;
-import com.example.apideliveryservice.dto.RequestGeneralMemberDto;
-import com.example.apideliveryservice.dto.RequestPurchaseListDto;
+import com.example.apideliveryservice.dto.RequestGeneralMember;
+import com.example.apideliveryservice.dto.RequestPurchaseLIst;
 import com.example.apideliveryservice.dto.ResponseGeneralMemberSuccess;
 import com.example.apideliveryservice.dto.ResponsePurchaseListSuccess;
 import com.example.apideliveryservice.service.GeneralMemberService;
 import com.example.apideliveryservice.service.PurchaseListService;
-import java.sql.SQLException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -35,7 +33,7 @@ public class GeneralMemberController {
 
     @PostMapping("/member/join")
     public ResponseEntity joinMember(
-        @Validated @RequestBody RequestGeneralMemberDto requestGeneralMember) throws Exception {
+        @Validated @RequestBody RequestGeneralMember requestGeneralMember) throws Exception {
         generalMemberService.join(requestGeneralMember.getLoginName(),
             requestGeneralMember.getPassword(), requestGeneralMember.getName());
         ResponseGeneralMemberSuccess success = new ResponseGeneralMemberSuccess(201, null, null);
@@ -58,22 +56,15 @@ public class GeneralMemberController {
         return ResponseEntity.status(HttpStatus.OK).body(success);
     }
 
-//    @PostMapping("/member/purchase")
-//    public ResponseEntity foodPurchase(
-//        @Validated @RequestBody RequestPurchaseListDto requestPurchaseList) throws Exception {
-//        purchaseListService.addList(requestPurchaseList.getGeneralMemberId(),
-//            requestPurchaseList.getCompanyMemberId(), requestPurchaseList.getFoodId(),
-//            requestPurchaseList.getFoodPrice());
-//        ResponsePurchaseListSuccess success = new ResponsePurchaseListSuccess(201, null, null);
-//        return new ResponseEntity(success, HttpStatus.CREATED);
-//    }
-//
-//    @GetMapping("/member/sales")
-//    public ResponseEntity findSalesLIst(@RequestParam("generalMemberId") String generalMemberId)
-//        throws SQLException {
-//        List<PurchaseListDto> salesList = purchaseListService.findByGeneralMemberIdAndThisMonth(
-//            generalMemberId);
-//        ResponsePurchaseListSuccess success = new ResponsePurchaseListSuccess(200, salesList, null);
-//        return new ResponseEntity(success, HttpStatus.OK);
-//    }
+    //valid적용하는 것 남음
+    @PostMapping("/member/purchase")
+    public ResponseEntity foodPurchase(@Validated @RequestBody List<RequestPurchaseLIst> list)
+        throws Exception {
+        for (RequestPurchaseLIst request : list) {
+            purchaseListService.addList(request.getGeneralMemberId(), request.getCompanyMemberId(),
+                request.getFoodId(), request.getFoodName());
+        }
+        ResponsePurchaseListSuccess success = new ResponsePurchaseListSuccess(201, null, null);
+        return new ResponseEntity(success, HttpStatus.CREATED);
+    }
 }

@@ -1,4 +1,4 @@
-package com.example.apideliveryservice.dto;
+package com.example.apideliveryservice.entity;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
@@ -16,11 +16,18 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class CompanyFoodDto {
+@Entity
+@Table(name = "company_food")
+public class CompanyFoodEntity {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column(name = "member_id")
     private Long memberId;
     private String name;
+    @Column(name = "registration_date")
     private Timestamp registrationDate;
-    private BigDecimal price;
+    @Transient
+    private BigDecimal tempPrice;
 }

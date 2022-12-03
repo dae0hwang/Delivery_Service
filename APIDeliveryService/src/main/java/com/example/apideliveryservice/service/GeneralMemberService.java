@@ -1,11 +1,13 @@
 package com.example.apideliveryservice.service;
 
 import com.example.apideliveryservice.dto.GeneralMemberDto;
+import com.example.apideliveryservice.entity.GeneralMemberEntity;
 import com.example.apideliveryservice.exception.DeliveryServiceException;
 import com.example.apideliveryservice.exception.ExceptionMessage;
 import com.example.apideliveryservice.repository.GeneralMemberRepository;
 import java.sql.Timestamp;
 import java.util.List;
+import java.util.stream.Collectors;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
@@ -28,7 +30,7 @@ public class GeneralMemberService {
      * @throws DeliveryServiceException-general member join fail due to DuplicatedLoginName
      */
     public void join(String loginName, String password, String name) throws Exception {
-        GeneralMemberDto generalMemberDto = getGeneralMember(loginName, password, name);
+        GeneralMemberEntity generalMemberDto = getGeneralMember(loginName, password, name);
         EntityManagerFactory emf = Persistence.createEntityManagerFactory(persistenceName);
         EntityManager em = emf.createEntityManager();
         EntityTransaction tx = em.getTransaction();
@@ -46,13 +48,13 @@ public class GeneralMemberService {
         }
     }
 
-    private GeneralMemberDto getGeneralMember(String loginName, String password, String name) {
-        GeneralMemberDto generalMemberDto = new GeneralMemberDto(null, loginName, password, name,
+    private GeneralMemberEntity getGeneralMember(String loginName, String password, String name) {
+        GeneralMemberEntity generalMemberDto = new GeneralMemberEntity(null, loginName, password, name,
             false, new Timestamp(System.currentTimeMillis()));
         return generalMemberDto;
     }
 
-    private void validateDuplicateLoginName(EntityManager em, GeneralMemberDto generalMemberDto) {
+    private void validateDuplicateLoginName(EntityManager em, GeneralMemberEntity generalMemberDto) {
         generalMemberRepository.findByLoginName(em, generalMemberDto.getLoginName())
             .ifPresent(m -> {
                 throw new DeliveryServiceException(
@@ -70,9 +72,10 @@ public class GeneralMemberService {
         EntityTransaction tx = em.getTransaction();
         try {
             tx.begin();
-            List<GeneralMemberDto> allMember = generalMemberRepository.findAll(em);
+            List<GeneralMemberEntity> allMemberEntity = generalMemberRepository.findAll(em);
             tx.commit();
-            return allMember;
+            List<GeneralMemberDto> allMemberDto = changeAllMemberEntityToDto(allMemberEntity);
+            return allMemberDto;
         } catch (Exception e) {
             tx.rollback();
             throw e;
@@ -95,14 +98,15 @@ public class GeneralMemberService {
         EntityTransaction tx = em.getTransaction();
         try {
             tx.begin();
-            GeneralMemberDto member = generalMemberRepository.findById(em, Long.parseLong(id))
+            GeneralMemberEntity memberEntity = generalMemberRepository.findById(em, Long.parseLong(id))
                 .orElse(null);
-            if (member == null) {
+            if (memberEntity == null) {
                 throw new DeliveryServiceException(
                     ExceptionMessage.DeliveryExceptionNonExistentMemberId);
             }
             tx.commit();
-            return member;
+            GeneralMemberDto memberDto = changeMemberEtityToDto(memberEntity);
+            return memberDto;
         } catch (Exception e) {
             tx.rollback();
             throw e;
@@ -110,5 +114,18 @@ public class GeneralMemberService {
             em.close();
             emf.close();
         }
+    }
+
+    private GeneralMemberDto changeMemberEtityToDto(GeneralMemberEntity memberEntity) {
+        GeneralMemberDto memberDto = new GeneralMemberDto(memberEntity.getId(),
+            memberEntity.getLoginName(), memberEntity.getName(), memberEntity.getCreatedAt());
+        return memberDto;
+    }
+
+    private List<GeneralMemberDto> changeAllMemberEntityToDto(List<GeneralMemberEntity> allMemberEntity) {
+        List<GeneralMemberDto> allMemberDto = allMemberEntity.stream().map(
+            m -> new GeneralMemberDto(m.getId(), m.getLoginName(), m.getName(),
+                m.getCreatedAt())).collect(Collectors.toList());
+        return allMemberDto;
     }
 }

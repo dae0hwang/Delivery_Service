@@ -1,6 +1,6 @@
 package com.example.apideliveryservice.repository;
 
-import com.example.apideliveryservice.dto.GeneralMemberDto;
+import com.example.apideliveryservice.entity.GeneralMemberEntity;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
@@ -13,15 +13,15 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class GeneralMemberRepository {
 
-    public void create(EntityManager em, GeneralMemberDto generalMemberDto) {
+    public void create(EntityManager em, GeneralMemberEntity generalMemberDto) {
         em.persist(generalMemberDto);
 
     }
 
-    public Optional<GeneralMemberDto> findByLoginName(EntityManager em, String loginName) {
-        String jpql = "SELECT m FROM GeneralMemberDto m where m.loginName=:loginName";
+    public Optional<GeneralMemberEntity> findByLoginName(EntityManager em, String loginName) {
+        String jpql = "SELECT m FROM GeneralMemberEntity m where m.loginName=:loginName";
         try {
-            GeneralMemberDto findMember = em.createQuery(jpql, GeneralMemberDto.class)
+            GeneralMemberEntity findMember = em.createQuery(jpql, GeneralMemberEntity.class)
                 .setParameter("loginName", loginName).getSingleResult();
             return Optional.ofNullable(findMember);
         } catch (NoResultException e) {
@@ -30,16 +30,16 @@ public class GeneralMemberRepository {
         }
     }
 
-    public List<GeneralMemberDto> findAll(EntityManager em) throws SQLException {
-        String jpql = "SELECT m FROM GeneralMemberDto m";
-        List<GeneralMemberDto> list = em.createQuery(jpql, GeneralMemberDto.class)
+    public List<GeneralMemberEntity> findAll(EntityManager em) throws SQLException {
+        String jpql = "SELECT m FROM GeneralMemberEntity m";
+        List<GeneralMemberEntity> list = em.createQuery(jpql, GeneralMemberEntity.class)
             .getResultList();
         return list;
     }
 
 
-    public Optional<GeneralMemberDto> findById(EntityManager em, Long id) throws SQLException {
-        GeneralMemberDto findMember = em.find(GeneralMemberDto.class, id);
+    public Optional<GeneralMemberEntity> findById(EntityManager em, Long id) throws SQLException {
+        GeneralMemberEntity findMember = em.find(GeneralMemberEntity.class, id);
         return Optional.ofNullable(findMember);
     }
 }

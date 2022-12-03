@@ -1,11 +1,10 @@
 package com.example.apideliveryservice.controller;
 
 import com.example.apideliveryservice.dto.CompanyFoodDto;
-import com.example.apideliveryservice.dto.RequestCompanyFoodDto;
-import com.example.apideliveryservice.dto.RequestCompanyFoodPriceDto;
+import com.example.apideliveryservice.dto.RequestCompanyFood;
+import com.example.apideliveryservice.dto.RequestCompanyFoodPrice;
 import com.example.apideliveryservice.dto.ResponseCompanyFoodSuccess;
 import com.example.apideliveryservice.service.CompanyFoodService;
-import java.sql.SQLException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,7 +30,7 @@ public class CompanyFoodController {
     private final CompanyFoodService companyFoodService;
 
     @PostMapping("food/addFood")
-    public ResponseEntity addFood(@Validated @RequestBody RequestCompanyFoodDto requestCompanyFood)
+    public ResponseEntity addFood(@Validated @RequestBody RequestCompanyFood requestCompanyFood)
         throws Exception {
         companyFoodService.addFood(requestCompanyFood.getMemberId(), requestCompanyFood.getName(),
             requestCompanyFood.getPrice());
@@ -56,7 +55,7 @@ public class CompanyFoodController {
     }
 
     @PutMapping("/food/update")
-    public ResponseEntity updatePrice(@Validated @RequestBody RequestCompanyFoodPriceDto request)
+    public ResponseEntity updatePrice(@Validated @RequestBody RequestCompanyFoodPrice request)
         throws Exception {
         companyFoodService.updatePrice(request.getFoodId(), request.getPrice());
         ResponseCompanyFoodSuccess success = new ResponseCompanyFoodSuccess(200, null, null);

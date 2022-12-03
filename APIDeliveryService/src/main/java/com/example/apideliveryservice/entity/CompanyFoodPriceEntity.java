@@ -1,5 +1,6 @@
-package com.example.apideliveryservice.dto;
+package com.example.apideliveryservice.entity;
 
+import com.example.apideliveryservice.entity.CompanyFoodEntity;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import javax.persistence.Column;
@@ -19,14 +20,14 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Entity
 @Table(name = "company_food_price")
-public class CompanyFoodPriceDto {
+public class CompanyFoodPriceEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @ManyToOne
     @JoinColumn(name = "food_id")
-    private CompanyFoodDto companyFood;
+    private CompanyFoodEntity companyFood;
     private BigDecimal price;
     @Column(name = "update_date")
     private Timestamp updateDate;

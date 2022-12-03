@@ -4,8 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.example.apideliveryservice.RepositoryResetHelper;
-import com.example.apideliveryservice.dto.CompanyFoodDto;
-import com.example.apideliveryservice.dto.RequestCompanyFoodDto;
+import com.example.apideliveryservice.entity.CompanyFoodEntity;
+import com.example.apideliveryservice.dto.RequestCompanyFood;
 import com.example.apideliveryservice.exception.DuplicatedFoodNameException;
 import com.example.apideliveryservice.exception.NonExistentFoodIdException;
 import com.example.apideliveryservice.repository.CompanyFoodRepository;
@@ -62,15 +62,15 @@ class CompanyFoodServiceTest {
     @DisplayName("정상 음식 등록 Test")
     void addFood1() throws Exception {
         //given
-        RequestCompanyFoodDto requestCompanyFood = new RequestCompanyFoodDto("11", "foodName",
+        RequestCompanyFood requestCompanyFood = new RequestCompanyFood("11", "foodName",
             "3000");
-        CompanyFoodDto food = new CompanyFoodDto(1l, 11l, "foodName",
+        CompanyFoodEntity food = new CompanyFoodEntity(1l, 11l, "foodName",
             new Timestamp(System.currentTimeMillis()), null);
 
         //when
         service.addFood(requestCompanyFood.getMemberId(), requestCompanyFood.getName(),
             requestCompanyFood.getPrice());
-        CompanyFoodDto findFood = repository.findByNameAndMemberId(em, 11l, "foodName")
+        CompanyFoodEntity findFood = repository.findByNameAndMemberId(em, 11l, "foodName")
             .orElse(null);
         //then
         assertThat(food).isEqualTo(findFood);
@@ -81,12 +81,12 @@ class CompanyFoodServiceTest {
     void addFood4() throws SQLException {
         //given
         tx.begin();
-        CompanyFoodDto companyFoodDto1 = new CompanyFoodDto(null, 11l, "name",
+        CompanyFoodEntity companyFoodDto1 = new CompanyFoodEntity(null, 11l, "name",
             new Timestamp(System.currentTimeMillis()), null);
         repository.add(em, companyFoodDto1, new BigDecimal("3000"));
         tx.commit();
         //when
-        RequestCompanyFoodDto request = new RequestCompanyFoodDto("11", "name", "3000");
+        RequestCompanyFood request = new RequestCompanyFood("11", "name", "3000");
         //then
         assertThatThrownBy(() -> service.addFood(request.getMemberId(), request.getName(),
             request.getPrice())).isInstanceOf(DuplicatedFoodNameException.class);
@@ -98,14 +98,14 @@ class CompanyFoodServiceTest {
     void findMember() throws Exception {
         //given
         tx.begin();
-        CompanyFoodDto saveFood = new CompanyFoodDto(null, 11l, "name",
+        CompanyFoodEntity saveFood = new CompanyFoodEntity(null, 11l, "name",
             new Timestamp(System.currentTimeMillis()), null);
         repository.add(em, saveFood, new BigDecimal("3000"));
         tx.commit();
-        CompanyFoodDto expected = new CompanyFoodDto(1l, 11l, "name",
+        CompanyFoodEntity expected = new CompanyFoodEntity(1l, 11l, "name",
             saveFood.getRegistrationDate(), new BigDecimal("3000"));
         //when
-        CompanyFoodDto findFood = service.findFood("1");
+        CompanyFoodEntity findFood = service.findFood("1");
         //then
         assertThat(findFood).isEqualTo(expected);
         assertThatThrownBy(() -> service.findFood("2")).isInstanceOf(
@@ -117,13 +117,13 @@ class CompanyFoodServiceTest {
     void updatePrice() throws Exception {
         //given
         tx.begin();
-        CompanyFoodDto saveFood = new CompanyFoodDto(null, 11l, "foodName",
+        CompanyFoodEntity saveFood = new CompanyFoodEntity(null, 11l, "foodName",
             new Timestamp(System.currentTimeMillis()), null);
         repository.add(em, saveFood, new BigDecimal("3000"));
         tx.commit();
         //when
         service.updatePrice("1", "5000");
-        CompanyFoodDto findFood = repository.findById(em, 1l).orElse(null);
+        CompanyFoodEntity findFood = repository.findById(em, 1l).orElse(null);
         //then
         assertThat(findFood.getTempPrice()).isEqualTo("5000");
     }
