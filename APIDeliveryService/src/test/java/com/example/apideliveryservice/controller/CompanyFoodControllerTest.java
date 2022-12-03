@@ -8,23 +8,16 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.example.apideliveryservice.RepositoryResetHelper;
-import com.example.apideliveryservice.controllerExceptionAdvice.CompanyFoodControllerExceptionAdvice;
-import com.example.apideliveryservice.dto.CompanyFoodDto;
-import com.example.apideliveryservice.dto.RequestCompanyFoodDto;
-import com.example.apideliveryservice.dto.RequestCompanyFoodPriceDto;
+import com.example.apideliveryservice.controllerexceptionadvice.CompanyFoodControllerExceptionAdvice;
+import com.example.apideliveryservice.dto.RequestCompanyFood;
 import com.example.apideliveryservice.dto.ResponseCompanyFoodSuccess;
-import com.example.apideliveryservice.dto.ResponseError;
 import com.example.apideliveryservice.interceptor.ExceptionResponseInterceptor;
 import com.example.apideliveryservice.repository.CompanyFoodRepository;
 import com.example.apideliveryservice.service.CompanyFoodService;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
@@ -96,7 +89,7 @@ class CompanyFoodControllerTest {
     void addFood1() throws Exception {
         //given
         String url = baseUrl + "/food/addFood";
-        RequestCompanyFoodDto requestCompanyFoodDto = new RequestCompanyFoodDto(
+        RequestCompanyFood requestCompanyFoodDto = new RequestCompanyFood(
             "1", "foodName", "3000");
         String requestJson = objectMapper.writeValueAsString(requestCompanyFoodDto);
         ResponseCompanyFoodSuccess success

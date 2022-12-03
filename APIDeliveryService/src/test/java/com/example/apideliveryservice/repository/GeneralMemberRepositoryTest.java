@@ -3,7 +3,7 @@ package com.example.apideliveryservice.repository;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.example.apideliveryservice.RepositoryResetHelper;
-import com.example.apideliveryservice.dto.GeneralMemberDto;
+import com.example.apideliveryservice.entity.GeneralMemberEntity;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -62,11 +62,11 @@ class GeneralMemberRepositoryTest {
     @DisplayName("generalMember create findByLoginId 동시 Test")
     void create() throws SQLException {
         //given
-        GeneralMemberDto generalMemberDto = new GeneralMemberDto(null, "loginName", "password",
+        GeneralMemberEntity generalMemberDto = new GeneralMemberEntity(null, "loginName", "password",
             "name", false, new Timestamp(System.currentTimeMillis()));
         //when
         repository.create(em, generalMemberDto);
-        GeneralMemberDto findMember = repository.findByLoginName(em, "loginName")
+        GeneralMemberEntity findMember = repository.findByLoginName(em, "loginName")
             .orElse(null);
         //then
         assertThat(findMember.toString()).isEqualTo(generalMemberDto.toString());
@@ -75,17 +75,17 @@ class GeneralMemberRepositoryTest {
     @Test
     void findAllMember() throws SQLException {
         //given
-        GeneralMemberDto companyMemberDto1 = new GeneralMemberDto(null, "loginName", "password", "name"
+        GeneralMemberEntity companyMemberDto1 = new GeneralMemberEntity(null, "loginName", "password", "name"
             , false, new Timestamp(System.currentTimeMillis()));
-        GeneralMemberDto companyMemberDto2 = new GeneralMemberDto(null, "loginName2", "password", "name"
+        GeneralMemberEntity companyMemberDto2 = new GeneralMemberEntity(null, "loginName2", "password", "name"
             , false, new Timestamp(System.currentTimeMillis()));
         repository.create(em, companyMemberDto1);
         repository.create(em, companyMemberDto2);
-        List<GeneralMemberDto> resultLIst = new ArrayList<>();
+        List<GeneralMemberEntity> resultLIst = new ArrayList<>();
         resultLIst.add(companyMemberDto1);
         resultLIst.add(companyMemberDto2);
         //when
-        List<GeneralMemberDto>allMember = repository.findAll(em);
+        List<GeneralMemberEntity>allMember = repository.findAll(em);
         //then
         assertThat(allMember).isEqualTo(resultLIst);
     }
@@ -94,12 +94,12 @@ class GeneralMemberRepositoryTest {
     @DisplayName("Id가 존재했을 때 찾기")
     void findById1() throws SQLException {
         //given
-        GeneralMemberDto companyMemberDto = new GeneralMemberDto(null, "loginName", "password",
+        GeneralMemberEntity companyMemberDto = new GeneralMemberEntity(null, "loginName", "password",
             "name", false, new Timestamp(System.currentTimeMillis()));
         //when
         repository.create(em, companyMemberDto);
-        Optional<GeneralMemberDto> findMember = repository.findById(em,1l);
-        GeneralMemberDto findMemberDto = findMember.get();
+        Optional<GeneralMemberEntity> findMember = repository.findById(em,1l);
+        GeneralMemberEntity findMemberDto = findMember.get();
         //then
         assertThat(findMemberDto).isEqualTo(companyMemberDto);
     }
@@ -108,8 +108,8 @@ class GeneralMemberRepositoryTest {
     @DisplayName("Id가 존재하지 않을 때 찾기")
     void findById2() throws SQLException {
         //when
-        Optional<GeneralMemberDto> findMember = repository.findById(em, 1l);
-        GeneralMemberDto findMemberDto = findMember.orElse(null);
+        Optional<GeneralMemberEntity> findMember = repository.findById(em, 1l);
+        GeneralMemberEntity findMemberDto = findMember.orElse(null);
         //then
         assertThat(findMemberDto).isNull();
     }

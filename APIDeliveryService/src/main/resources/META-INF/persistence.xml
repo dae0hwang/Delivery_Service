@@ -2,10 +2,10 @@
 <persistence xmlns="http://xmlns.jcp.org/xml/ns/persistence" version="2.1">
 
   <persistence-unit name="jpa-mysql">
-    <class>com.example.apideliveryservice.dto.CompanyMemberDto</class>
-    <class>com.example.apideliveryservice.dto.GeneralMemberDto</class>
-    <class>com.example.apideliveryservice.dto.CompanyFoodDto</class>
-    <class>com.example.apideliveryservice.dto.CompanyFoodPriceDto</class>
+    <class>com.example.apideliveryservice.entity.CompanyMemberEntity</class>
+    <class>com.example.apideliveryservice.entity.GeneralMemberEntity</class>
+    <class>com.example.apideliveryservice.entity.CompanyFoodEntity</class>
+    <class>com.example.apideliveryservice.entity.CompanyFoodPriceEntity</class>
     <class>com.example.apideliveryservice.entity.PurchaseListEntity</class>
 
     <properties>
@@ -29,10 +29,10 @@
   </persistence-unit>
 
   <persistence-unit name="jpa-test">
-    <class>com.example.apideliveryservice.dto.CompanyMemberDto</class>
-    <class>com.example.apideliveryservice.dto.GeneralMemberDto</class>
-    <class>com.example.apideliveryservice.dto.CompanyFoodDto</class>
-    <class>com.example.apideliveryservice.dto.CompanyFoodPriceDto</class>
+    <class>com.example.apideliveryservice.entity.CompanyMemberEntity</class>
+    <class>com.example.apideliveryservice.entity.GeneralMemberEntity</class>
+    <class>com.example.apideliveryservice.entity.CompanyFoodEntity</class>
+    <class>com.example.apideliveryservice.entity.CompanyFoodPriceEntity</class>
     <class>com.example.apideliveryservice.entity.PurchaseListEntity</class>
 
     <properties>

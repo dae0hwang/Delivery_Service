@@ -1,11 +1,13 @@
 package com.example.apideliveryservice.service;
 
 import com.example.apideliveryservice.dto.CompanyMemberDto;
+import com.example.apideliveryservice.entity.CompanyMemberEntity;
 import com.example.apideliveryservice.exception.DuplicatedLoginNameException;
 import com.example.apideliveryservice.exception.NonExistentMemberIdException;
 import com.example.apideliveryservice.repository.CompanyMemberRepository;
 import java.sql.Timestamp;
 import java.util.List;
+import java.util.stream.Collectors;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
@@ -24,13 +26,27 @@ public class CompanyMemberService {
     private String persistenceName;
     private final CompanyMemberRepository companyMemberRepository;
 
+
+    public static void main(String[] args) {
+        EntityManagerFactory emf = Persistence.createEntityManagerFactory("test");
+        EntityManager em = emf.createEntityManager();
+        EntityTransaction tx = em.getTransaction();
+        tx.begin();
+        Member member = new Member(null, "회원7");
+//        em.persist(member);
+        Member member1 = em.find(Member.class, 3l);
+        em.remove(member1);
+        tx.commit();
+
+
+    }
     /**
      * @param loginName, password, name
      * @throws Exception
      * @throws DuplicatedLoginNameException
      */
     public void join(String loginName, String password, String name) throws Exception {
-        CompanyMemberDto companyMemberDto = getCompanyMemberDto(loginName, password, name);
+        CompanyMemberEntity companyMemberDto = getCompanyMemberDto(loginName, password, name);
         EntityManagerFactory emf = Persistence.createEntityManagerFactory(persistenceName);
         EntityManager em = emf.createEntityManager();
         EntityTransaction tx = em.getTransaction();
@@ -48,13 +64,13 @@ public class CompanyMemberService {
         }
     }
 
-    private CompanyMemberDto getCompanyMemberDto(String loginName, String password, String name) {
-        CompanyMemberDto companyMemberDto = new CompanyMemberDto(null, loginName, password, name,
+    private CompanyMemberEntity getCompanyMemberDto(String loginName, String password, String name) {
+        CompanyMemberEntity companyMemberDto = new CompanyMemberEntity(null, loginName, password, name,
             false, new Timestamp(System.currentTimeMillis()));
         return companyMemberDto;
     }
 
-    private void validateDuplicateLoginName(EntityManager em, CompanyMemberDto companyMemberDto) {
+    private void validateDuplicateLoginName(EntityManager em, CompanyMemberEntity companyMemberDto) {
         companyMemberRepository.findByLoginName(em, companyMemberDto.getLoginName())
             .ifPresent(m -> {
                 throw new DuplicatedLoginNameException();
@@ -71,9 +87,11 @@ public class CompanyMemberService {
         EntityTransaction tx = em.getTransaction();
         try {
             tx.begin();
-            List<CompanyMemberDto> memberList = companyMemberRepository.findAllMember(em);
+            List<CompanyMemberEntity> memberEntityList = companyMemberRepository.findAllMember(em);
             tx.commit();
-            return memberList;
+            List<CompanyMemberDto> memberDtoList = changeMemberEntityListToDtoList(
+                memberEntityList);
+            return memberDtoList;
         } catch (Exception e) {
             tx.rollback();
             throw e;
@@ -95,13 +113,14 @@ public class CompanyMemberService {
         EntityTransaction tx = em.getTransaction();
         try {
             tx.begin();
-            CompanyMemberDto member = companyMemberRepository.findById(em,
+            CompanyMemberEntity memberEntity = companyMemberRepository.findById(em,
                 Long.valueOf(id)).orElse(null);
-            if (member == null) {
+            if (memberEntity == null) {
                 throw new NonExistentMemberIdException();
             }
             tx.commit();
-            return member;
+            CompanyMemberDto memberDto = changeMemberEntityToDto(memberEntity);
+            return memberDto;
         } catch (Exception e) {
             tx.rollback();
             throw e;
@@ -109,5 +128,18 @@ public class CompanyMemberService {
             em.close();
             emf.close();
         }
+    }
+
+    private CompanyMemberDto changeMemberEntityToDto(CompanyMemberEntity memberEntity) {
+        CompanyMemberDto memberDto = new CompanyMemberDto(memberEntity.getId(),
+            memberEntity.getName(), memberEntity.getCreatedAt());
+        return memberDto;
+    }
+
+    private List<CompanyMemberDto> changeMemberEntityListToDtoList(
+        List<CompanyMemberEntity> memberEntityList) {
+        List<CompanyMemberDto> memberDtoList = memberEntityList.stream()
+            .map(m -> new CompanyMemberDto(m.getId(), m.getName(), m.getCreatedAt())).collect(Collectors.toList());
+        return memberDtoList;
     }
 }

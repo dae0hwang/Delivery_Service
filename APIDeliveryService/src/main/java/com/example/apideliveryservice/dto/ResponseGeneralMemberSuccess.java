@@ -1,5 +1,6 @@
 package com.example.apideliveryservice.dto;
 
+import com.example.apideliveryservice.entity.GeneralMemberEntity;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Data;

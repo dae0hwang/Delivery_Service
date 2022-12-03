@@ -10,12 +10,12 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class RequestCompanyFoodDto {
+public class RequestCompanyFoodPrice {
 
-    @NotBlank(message = ExceptionMessage.RequestCompanyFoodDtoMemberId)
-    private String memberId;
-    @NotBlank(message = ExceptionMessage.RequestCompanyFoodDtoName)
-    private String name;
-    @Digits(message = ExceptionMessage.RequestCompanyFoodDtoPrice, integer = 10, fraction = 0)
+    @NotBlank(message = ExceptionMessage.RequestCompanyFoodPriceDtoFoodId)
+    private String foodId;
+    @Digits(message = ExceptionMessage.RequestCompanyFoodPriceDtoFoodPrice, integer = 10,
+        fraction = 0)
     private String price;
+
 }

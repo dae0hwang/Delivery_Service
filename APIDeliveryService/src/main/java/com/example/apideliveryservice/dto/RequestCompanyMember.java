@@ -1,6 +1,5 @@
 package com.example.apideliveryservice.dto;
 
-import com.example.apideliveryservice.annotation.Password;
 import com.example.apideliveryservice.exception.ExceptionMessage;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
@@ -11,12 +10,14 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class RequestGeneralMemberDto {
+public class RequestCompanyMember {
 
-    @Pattern(regexp = "^[a-z0-9]{8,20}$", message = ExceptionMessage.RequestGeneralMemberDtoLoginName)
+    @Pattern(regexp = "^[a-z0-9]{8,20}$", message =
+        ExceptionMessage.RequestCompanyMemberDtoLoginName)
     private String loginName;
-    @Password
+    @Pattern(regexp = "^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$ %^&*-]).{8,}$", message
+        = ExceptionMessage.RequestCompanyMemberDtoPassword)
     private String password;
-    @NotBlank(message = ExceptionMessage.RequestGeneralMemberDtoName)
+    @NotBlank(message = ExceptionMessage.RequestCompanyMemberDtoName)
     private String name;
 }

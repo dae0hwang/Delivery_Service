@@ -36,20 +36,9 @@ public class PurchaseListRepository {
         return connection;
     }
 
-//    public static void main(String[] args) throws SQLException {
-//        HikariDataSource dataSource = new HikariDataSource();
-//        dataSource.setJdbcUrl("jdbc:mysql://localhost:3307/delivery_service");
-//        dataSource.setUsername("root");
-//        dataSource.setPassword("111111");
-//        Connection connection = dataSource.getConnection();
-//        PurchaseListRepository repository = new PurchaseListRepository();
-//
-//        List<FoodPriceSumDto> list = repository.companyAllOfDay(connection);
-//        System.out.println(list.toString());
-//    }
 
-    public void create(EntityManager em, PurchaseListEntity purchaseListDto) throws Exception {
-        em.persist(purchaseListDto);
+    public void create(EntityManager em, PurchaseListEntity purchaseListEntity) throws Exception {
+        em.persist(purchaseListEntity);
     }
 
     public List<FoodPriceSumDto> companyAllOfDay(Connection connection) throws SQLException {

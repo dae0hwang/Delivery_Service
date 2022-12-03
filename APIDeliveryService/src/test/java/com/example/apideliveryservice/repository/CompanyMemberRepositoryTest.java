@@ -3,7 +3,7 @@ package com.example.apideliveryservice.repository;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.example.apideliveryservice.RepositoryResetHelper;
-import com.example.apideliveryservice.dto.CompanyMemberDto;
+import com.example.apideliveryservice.entity.CompanyMemberEntity;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -62,12 +62,12 @@ class CompanyMemberRepositoryTest {
     @DisplayName("save and findByLonginName Test")
     void save() throws Exception {
         //given
-        CompanyMemberDto companyMemberDto = new CompanyMemberDto(null, "loginName", "password",
+        CompanyMemberEntity companyMemberDto = new CompanyMemberEntity(null, "loginName", "password",
             "name", false, new Timestamp(System.currentTimeMillis()));
         //when
         repository.save(em, companyMemberDto);
-        Optional<CompanyMemberDto> findMember = repository.findByLoginName(em, "loginName");
-        CompanyMemberDto findMemberDto = findMember.get();
+        Optional<CompanyMemberEntity> findMember = repository.findByLoginName(em, "loginName");
+        CompanyMemberEntity findMemberDto = findMember.get();
         //then
         assertThat(findMemberDto.toString()).isEqualTo(companyMemberDto.toString());
     }
@@ -76,8 +76,8 @@ class CompanyMemberRepositoryTest {
     @DisplayName("loginName 이 존재하지 않을 때")
     void findByLoginName2() throws Exception {
         //when
-        Optional<CompanyMemberDto> findMember = repository.findByLoginName(em, "loginName");
-        CompanyMemberDto findMemberDto = findMember.orElse(null);
+        Optional<CompanyMemberEntity> findMember = repository.findByLoginName(em, "loginName");
+        CompanyMemberEntity findMemberDto = findMember.orElse(null);
         //then
         assertThat(findMemberDto).isNull();
     }
@@ -86,12 +86,12 @@ class CompanyMemberRepositoryTest {
     @DisplayName("Id가 존재했을 때 찾기")
     void findById1() throws Exception {
         //given
-        CompanyMemberDto companyMemberDto = new CompanyMemberDto(null, "loginName", "password",
+        CompanyMemberEntity companyMemberDto = new CompanyMemberEntity(null, "loginName", "password",
             "name", false, new Timestamp(System.currentTimeMillis()));
         //when
         repository.save(em, companyMemberDto);
-        Optional<CompanyMemberDto> findMember = repository.findById(em, 1l);
-        CompanyMemberDto findMemberDto = findMember.get();
+        Optional<CompanyMemberEntity> findMember = repository.findById(em, 1l);
+        CompanyMemberEntity findMemberDto = findMember.get();
         //then
         assertThat(findMemberDto).isEqualTo(companyMemberDto);
     }
@@ -100,8 +100,8 @@ class CompanyMemberRepositoryTest {
     @DisplayName("Id가 존재하지 않을 때 찾기")
     void findById2() throws Exception {
         //when
-        Optional<CompanyMemberDto> findMember = repository.findById(em, 1l);
-        CompanyMemberDto findMemberDto = findMember.orElse(null);
+        Optional<CompanyMemberEntity> findMember = repository.findById(em, 1l);
+        CompanyMemberEntity findMemberDto = findMember.orElse(null);
         //then
         assertThat(findMemberDto).isNull();
     }
@@ -109,17 +109,17 @@ class CompanyMemberRepositoryTest {
     @Test
     void findAllMember() throws Exception {
         //given
-        CompanyMemberDto companyMemberDto1 = new CompanyMemberDto(null, "loginName", "password",
+        CompanyMemberEntity companyMemberDto1 = new CompanyMemberEntity(null, "loginName", "password",
             "name", false, new Timestamp(System.currentTimeMillis()));
-        CompanyMemberDto companyMemberDto2 = new CompanyMemberDto(null, "loginName2", "password",
+        CompanyMemberEntity companyMemberDto2 = new CompanyMemberEntity(null, "loginName2", "password",
             "name", false, new Timestamp(System.currentTimeMillis()));
         repository.save(em, companyMemberDto1);
         repository.save(em, companyMemberDto2);
-        List<CompanyMemberDto> resultLIst = new ArrayList<>();
+        List<CompanyMemberEntity> resultLIst = new ArrayList<>();
         resultLIst.add(companyMemberDto1);
         resultLIst.add(companyMemberDto2);
         //when
-        List<CompanyMemberDto> allMember = repository.findAllMember(em);
+        List<CompanyMemberEntity> allMember = repository.findAllMember(em);
         //then
         assertThat(resultLIst).isEqualTo(allMember);
     }

@@ -1,4 +1,4 @@
-package com.example.apideliveryservice.controllerExceptionAdvice;
+package com.example.apideliveryservice.controllerexceptionadvice;
 
 import com.example.apideliveryservice.controller.CompanyMemberController;
 import com.example.apideliveryservice.exception.DuplicatedLoginNameException;

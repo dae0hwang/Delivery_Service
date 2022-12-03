@@ -1,7 +1,7 @@
 package com.example.apideliveryservice.interceptor;
 
 import com.example.apideliveryservice.dto.ResponseError;
-import com.example.apideliveryservice.threadLocalStorage.ThreadLocalStorage;
+import com.example.apideliveryservice.threadlocalstorage.ErrorInformationTls;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import javax.servlet.http.HttpServletRequest;
@@ -13,7 +13,7 @@ import org.springframework.web.servlet.HandlerInterceptor;
 public class ExceptionResponseInterceptor implements HandlerInterceptor {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
-    private final ThreadLocalStorage threadLocalStorage = new ThreadLocalStorage();
+    private final ErrorInformationTls threadLocalStorage = new ErrorInformationTls();
 
     @Override
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response,

@@ -1,6 +1,6 @@
 package com.example.apideliveryservice.repository;
 
-import com.example.apideliveryservice.dto.CompanyMemberDto;
+import com.example.apideliveryservice.entity.CompanyMemberEntity;
 import java.util.List;
 import java.util.Optional;
 import javax.persistence.EntityManager;
@@ -12,14 +12,14 @@ import org.springframework.stereotype.Service;
 @Service
 public class CompanyMemberRepository {
 
-    public void save(EntityManager em, CompanyMemberDto companyMember) {
+    public void save(EntityManager em, CompanyMemberEntity companyMember) {
         em.persist(companyMember);
     }
 
-    public Optional<CompanyMemberDto> findByLoginName(EntityManager em, String loginName) {
-        String jpql = "SELECT m FROM CompanyMemberDto m where m.loginName=:loginName";
+    public Optional<CompanyMemberEntity> findByLoginName(EntityManager em, String loginName) {
+        String jpql = "SELECT m FROM CompanyMemberEntity m where m.loginName=:loginName";
         try {
-            CompanyMemberDto findMember = em.createQuery(jpql, CompanyMemberDto.class)
+            CompanyMemberEntity findMember = em.createQuery(jpql, CompanyMemberEntity.class)
                 .setParameter("loginName", loginName).getSingleResult();
             return Optional.ofNullable(findMember);
         } catch (NoResultException e) {
@@ -28,14 +28,14 @@ public class CompanyMemberRepository {
         }
     }
 
-    public Optional<CompanyMemberDto> findById(EntityManager em, Long id) throws Exception {
-        CompanyMemberDto findMember = em.find(CompanyMemberDto.class, id);
+    public Optional<CompanyMemberEntity> findById(EntityManager em, Long id) throws Exception {
+        CompanyMemberEntity findMember = em.find(CompanyMemberEntity.class, id);
         return Optional.ofNullable(findMember);
     }
 
-    public List<CompanyMemberDto> findAllMember(EntityManager em) throws Exception {
-        String jpql = "SELECT c FROM CompanyMemberDto c";
-        List<CompanyMemberDto> list = em.createQuery(jpql, CompanyMemberDto.class).getResultList();
+    public List<CompanyMemberEntity> findAllMember(EntityManager em) throws Exception {
+        String jpql = "SELECT c FROM CompanyMemberEntity c";
+        List<CompanyMemberEntity> list = em.createQuery(jpql, CompanyMemberEntity.class).getResultList();
         return list;
     }
 }

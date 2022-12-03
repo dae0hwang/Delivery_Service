@@ -1,14 +1,14 @@
 package com.example.apideliveryservice.service;
 
 import com.example.apideliveryservice.dto.CompanyFoodDto;
+import com.example.apideliveryservice.entity.CompanyFoodEntity;
 import com.example.apideliveryservice.exception.DuplicatedFoodNameException;
 import com.example.apideliveryservice.exception.NonExistentFoodIdException;
-import com.example.apideliveryservice.exception.NonExistentMemberIdException;
 import com.example.apideliveryservice.repository.CompanyFoodRepository;
 import java.math.BigDecimal;
-import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.List;
+import java.util.stream.Collectors;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
@@ -34,15 +34,16 @@ public class CompanyFoodService {
      * @throws Exception
      * @throws DuplicatedFoodNameException
      */
-    public void addFood(String memberId, String name, String price) throws Exception {
-        CompanyFoodDto companyFoodDto = new CompanyFoodDto(null, Long.valueOf(memberId), name, new Timestamp(System.currentTimeMillis()), null);
+    public void addFood(String memberId, String name, BigDecimal price) throws Exception {
+        CompanyFoodEntity companyFoodDto = new CompanyFoodEntity(null, Long.valueOf(memberId), name,
+            new Timestamp(System.currentTimeMillis()), null);
         EntityManagerFactory emf = Persistence.createEntityManagerFactory(persistenceName);
         EntityManager em = emf.createEntityManager();
         EntityTransaction tx = em.getTransaction();
         try {
             tx.begin();
             validateDuplicateFoodName(em, Long.valueOf(memberId), name);
-            companyFoodRepository.add(em, companyFoodDto, new BigDecimal(price));
+            companyFoodRepository.add(em, companyFoodDto, price);
             tx.commit();
         } catch (Exception e) {
             tx.rollback();
@@ -71,10 +72,11 @@ public class CompanyFoodService {
         EntityTransaction tx = em.getTransaction();
         try {
             tx.begin();
-            List<CompanyFoodDto> allFood = companyFoodRepository.findAllFood(em,
+            List<CompanyFoodEntity> allFoodEntity = companyFoodRepository.findAllFood(em,
                 Long.valueOf(memberId));
             tx.commit();
-            return allFood;
+            List<CompanyFoodDto> allFoodDto = changeAllFoodEntityToDto(allFoodEntity);
+            return allFoodDto;
         } catch (Exception e) {
             tx.rollback();
             throw e;
@@ -97,13 +99,14 @@ public class CompanyFoodService {
         EntityTransaction tx = em.getTransaction();
         try {
             tx.begin();
-            CompanyFoodDto findFood = companyFoodRepository.findById(em, Long.valueOf(id))
+            CompanyFoodEntity findFoodEntity = companyFoodRepository.findById(em, Long.valueOf(id))
                 .orElse(null);
-            if (findFood == null) {
+            if (findFoodEntity == null) {
                 throw new NonExistentFoodIdException();
             }
             tx.commit();
-            return findFood;
+            CompanyFoodDto findFoodDto = changeFindFoodEntityToDto(findFoodEntity);
+            return findFoodDto;
         } catch (Exception e) {
             tx.rollback();
             throw e;
@@ -133,5 +136,19 @@ public class CompanyFoodService {
             em.close();
             emf.close();
         }
+    }
+
+    private List<CompanyFoodDto> changeAllFoodEntityToDto(List<CompanyFoodEntity> allFoodEntity) {
+        List<CompanyFoodDto> allFoodDto = allFoodEntity.stream().map(
+            m -> new CompanyFoodDto(m.getId(), m.getMemberId(), m.getName(),
+                m.getRegistrationDate(), m.getTempPrice())).collect(Collectors.toList());
+        return allFoodDto;
+    }
+
+    private CompanyFoodDto changeFindFoodEntityToDto(CompanyFoodEntity findFoodEntity) {
+        CompanyFoodDto findFoodDto = new CompanyFoodDto(findFoodEntity.getId(),
+            findFoodEntity.getMemberId(), findFoodEntity.getName(),
+            findFoodEntity.getRegistrationDate(), findFoodEntity.getTempPrice());
+        return findFoodDto;
     }
 }

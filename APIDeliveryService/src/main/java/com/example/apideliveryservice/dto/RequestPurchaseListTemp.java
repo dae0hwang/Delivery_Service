@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class RequestPurchaseListDto {
+public class RequestPurchaseListTemp {
 
     @Digits(message = ExceptionMessage.RequestPurchaseListDtoGeneralMemberId, integer = 10,
         fraction = 0)

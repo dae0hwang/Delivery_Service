@@ -1,171 +1,187 @@
 <!DOCTYPE HTML>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-  <meta charset="utf-8">
-  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-  <script>
-    window.onload = async function () {
-      //requestParam 가져오기 함수
-      function getParam(sname) {
-        var params = location.search.substr(location.search.indexOf("?") + 1);
-        var sval = "";
-        params = params.split("&");
-        for (var i = 0; i < params.length; i++) {
-          temp = params[i].split("=");
-          if ([temp[0]] == sname) {
-            sval = temp[1];
-          }
-        }
-        return sval;
-      }
+    <meta charset="utf-8">
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+        window.onload = async function () {
+            //requestParam 가져오기 함수
+            function getParam(sname) {
+                var params = location.search.substr(location.search.indexOf("?") + 1);
+                var sval = "";
+                params = params.split("&");
+                for (var i = 0; i < params.length; i++) {
+                    temp = params[i].split("=");
+                    if ([temp[0]] == sname) {
+                        sval = temp[1];
+                    }
+                }
+                return sval;
+            }
+
+            //requestParam generalMemberId 가져오기.
+            let generalMemberId = getParam("generalMemberId");
+            //requestParam companyMemberId 가져오기.
+            let companyMemberId = getParam("companyMemberId");
+
+            //제네럴멤버 h2 나타내기
+            let generalH2 = document.getElementById("generalH2");
+            axios({
+                url: 'http://127.0.0.1:5510/api/delivery-service/general/member/information',
+                method: 'get',
+                params: {
+                    memberId: generalMemberId
+                }
+            })
+
+            .then(function (response) {
+                let generalMemberName = response.data.generalMemberDto.name;
+                let textNode = document.createTextNode(generalMemberName + " 음식 주문 페이지");
+                generalH2.appendChild(textNode);
+            })
+            .catch(function (error) {
+                console.log(error);
+                alert("서버에 문제가 있습니다. 잠시후 시도해 주세요.")
+            });
+
+            //컴패니멤버 h2 나타내기
+            let companyH2 = document.getElementById("companyH2");
+            axios({
+                url: 'http://127.0.0.1:5510/api/delivery-service/company/member/information',
+                method: 'get',
+                params: {
+                    memberId: companyMemberId
+                }
+            })
+            .then(function (response) {
+                let companyMemberDto = response.data.companyMemberDto.name;
+                let textNode = document.createTextNode(companyMemberDto + " 음식 리스트");
+                companyH2.appendChild(textNode);
+            })
+            .catch(function (error) {
+                console.log(error);
+                alert("서버에 문제가 있습니다. 잠시후 시도해 주세요.")
+            });
+
+            //foodList
+            const data = await axios.get(
+                'http://127.0.0.1:5510/api/delivery-service/company/food/allFood',
+                {params: {memberId: companyMemberId}})
+            const dataList = data.data.list;
+            console.log(data)
+            console.log(dataList);
 
 
-      //requestParam generalMemberId 가져오기.
-      let generalMemberId = getParam("generalMemberId");
-      //requestParam companyMemberId 가져오기.
-      let companyMemberId = getParam("companyMemberId");
+            let tBody = document.getElementById("tBody");
+            function makeTable(dataList) {
+                for (i in dataList) {
 
-      //제네럴멤버 h2 나타내기
-      let generalH2 = document.getElementById("generalH2");
-      axios({
-        url: 'http://127.0.0.1:5510/api/delivery-service/general/member/information',
-        method: 'get',
-        params: {
-          memberId: generalMemberId
-        }
-      })
+                    let textNode = document.createTextNode(dataList[i].memberId);
+                    let tdNode = document.createElement("td");
+                    tdNode.appendChild(textNode)
+                    let textNode2 = document.createTextNode(dataList[i].id);
+                    let tdNode2 = document.createElement("td");
+                    tdNode2.appendChild(textNode2)
+                    let textNode3 = document.createTextNode(dataList[i].name);
+                    let tdNode3 = document.createElement("td");
+                    tdNode3.appendChild(textNode3)
+                    let textNode4 = document.createTextNode(dataList[i].price);
+                    let tdNode4 = document.createElement("td");
+                    tdNode4.appendChild(textNode4)
 
-      .then(function (response) {
-        let generalMemberName = response.data.generalMemberDto.name;
-        let textNode = document.createTextNode(generalMemberName + " 음식 주문 페이지");
-        generalH2.appendChild(textNode);
-      })
-      .catch(function (error) {
-        console.log(error);
-        alert("서버에 문제가 있습니다. 잠시후 시도해 주세요.")
-      });
+                    // <label>여행<input type="checkbox" name="interest"></label>
 
-      //컴패니멤버 h2 나타내기
-      let companyH2 = document.getElementById("companyH2");
-      axios({
-        url: 'http://127.0.0.1:5510/api/delivery-service/company/member/information',
-        method: 'get',
-        params: {
-          memberId: companyMemberId
-        }
-      })
-      .then(function (response) {
-        let companyMemberDto = response.data.companyMemberDto.name;
-        let textNode = document.createTextNode(companyMemberDto + " 음식 리스트");
-        companyH2.appendChild(textNode);
-      })
-      .catch(function (error) {
-        console.log(error);
-        alert("서버에 문제가 있습니다. 잠시후 시도해 주세요.")
-      });
+                    const checkBox = document.createElement("input");
+                    checkBox.type="checkbox"
+                    checkBox.name="check"
+                    checkBox.id = "checkBox"
+                    let tdNode5 = document.createElement("td");
+                    tdNode5.appendChild(checkBox);
 
-      //foodList
-      const data = await axios.get(
-          'http://127.0.0.1:5510/api/delivery-service/company/food/allFood',
-          {params: {memberId: companyMemberId}})
-      const dataList = data.data.list;
-      console.log(dataList);
+                    let trNode = document.createElement("tr");
+                    trNode.setAttribute("foodName", dataList[i].name);
+                    trNode.setAttribute("foodId", dataList[i].id);
+                    trNode.appendChild(tdNode);
+                    trNode.appendChild(tdNode2);
+                    trNode.appendChild(tdNode3);
+                    trNode.appendChild(tdNode4);
+                    trNode.appendChild(tdNode5);
+                    tBody.appendChild(trNode);
+                }
+            }
 
-      //음식주문 함수
-      function purchaseFunction(generalMemberId, companyMemberId, foodId,
-          foodPrice) {
-        axios({
-          url: 'http://127.0.0.1:5510/api/delivery-service/general/member/purchase',
-          method: 'post',
-          data: {
-            generalMemberId: generalMemberId,
-            companyMemberId: companyMemberId,
-            foodId: foodId,
-            foodPrice: foodPrice
-          }
-        })
-        .then(function (response) {
-          console.log("버튼 성공이다.")
-          console.log(response)
-          console.log(response.status)
-        })
-        .catch(function (error) {
-          console.log(error);
-        });
-      };
+            makeTable(dataList);
 
-      //컴패니 음식리스트 출력 그리고 주문하기 버튼 완성하기.
-      let tBody = document.getElementById("tBody");
-      function makeTable(dataList) {
-        for (i in dataList) {
+            //음식주문 함수
+            function purchaseFunction(list) {
+                axios({
+                    url: 'http://127.0.0.1:5510/api/delivery-service/general/member/purchase',
+                    method: 'post',
+                    data: list
+                })
+                .
+                then(function (response) {
+                    alert("주문이 완료 되었습니다")
+                    console.log(response)
+                    console.log(response.status)
+                })
+                .catch(function (error) {
+                    console.log(error);
+                    alert("주문이 실패했습니다. 잠시 후에 시도해주세요.")
+                });
+            };
 
-          let textNode = document.createTextNode(dataList[i].memberId);
-          let tdNode = document.createElement("td");
-          tdNode.appendChild(textNode)
-          let textNode2 = document.createTextNode(dataList[i].id);
-          let tdNode2 = document.createElement("td");
-          tdNode2.appendChild(textNode2)
-          let textNode3 = document.createTextNode(dataList[i].name);
-          let tdNode3 = document.createElement("td");
-          tdNode3.appendChild(textNode3)
-          let textNode4 = document.createTextNode(dataList[i].tempPrice);
-          let tdNode4 = document.createElement("td");
-          tdNode4.appendChild(textNode4)
+            //체크박스 확인후에 클릭시 체크한 음식 전부 구매하기.
+            document.addEventListener('click', function (event) {
+                if (event.target.id!="purchaseButton") return;
 
-          let purchaseButton = document.createElement("input");
-          purchaseButton.type = "button"
-          purchaseButton.value = "음식 주문";
-          purchaseButton.id = "purchaseButton";
-          purchaseButton.setAttribute("foodId", dataList[i].id);
-          purchaseButton.setAttribute("foodPrice", dataList[i].tempPrice);
-
-          let tdNode5 = document.createElement("td");
-          tdNode5.appendChild(purchaseButton);
-
-          let trNode = document.createElement("tr");
-          trNode.appendChild(tdNode);
-          trNode.appendChild(tdNode2);
-          trNode.appendChild(tdNode3);
-          trNode.appendChild(tdNode4);
-          trNode.appendChild(tdNode5);
-          tBody.appendChild(trNode);
-        }
-      }
-
-      makeTable(dataList);
-
-      document.addEventListener('click', function (event) {
-        if (event.target.id!="purchaseButton") return;
-        let foodId = event.target.getAttribute("foodId");
-        let foodPrice = event.target.getAttribute("foodPrice");
-        purchaseFunction(generalMemberId, companyMemberId, foodId, foodPrice)
-        alert("주문이 완료되었습니다")
-      });
-    };
-  </script>
+                const tableBody = document.getElementById("tBody");
+                const trArray = tableBody.getElementsByTagName("tr");
+                const postArray = new Array();
+                //이제 싹돌면서 리스트에 넣어서 보내기 하면된다.
+                for (let trArrayElement of trArray) {
+                    const elementsByTagName = trArrayElement.getElementsByTagName('input');
+                    const checkStat = elementsByTagName[0].checked;
+                    if (checkStat) {
+                        const foodName = trArrayElement.getAttribute("foodName");
+                        const foodId = trArrayElement.getAttribute("foodId");
+                        console.log(generalMemberId, companyMemberId, foodName)
+                        const postObject = { generalMemberId: generalMemberId, companyMemberId:companyMemberId, foodName: foodName,
+                            foodId: foodId}
+                        console.log(postObject);
+                        postArray.push(postObject);
+                    }
+                }
+                if (postArray.length != 0) {
+                    purchaseFunction(postArray);
+                }
+            });
+        };
+    </script>
 
 </head>
 
 <body>
 <div>
-  <h2 id="generalH2"></h2>
+    <h2 id="generalH2">aa</h2>
 </div>
 <div>
-  <h2 id="companyH2"></h2>
+    <h2 id="companyH2">aa</h2>
+    <input type="button" id="purchaseButton" value="음식주문">
 </div>
 
 <table id="table" border="1">
-  <thead>
-  <tr>
-    <th>멤버 id</th>
-    <th>음식 id</th>
-    <th>음식 이름</th>
-    <th>음식 가격</th>
-    <th>음식 주문하기</th>
-  </tr>
-  </thead>
-  <tbody id="tBody">
-  </tbody>
+    <thead>
+    <tr>
+        <th>멤버 id</th>
+        <th>음식 id</th>
+        <th>음식 이름</th>
+        <th>음식 가격</th>
+        <th>음식 선택</th>
+    </tr>
+    </thead>
+    <tbody id="tBody">
+    </tbody>
 </table>
 
 </body>

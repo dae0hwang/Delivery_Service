@@ -7,11 +7,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.example.apideliveryservice.RepositoryResetHelper;
-import com.example.apideliveryservice.controllerExceptionAdvice.CompanyMemberControllerExceptionAdvice;
-import com.example.apideliveryservice.dto.CompanyMemberDto;
-import com.example.apideliveryservice.dto.RequestCompanyMemberDto;
+import com.example.apideliveryservice.controllerexceptionadvice.CompanyMemberControllerExceptionAdvice;
+import com.example.apideliveryservice.dto.RequestCompanyMember;
 import com.example.apideliveryservice.dto.ResponseCompanyMemberSuccess;
-import com.example.apideliveryservice.dto.ResponseError;
 import com.example.apideliveryservice.interceptor.ExceptionResponseInterceptor;
 import com.example.apideliveryservice.repository.CompanyMemberRepository;
 import com.example.apideliveryservice.service.CompanyMemberService;
@@ -19,12 +17,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.sql.Timestamp;
-import java.util.List;
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.EntityTransaction;
-import javax.persistence.Persistence;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -82,7 +74,7 @@ class CompanyMemberControllerTest {
     void joinMember1() throws Exception {
         //given
         String url = baseUrl + "/member/join";
-        RequestCompanyMemberDto requestCompanyMemberDto = new RequestCompanyMemberDto("loginname1",
+        RequestCompanyMember requestCompanyMemberDto = new RequestCompanyMember("loginname1",
             "aA!1111111111", "name");
         String requestJson = objectMapper.writeValueAsString(requestCompanyMemberDto);
         ResponseCompanyMemberSuccess success = new ResponseCompanyMemberSuccess(201, null, null);

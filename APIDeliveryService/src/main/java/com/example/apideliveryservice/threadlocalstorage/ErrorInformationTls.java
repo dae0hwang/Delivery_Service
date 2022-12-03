@@ -1,6 +1,6 @@
-package com.example.apideliveryservice.threadLocalStorage;
+package com.example.apideliveryservice.threadlocalstorage;
 
-public class ThreadLocalStorage {
+public class ErrorInformationTls {
 
     private final static ThreadLocal<String> errorType = new ThreadLocal<>();
     private final static ThreadLocal<String> errorTitle = new ThreadLocal<>();

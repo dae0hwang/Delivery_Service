@@ -31,9 +31,4 @@ public class GeneralMemberController {
         @RequestParam("companyMemberId") String company) {
         return "general/member/purchasePage";
     }
-
-    @GetMapping("/member/used/{memberId}")
-    public String usedAmount() {
-        return "general/member/usedAmount";
-    }
 }
