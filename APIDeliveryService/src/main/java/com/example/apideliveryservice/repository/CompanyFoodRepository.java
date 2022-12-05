@@ -16,11 +16,11 @@ import org.springframework.stereotype.Service;
 @Service
 public class CompanyFoodRepository {
 
-    public void add(EntityManager em, CompanyFoodEntity companyFoodDto, BigDecimal price) {
-        em.persist(companyFoodDto);
-        CompanyFoodPriceEntity companyFoodPriceDto = new CompanyFoodPriceEntity(null, companyFoodDto,
+    public void add(EntityManager em, CompanyFoodEntity companyFoodEntity, BigDecimal price) {
+        em.persist(companyFoodEntity);
+        CompanyFoodPriceEntity companyFoodPriceEntity = new CompanyFoodPriceEntity(null, companyFoodEntity,
             price, new Timestamp(System.currentTimeMillis()));
-        em.persist(companyFoodPriceDto);
+        em.persist(companyFoodPriceEntity);
     }
 
     public Optional<CompanyFoodEntity> findByNameAndMemberId(EntityManager em, Long memberId,
@@ -56,40 +56,41 @@ public class CompanyFoodRepository {
     }
 
     public List<CompanyFoodEntity> findAllFood(EntityManager em, Long id) {
-        List<CompanyFoodEntity> foodDtoList = new ArrayList<>();
+        List<CompanyFoodEntity> companyFoodEntities = new ArrayList<>();
         try {
-            String foodDtoJpql = "SELECT f FROM CompanyFoodEntity f WHERE f.memberId=:memberId";
-            foodDtoList = em.createQuery(foodDtoJpql, CompanyFoodEntity.class)
+            String jpql = "SELECT f FROM CompanyFoodEntity f WHERE f.memberId=:memberId";
+            companyFoodEntities = em.createQuery(jpql, CompanyFoodEntity.class)
                 .setParameter("memberId", id).getResultList();
-            addListTempPrice(em, foodDtoList);
-            return foodDtoList;
+            addListTempPrice(em, companyFoodEntities);
+            return companyFoodEntities;
         } catch (NoResultException e) {
             log.info("ex", e);
-            return foodDtoList;
+            return companyFoodEntities;
         }
     }
 
-    private void addListTempPrice(EntityManager em, List<CompanyFoodEntity> foodDtoList) {
-        foodDtoList.replaceAll(companyFoodDto -> {
-            String foodPriceDtoJpql = "select p from CompanyFoodPriceEntity p "
+    private void addListTempPrice(EntityManager em, List<CompanyFoodEntity> companyFoodEntities) {
+        companyFoodEntities.replaceAll(companyFoodEntity -> {
+            String jpql = "select p from CompanyFoodPriceEntity p "
                 + "where p.companyFood=:companyFood order by p.updateDate desc";
-            List<CompanyFoodPriceEntity> companyFoodPriceDtoList = em.createQuery(foodPriceDtoJpql, CompanyFoodPriceEntity.class)
-                .setParameter("companyFood", companyFoodDto).getResultList();
-            CompanyFoodPriceEntity foodPriceDto = companyFoodPriceDtoList.stream().findFirst()
+            List<CompanyFoodPriceEntity> companyFoodPriceEntities = em.createQuery(jpql,
+                    CompanyFoodPriceEntity.class).setParameter("companyFood", companyFoodEntity)
+                .getResultList();
+            CompanyFoodPriceEntity companyFoodPriceEntity = companyFoodPriceEntities.stream().findFirst()
                 .get();
-            return new CompanyFoodEntity(companyFoodDto.getId(), companyFoodDto.getMemberId(),
-                companyFoodDto.getName(), companyFoodDto.getRegistrationDate(),
-                foodPriceDto.getPrice());
+            return new CompanyFoodEntity(companyFoodEntity.getId(), companyFoodEntity.getMemberId(),
+                companyFoodEntity.getName(), companyFoodEntity.getRegistrationDate(),
+                companyFoodPriceEntity.getPrice());
         });
     }
 
     public Optional<CompanyFoodEntity> findById(EntityManager em, Long id) {
-        CompanyFoodEntity companyFoodDto = em.find(CompanyFoodEntity.class, id);
-        if (companyFoodDto == null) {
+        CompanyFoodEntity companyFoodEntity = em.find(CompanyFoodEntity.class, id);
+        if (companyFoodEntity == null) {
             return Optional.empty();
         }
-        CompanyFoodEntity companyFoodDtoWithTempPrice = addTempPrice(em, companyFoodDto);
-        return Optional.ofNullable(companyFoodDtoWithTempPrice);
+        CompanyFoodEntity companyFoodEntityWithTempPrice = addTempPrice(em, companyFoodEntity);
+        return Optional.ofNullable(companyFoodEntityWithTempPrice);
     }
 
     private CompanyFoodEntity addTempPrice(EntityManager em, CompanyFoodEntity companyFoodDto) {
