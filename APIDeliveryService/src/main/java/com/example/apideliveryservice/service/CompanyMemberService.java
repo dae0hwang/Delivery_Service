@@ -26,20 +26,6 @@ public class CompanyMemberService {
     private String persistenceName;
     private final CompanyMemberRepository companyMemberRepository;
 
-
-    public static void main(String[] args) {
-        EntityManagerFactory emf = Persistence.createEntityManagerFactory("test");
-        EntityManager em = emf.createEntityManager();
-        EntityTransaction tx = em.getTransaction();
-        tx.begin();
-        Member member = new Member(null, "회원7");
-//        em.persist(member);
-        Member member1 = em.find(Member.class, 3l);
-        em.remove(member1);
-        tx.commit();
-
-
-    }
     /**
      * @param loginName, password, name
      * @throws Exception
