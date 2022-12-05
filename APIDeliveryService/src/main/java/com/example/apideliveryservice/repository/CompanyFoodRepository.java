@@ -37,7 +37,7 @@ public class CompanyFoodRepository {
         }
     }
 
-    public BigDecimal findPriceByFoodIdFromCompanyFoodPriceEntity(EntityManager em, Long foodId) {
+    public BigDecimal findPriceByFoodId(EntityManager em, Long foodId) {
         CompanyFoodEntity companyFoodEntity = em.find(CompanyFoodEntity.class, foodId);
 
         String jpql = "SELECT f FROM CompanyFoodPriceEntity f WHERE f.companyFood=:companyFood "
