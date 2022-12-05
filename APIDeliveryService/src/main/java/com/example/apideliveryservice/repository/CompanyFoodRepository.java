@@ -1,6 +1,5 @@
 package com.example.apideliveryservice.repository;
 
-import com.example.apideliveryservice.dto.CompanyFoodDto;
 import com.example.apideliveryservice.entity.CompanyFoodEntity;
 import com.example.apideliveryservice.entity.CompanyFoodPriceEntity;
 import java.math.BigDecimal;
@@ -9,38 +8,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.EntityTransaction;
 import javax.persistence.NoResultException;
-import javax.persistence.Persistence;
-import javax.sql.DataSource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service
 public class CompanyFoodRepository {
-
-    public static void main(String[] args) {
-        CompanyFoodRepository repository = new CompanyFoodRepository();
-        EntityManagerFactory emf = Persistence.createEntityManagerFactory("jpa-mysql");
-        EntityManager em = emf.createEntityManager();
-        EntityTransaction tx = em.getTransaction();
-
-        BigDecimal price = new BigDecimal("6000");
-        try {
-            tx.begin();
-            BigDecimal price2 = repository.findPriceByNameAndMemberId(em, 26l, "참치김밥");
-            tx.commit();
-            log.info("price={}", price2);
-        } catch (Exception e) {
-            log.error("ex", e);
-            tx.rollback();
-        } finally {
-            em.close();
-            emf.close();
-        }
-    }
 
     public void add(EntityManager em, CompanyFoodEntity companyFoodDto, BigDecimal price) {
         em.persist(companyFoodDto);
@@ -63,16 +37,17 @@ public class CompanyFoodRepository {
         }
     }
 
-    //또 최신값을 가져와야하는 문제가있는데
-    public BigDecimal findPriceByNameAndMemberId(EntityManager em, Long memberId,
-        String findName) {
-        String jpql = "SELECT f FROM CompanyFoodEntity f WHERE f.name=:name AND f.memberId=:memberId";
+    public BigDecimal findPriceByFoodIdFromCompanyFoodPriceEntity(EntityManager em, Long foodId) {
+        CompanyFoodEntity companyFoodEntity = em.find(CompanyFoodEntity.class, foodId);
+
+        String jpql = "SELECT f FROM CompanyFoodPriceEntity f WHERE f.companyFood=:companyFood "
+            + "order by f.updateDate desc";
         try {
-            CompanyFoodEntity findCompanyFood = em.createQuery(jpql, CompanyFoodEntity.class)
-                .setParameter("name", findName).setParameter("memberId", memberId)
+            CompanyFoodPriceEntity companyFoodPriceEntity = em.createQuery(jpql,
+                    CompanyFoodPriceEntity.class).setParameter("companyFood", companyFoodEntity)
+                .setMaxResults(1)
                 .getSingleResult();
-            CompanyFoodEntity companyFoodDtoWithTempPrice = addTempPrice(em, findCompanyFood);
-            BigDecimal findPrice = companyFoodDtoWithTempPrice.getTempPrice();
+            BigDecimal findPrice = companyFoodPriceEntity.getPrice();
             return findPrice;
         } catch (NoResultException e) {
             log.info("ex", e);
