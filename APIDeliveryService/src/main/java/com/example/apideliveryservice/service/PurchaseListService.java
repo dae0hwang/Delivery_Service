@@ -6,7 +6,6 @@ import com.example.apideliveryservice.repository.CompanyFoodRepository;
 import com.example.apideliveryservice.repository.PurchaseListRepository;
 import java.math.BigDecimal;
 import java.sql.Connection;
-import java.sql.Date;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.List;
@@ -86,8 +85,9 @@ public class PurchaseListService {
         EntityTransaction tx = em.getTransaction();
         try {
             tx.begin();
-            BigDecimal priceByNameAndMemberId = companyFoodRepository.findPriceByNameAndMemberId(em,
-                companyId, foodName);
+            BigDecimal priceByNameAndMemberId =
+                companyFoodRepository.findPriceByFoodIdFromCompanyFoodPriceEntity(
+                em, foodId);
             PurchaseListEntity purchaseListEntity = new PurchaseListEntity(null, generalId,
                 companyId, foodId, priceByNameAndMemberId,
                 new Timestamp(System.currentTimeMillis()));
