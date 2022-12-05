@@ -29,7 +29,7 @@ public class PurchaseListService {
     private final PurchaseListRepository repository;
     private final CompanyFoodRepository companyFoodRepository;
 
-    public void addList(Long generalId, Long companyId, Long foodId, String foodName)
+    public void addList(Long generalId, Long companyId, Long foodId)
         throws Exception {
         EntityManagerFactory emf = Persistence.createEntityManagerFactory(persistenceName);
         EntityManager em = emf.createEntityManager();

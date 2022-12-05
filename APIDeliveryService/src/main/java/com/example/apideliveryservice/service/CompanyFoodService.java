@@ -35,7 +35,7 @@ public class CompanyFoodService {
      * @throws DuplicatedFoodNameException
      */
     public void addFood(String memberId, String name, BigDecimal price) throws Exception {
-        CompanyFoodEntity companyFoodDto = new CompanyFoodEntity(null, Long.valueOf(memberId), name,
+        CompanyFoodEntity companyFoodEntity = new CompanyFoodEntity(null, Long.valueOf(memberId), name,
             new Timestamp(System.currentTimeMillis()), null);
         EntityManagerFactory emf = Persistence.createEntityManagerFactory(persistenceName);
         EntityManager em = emf.createEntityManager();
@@ -43,7 +43,7 @@ public class CompanyFoodService {
         try {
             tx.begin();
             validateDuplicateFoodName(em, Long.valueOf(memberId), name);
-            companyFoodRepository.add(em, companyFoodDto, price);
+            companyFoodRepository.add(em, companyFoodEntity, price);
             tx.commit();
         } catch (Exception e) {
             tx.rollback();

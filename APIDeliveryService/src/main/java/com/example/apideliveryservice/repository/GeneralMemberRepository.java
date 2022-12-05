@@ -13,8 +13,8 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class GeneralMemberRepository {
 
-    public void create(EntityManager em, GeneralMemberEntity generalMemberDto) {
-        em.persist(generalMemberDto);
+    public void create(EntityManager em, GeneralMemberEntity generalMemberEntity) {
+        em.persist(generalMemberEntity);
 
     }
 

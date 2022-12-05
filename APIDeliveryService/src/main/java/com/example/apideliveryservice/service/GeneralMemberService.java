@@ -30,14 +30,14 @@ public class GeneralMemberService {
      * @throws DeliveryServiceException-general member join fail due to DuplicatedLoginName
      */
     public void join(String loginName, String password, String name) throws Exception {
-        GeneralMemberEntity generalMemberDto = getGeneralMember(loginName, password, name);
+        GeneralMemberEntity generalMemberEntity = getGeneralMember(loginName, password, name);
         EntityManagerFactory emf = Persistence.createEntityManagerFactory(persistenceName);
         EntityManager em = emf.createEntityManager();
         EntityTransaction tx = em.getTransaction();
         try {
             tx.begin();
-            validateDuplicateLoginName(em, generalMemberDto);
-            generalMemberRepository.create(em, generalMemberDto);
+            validateDuplicateLoginName(em, generalMemberEntity);
+            generalMemberRepository.create(em, generalMemberEntity);
             tx.commit();
         } catch (Exception e) {
             tx.rollback();
@@ -49,13 +49,13 @@ public class GeneralMemberService {
     }
 
     private GeneralMemberEntity getGeneralMember(String loginName, String password, String name) {
-        GeneralMemberEntity generalMemberDto = new GeneralMemberEntity(null, loginName, password, name,
+        GeneralMemberEntity generalMemberEntity = new GeneralMemberEntity(null, loginName, password, name,
             false, new Timestamp(System.currentTimeMillis()));
-        return generalMemberDto;
+        return generalMemberEntity;
     }
 
-    private void validateDuplicateLoginName(EntityManager em, GeneralMemberEntity generalMemberDto) {
-        generalMemberRepository.findByLoginName(em, generalMemberDto.getLoginName())
+    private void validateDuplicateLoginName(EntityManager em, GeneralMemberEntity generalMemberEntity) {
+        generalMemberRepository.findByLoginName(em, generalMemberEntity.getLoginName())
             .ifPresent(m -> {
                 throw new DeliveryServiceException(
                     ExceptionMessage.DeliveryExceptionDuplicatedName);
@@ -105,7 +105,7 @@ public class GeneralMemberService {
                     ExceptionMessage.DeliveryExceptionNonExistentMemberId);
             }
             tx.commit();
-            GeneralMemberDto memberDto = changeMemberEtityToDto(memberEntity);
+            GeneralMemberDto memberDto = changeMemberEntityToDto(memberEntity);
             return memberDto;
         } catch (Exception e) {
             tx.rollback();
@@ -116,7 +116,7 @@ public class GeneralMemberService {
         }
     }
 
-    private GeneralMemberDto changeMemberEtityToDto(GeneralMemberEntity memberEntity) {
+    private GeneralMemberDto changeMemberEntityToDto(GeneralMemberEntity memberEntity) {
         GeneralMemberDto memberDto = new GeneralMemberDto(memberEntity.getId(),
             memberEntity.getLoginName(), memberEntity.getName(), memberEntity.getCreatedAt());
         return memberDto;

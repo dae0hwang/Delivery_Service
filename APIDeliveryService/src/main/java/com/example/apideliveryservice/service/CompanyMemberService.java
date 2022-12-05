@@ -32,14 +32,14 @@ public class CompanyMemberService {
      * @throws DuplicatedLoginNameException
      */
     public void join(String loginName, String password, String name) throws Exception {
-        CompanyMemberEntity companyMemberDto = getCompanyMemberDto(loginName, password, name);
+        CompanyMemberEntity companyMemberEntity = getCompanyMemberEntity(loginName, password, name);
         EntityManagerFactory emf = Persistence.createEntityManagerFactory(persistenceName);
         EntityManager em = emf.createEntityManager();
         EntityTransaction tx = em.getTransaction();
         try {
             tx.begin();
-            validateDuplicateLoginName(em, companyMemberDto);
-            companyMemberRepository.save(em, companyMemberDto);
+            validateDuplicateLoginName(em, companyMemberEntity);
+            companyMemberRepository.save(em, companyMemberEntity);
             tx.commit();
         } catch (Exception e) {
             tx.rollback();
@@ -50,14 +50,14 @@ public class CompanyMemberService {
         }
     }
 
-    private CompanyMemberEntity getCompanyMemberDto(String loginName, String password, String name) {
-        CompanyMemberEntity companyMemberDto = new CompanyMemberEntity(null, loginName, password, name,
+    private CompanyMemberEntity getCompanyMemberEntity(String loginName, String password, String name) {
+        CompanyMemberEntity companyMemberEntity = new CompanyMemberEntity(null, loginName, password, name,
             false, new Timestamp(System.currentTimeMillis()));
-        return companyMemberDto;
+        return companyMemberEntity;
     }
 
-    private void validateDuplicateLoginName(EntityManager em, CompanyMemberEntity companyMemberDto) {
-        companyMemberRepository.findByLoginName(em, companyMemberDto.getLoginName())
+    private void validateDuplicateLoginName(EntityManager em, CompanyMemberEntity companyMemberEntity) {
+        companyMemberRepository.findByLoginName(em, companyMemberEntity.getLoginName())
             .ifPresent(m -> {
                 throw new DuplicatedLoginNameException();
             });
