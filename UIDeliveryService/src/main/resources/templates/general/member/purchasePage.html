@@ -89,23 +89,28 @@
                     let tdNode4 = document.createElement("td");
                     tdNode4.appendChild(textNode4)
 
-                    // <label>여행<input type="checkbox" name="interest"></label>
+                    const numberListInput = document.createElement("input");
+                    numberListInput.type = "number";
+                    numberListInput.min = "1";
+                    numberListInput.max = "15";
+                    let tdNode5 = document.createElement("td");
+                    tdNode5.appendChild(numberListInput)
 
                     const checkBox = document.createElement("input");
                     checkBox.type="checkbox"
                     checkBox.name="check"
                     checkBox.id = "checkBox"
-                    let tdNode5 = document.createElement("td");
-                    tdNode5.appendChild(checkBox);
+                    let tdNode6 = document.createElement("td");
+                    tdNode6.appendChild(checkBox);
 
                     let trNode = document.createElement("tr");
-                    trNode.setAttribute("foodName", dataList[i].name);
                     trNode.setAttribute("foodId", dataList[i].id);
                     trNode.appendChild(tdNode);
                     trNode.appendChild(tdNode2);
                     trNode.appendChild(tdNode3);
                     trNode.appendChild(tdNode4);
                     trNode.appendChild(tdNode5);
+                    trNode.appendChild(tdNode6);
                     tBody.appendChild(trNode);
                 }
             }
@@ -115,7 +120,7 @@
             //음식주문 함수
             function purchaseFunction(list) {
                 axios({
-                    url: 'http://127.0.0.1:5510/api/delivery-service/general/member/purchase',
+                    url: 'http://127.0.0.1:5510/api/delivery-service/order/member/order',
                     method: 'post',
                     data: list
                 })
@@ -134,20 +139,18 @@
             //체크박스 확인후에 클릭시 체크한 음식 전부 구매하기.
             document.addEventListener('click', function (event) {
                 if (event.target.id!="purchaseButton") return;
-
+                console.log("aaaa")
                 const tableBody = document.getElementById("tBody");
                 const trArray = tableBody.getElementsByTagName("tr");
                 const postArray = new Array();
                 //이제 싹돌면서 리스트에 넣어서 보내기 하면된다.
                 for (let trArrayElement of trArray) {
                     const elementsByTagName = trArrayElement.getElementsByTagName('input');
-                    const checkStat = elementsByTagName[0].checked;
+                    const foodAmount = elementsByTagName[0].value;
+                    const checkStat = elementsByTagName[1].checked;
                     if (checkStat) {
-                        const foodName = trArrayElement.getAttribute("foodName");
                         const foodId = trArrayElement.getAttribute("foodId");
-                        console.log(generalMemberId, companyMemberId, foodName)
-                        const postObject = { generalMemberId: generalMemberId, companyMemberId:companyMemberId, foodName: foodName,
-                            foodId: foodId}
+                        const postObject = { generalMemberId: generalMemberId, companyMemberId:companyMemberId, foodId: foodId, foodAmount: foodAmount}
                         console.log(postObject);
                         postArray.push(postObject);
                     }

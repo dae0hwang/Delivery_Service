@@ -2,11 +2,8 @@ package com.example.apideliveryservice.controller;
 
 import com.example.apideliveryservice.dto.GeneralMemberDto;
 import com.example.apideliveryservice.dto.RequestGeneralMember;
-import com.example.apideliveryservice.dto.RequestPurchaseLIst;
 import com.example.apideliveryservice.dto.ResponseGeneralMemberSuccess;
-import com.example.apideliveryservice.dto.ResponsePurchaseListSuccess;
 import com.example.apideliveryservice.service.GeneralMemberService;
-import com.example.apideliveryservice.service.PurchaseListService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,7 +26,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class GeneralMemberController {
 
     private final GeneralMemberService generalMemberService;
-    private final PurchaseListService purchaseListService;
 
     @PostMapping("/member/join")
     public ResponseEntity joinMember(
@@ -54,17 +50,5 @@ public class GeneralMemberController {
         ResponseGeneralMemberSuccess success = new ResponseGeneralMemberSuccess(200, null,
             findMember);
         return ResponseEntity.status(HttpStatus.OK).body(success);
-    }
-
-    //valid적용하는 것 남음
-    @PostMapping("/member/purchase")
-    public ResponseEntity foodPurchase(@Validated @RequestBody List<RequestPurchaseLIst> list)
-        throws Exception {
-        for (RequestPurchaseLIst request : list) {
-            purchaseListService.addList(request.getGeneralMemberId(), request.getCompanyMemberId(),
-                request.getFoodId(), request.getFoodName());
-        }
-        ResponsePurchaseListSuccess success = new ResponsePurchaseListSuccess(201, null, null);
-        return new ResponseEntity(success, HttpStatus.CREATED);
     }
 }
