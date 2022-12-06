@@ -38,13 +38,21 @@ CREATE TABLE general_members(
     registration_date TIMESTAMP NOT NULL
 );
 
-DROP TABLE IF EXISTS purchase_list;
+DROP TABLE IF EXISTS order_list;
 
-CREATE TABLE purchase_list(
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    general_id BIGINT NOT NULL ,
-    company_id BIGINT NOT NULL ,
-    food_id BIGINT NOT NULL ,
-    food_price DECIMAL NOT NULL,
-    registration_date TIMESTAMP NOT NULL
+CREATE TABLE order_list(
+      id BIGINT AUTO_INCREMENT PRIMARY KEY,
+      general_id BIGINT NOT NULL ,
+      registration_date TIMESTAMP NOT NULL
+);
+
+DROP TABLE IF EXISTS order_detail_list;
+
+CREATE TABLE order_detail_list(
+      id BIGINT AUTO_INCREMENT PRIMARY KEY,
+      order_id BIGINT NOT NULL,
+      company_id BIGINT NOT NULL ,
+      food_id BIGINT NOT NULL ,
+      food_price DECIMAL NOT NULL,
+      food_amount  INT NOT NULL
 );
