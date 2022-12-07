@@ -128,4 +128,51 @@ public class RepositoryResetHelper {
             log.error("error message={}", e.getMessage(), e);
         }
     }
+
+    public void ifExistDeleteOrderList(Connection connection) {
+        String sql ="DROP TABLE IF EXISTS order_list";
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            log.error("error message={}", e.getMessage(), e);
+        }
+    }
+
+    public void createOrderList(Connection connection) {
+        String sql = "CREATE TABLE order_list(\n"
+            + "     id BIGINT AUTO_INCREMENT PRIMARY KEY,\n"
+            + "     general_id BIGINT NOT NULL ,\n"
+            + "     registration_date TIMESTAMP NOT NULL"
+            + ")";
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.executeUpdate();
+        }catch (SQLException e) {
+            log.error("error message={}", e.getMessage(), e);
+        }
+    }
+
+    public void ifExistDeleteOrderDetailList(Connection connection) {
+        String sql ="DROP TABLE IF EXISTS order_detail_list";
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            log.error("error message={}", e.getMessage(), e);
+        }
+    }
+
+    public void createOrderDetailList(Connection connection) {
+        String sql = "CREATE TABLE order_detail_list(\n"
+            + "      id BIGINT AUTO_INCREMENT PRIMARY KEY,\n"
+            + "      order_id BIGINT NOT NULL,\n"
+            + "      company_id BIGINT NOT NULL ,\n" +
+            "      food_id BIGINT NOT NULL ,\n"
+            + "      food_price DECIMAL NOT NULL,\n" +
+            "      food_amount  INT NOT NULL\n"
+            + ")";
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.executeUpdate();
+        }catch (SQLException e) {
+            log.error("error message={}", e.getMessage(), e);
+        }
+    }
 }
