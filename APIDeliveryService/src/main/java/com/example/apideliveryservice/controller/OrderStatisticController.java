@@ -1,8 +1,8 @@
 package com.example.apideliveryservice.controller;
 
 import com.example.apideliveryservice.dto.FoodPriceSumDto;
-import com.example.apideliveryservice.dto.ResponsePurchaseListSuccess;
-import com.example.apideliveryservice.service.PurchaseListService;
+import com.example.apideliveryservice.dto.ResponseOrderSuccess;
+import com.example.apideliveryservice.service.OrderStatisticService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,14 +18,14 @@ import org.springframework.web.bind.annotation.RestController;
 @CrossOrigin(origins = "http://localhost:8080")
 @RequestMapping("/api/delivery-service/statistic")
 @RequiredArgsConstructor
-public class PurchaseStatisticController {
+public class OrderStatisticController {
 
-    private final PurchaseListService purchaseListService;
+    private final OrderStatisticService orderStatisticService;
 
     @GetMapping("/company/all/day")
-    public ResponseEntity companyAllTodayMoney() throws Exception {
-        List<FoodPriceSumDto> statisticList = purchaseListService.companyAllOfDay();
-        ResponsePurchaseListSuccess success = new ResponsePurchaseListSuccess(200, null,
+    public ResponseEntity companyAllOfDayMoney() throws Exception {
+        List<FoodPriceSumDto> statisticList = orderStatisticService.companyAllOfDay();
+        ResponseOrderSuccess success = new ResponseOrderSuccess(200, null,
             statisticList);
         return new ResponseEntity(success, HttpStatus.OK);
     }
