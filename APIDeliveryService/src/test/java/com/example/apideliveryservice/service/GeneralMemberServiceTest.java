@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.example.apideliveryservice.RepositoryResetHelper;
+import com.example.apideliveryservice.dto.GeneralMemberDto;
 import com.example.apideliveryservice.entity.GeneralMemberEntity;
 import com.example.apideliveryservice.exception.DeliveryServiceException;
 import com.example.apideliveryservice.repository.GeneralMemberRepository;
@@ -82,48 +83,50 @@ class GeneralMemberServiceTest {
             .isInstanceOf(DeliveryServiceException.class);
     }
 
-//    @Test
-//    @DisplayName("모든 general member 찾기 test")
-//    void findAllMember() throws Exception {
-//        //given
-//        tx.begin();
-//        GeneralMemberEntity companyMemberDto1 = new GeneralMemberEntity(null, "loginName1", "password",
-//            "name", false, new Timestamp(System.currentTimeMillis()));
-//        GeneralMemberEntity companyMemberDto2 = new GeneralMemberEntity(null, "loginName2", "password",
-//            "name", false, new Timestamp(System.currentTimeMillis()));
-//        repository.create(em, companyMemberDto1);
-//        repository.create(em, companyMemberDto2);
-//        tx.commit();
-//        List<GeneralMemberEntity> result = new ArrayList<>();
-//        result.add(new GeneralMemberEntity(1l, "loginName1", "password",
-//            "name", false,companyMemberDto1.getCreatedAt()));
-//        result.add(new GeneralMemberEntity(2l, "loginName2", "password",
-//            "name", false,companyMemberDto2.getCreatedAt()));
-//
-//        //when
-//        List<GeneralMemberEntity> expected = service.findAllMember();
-//
-//        //then
-//        assertThat(expected.toString()).isEqualTo(result.toString());
-//    }
-//
-//    @Test
-//    @DisplayName("id로멤버 찾기  성공 test")
-//    void findById() throws Exception {
-//        //given
-//        GeneralMemberEntity result = new GeneralMemberEntity(null, "loginName1", "password", "name", false
-//            , new Timestamp(System.currentTimeMillis()));
-//        tx.begin();
-//        repository.create(em, result);
-//        tx.commit();
-//
-//        GeneralMemberEntity actual = new GeneralMemberEntity(1l, "loginName1", "password", "name", false
-//            , result.getCreatedAt());
-//        //when
-//        GeneralMemberEntity expect = service.findById("1");
-//        //then
-//        assertThat(actual).isEqualTo(expect);
-//    }
+    @Test
+    @DisplayName("모든 general member 찾기 test")
+    void findAllMember() throws Exception {
+        //given
+        tx.begin();
+        GeneralMemberEntity companyMemberDto1 = new GeneralMemberEntity(null, "loginName1", "password",
+            "name", false, new Timestamp(System.currentTimeMillis()));
+        GeneralMemberEntity companyMemberDto2 = new GeneralMemberEntity(null, "loginName2", "password",
+            "name", false, new Timestamp(System.currentTimeMillis()));
+        repository.create(em, companyMemberDto1);
+        repository.create(em, companyMemberDto2);
+        tx.commit();
+
+        List<GeneralMemberDto> result = new ArrayList<>();
+        result.add(
+            new GeneralMemberDto(1l, "loginName1", "name", companyMemberDto1.getCreatedAt()));
+        result.add(
+            new GeneralMemberDto(2l, "loginName2", "name", companyMemberDto2.getCreatedAt()));
+
+        //when
+        List<GeneralMemberDto> expected = service.findAllMember();
+
+        //then
+        assertThat(expected).isEqualTo(result);
+    }
+    //여기할 차례
+
+    @Test
+    @DisplayName("id로멤버 찾기  성공 test")
+    void findById() throws Exception {
+        //given
+        GeneralMemberEntity result = new GeneralMemberEntity(null, "loginName1", "password", "name", false
+            , new Timestamp(System.currentTimeMillis()));
+        tx.begin();
+        repository.create(em, result);
+        tx.commit();
+
+        GeneralMemberDto actual = new GeneralMemberDto(1l, "loginName1", "name",
+            result.getCreatedAt());
+        //when
+        GeneralMemberDto findMember = service.findById("1");
+        //then
+        assertThat(actual).isEqualTo(findMember);
+    }
 
     @Test
     @DisplayName("id로 멤버 찾기 실패  존재하지 않는 id test")

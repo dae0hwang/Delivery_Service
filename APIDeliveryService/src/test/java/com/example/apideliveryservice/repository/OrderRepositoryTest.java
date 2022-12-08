@@ -135,6 +135,4 @@ class OrderRepositoryTest {
         assertThat(findOrderListByGeneralId).isEqualTo(actualList);
         assertThat(findOrderBlankList).isEqualTo(new ArrayList<>());
     }
-
-
 }

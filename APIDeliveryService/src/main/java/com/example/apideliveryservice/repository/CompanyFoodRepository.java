@@ -4,7 +4,6 @@ import com.example.apideliveryservice.entity.CompanyFoodEntity;
 import com.example.apideliveryservice.entity.CompanyFoodPriceEntity;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import javax.persistence.EntityManager;
@@ -37,7 +36,7 @@ public class CompanyFoodRepository {
         }
     }
 
-    public BigDecimal findPriceByFoodId(EntityManager em, Long foodId) {
+    public BigDecimal findPriceByFoodId(EntityManager em, Long foodId){
         CompanyFoodEntity companyFoodEntity = em.find(CompanyFoodEntity.class, foodId);
         String jpql = "SELECT f FROM CompanyFoodPriceEntity f WHERE f.companyFood=:companyFood "
             + "order by f.updateDate desc";
@@ -55,17 +54,11 @@ public class CompanyFoodRepository {
     }
 
     public List<CompanyFoodEntity> findAllFood(EntityManager em, Long id) {
-        List<CompanyFoodEntity> companyFoodEntities = new ArrayList<>();
-        try {
-            String jpql = "SELECT f FROM CompanyFoodEntity f WHERE f.memberId=:memberId";
-            companyFoodEntities = em.createQuery(jpql, CompanyFoodEntity.class)
-                .setParameter("memberId", id).getResultList();
-            addListTempPrice(em, companyFoodEntities);
-            return companyFoodEntities;
-        } catch (NoResultException e) {
-            log.info("ex", e);
-            return companyFoodEntities;
-        }
+        String jpql = "SELECT f FROM CompanyFoodEntity f WHERE f.memberId=:memberId";
+        List<CompanyFoodEntity> companyFoodEntities = em.createQuery(jpql, CompanyFoodEntity.class)
+            .setParameter("memberId", id).getResultList();
+        addListTempPrice(em, companyFoodEntities);
+        return companyFoodEntities;
     }
 
     private void addListTempPrice(EntityManager em, List<CompanyFoodEntity> companyFoodEntities) {
@@ -108,7 +101,6 @@ public class CompanyFoodRepository {
         CompanyFoodEntity companyFoodDto = em.find(CompanyFoodEntity.class, foodId);
         CompanyFoodPriceEntity companyFoodPriceDto = new CompanyFoodPriceEntity(null, companyFoodDto,
             price, new Timestamp(System.currentTimeMillis()));
-
         em.persist(companyFoodPriceDto);
     }
 }

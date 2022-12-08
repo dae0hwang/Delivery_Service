@@ -3,6 +3,7 @@ package com.example.apideliveryservice.service;
 import static org.assertj.core.api.Assertions.*;
 
 import com.example.apideliveryservice.RepositoryResetHelper;
+import com.example.apideliveryservice.dto.CompanyMemberDto;
 import com.example.apideliveryservice.entity.CompanyMemberEntity;
 import com.example.apideliveryservice.dto.RequestCompanyMember;
 import com.example.apideliveryservice.exception.DuplicatedLoginNameException;
@@ -91,42 +92,40 @@ class CompanyMemberServiceTest {
     @DisplayName("모든 company member 찾기 test")
     void findAllMember() throws Exception {
         //given
-        CompanyMemberEntity companyMemberDto1 = new CompanyMemberEntity(null, "loginName1", "password",
+        CompanyMemberEntity companyMemberEntity1 = new CompanyMemberEntity(null, "loginName1", "password",
             "name", false, new Timestamp(System.currentTimeMillis()));
-        CompanyMemberEntity companyMemberDto2 = new CompanyMemberEntity(null, "loginName2", "password",
-            "name", false, new Timestamp(System.currentTimeMillis()));
-        CompanyMemberEntity companyMemberDto3 = new CompanyMemberEntity(null, "loginName3", "password",
+        CompanyMemberEntity companyMemberEntity2 = new CompanyMemberEntity(null, "loginName2", "password",
             "name", false, new Timestamp(System.currentTimeMillis()));
         tx.begin();
-        repository.save(em, companyMemberDto1);
-        repository.save(em, companyMemberDto2);
-        repository.save(em, companyMemberDto3);
+        repository.save(em, companyMemberEntity1);
+        repository.save(em, companyMemberEntity2);
         tx.commit();
-        List<CompanyMemberEntity> result = new ArrayList<>();
+        List<CompanyMemberDto> result = new ArrayList<>();
+        CompanyMemberDto companyMemberDto1 = new CompanyMemberDto(1l, "name", companyMemberEntity1.getCreatedAt());
+        CompanyMemberDto companyMemberDto2 = new CompanyMemberDto(2l, "name", companyMemberEntity2.getCreatedAt());
         result.add(companyMemberDto1);
         result.add(companyMemberDto2);
-        result.add(companyMemberDto3);
-
         //when
-        List<CompanyMemberEntity> expected = service.findAllMember();
+        List<CompanyMemberDto> expectedList = service.findAllMember();
 
         //then
-        assertThat(expected.toString()).isEqualTo(result.toString());
+        assertThat(expectedList).isEqualTo(result);
     }
 
     @Test
     @DisplayName("company member 찾기 test")
     void findMember1() throws Exception {
         //given
-        CompanyMemberEntity result = new CompanyMemberEntity(null, "loginName1", "password", "name",
+        CompanyMemberEntity saveMember = new CompanyMemberEntity(null, "loginName1", "password", "name",
             false, new Timestamp(System.currentTimeMillis()));
         tx.begin();
-        repository.save(em, result);
+        repository.save(em, saveMember);
         tx.commit();
+        CompanyMemberDto actual = new CompanyMemberDto(1l, "name", saveMember.getCreatedAt());
         //when
-        CompanyMemberEntity expected = service.findMember("1");
+        CompanyMemberDto findMember = service.findMember("1");
         //then
-        assertThat(expected.toString()).isEqualTo(result.toString());
+        assertThat(findMember).isEqualTo(actual);
     }
 
     @Test
