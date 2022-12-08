@@ -1,5 +1,7 @@
 server:
   port: 5510
+logging:
+  config: classpath:logback-console.xml
 
 ---
 
