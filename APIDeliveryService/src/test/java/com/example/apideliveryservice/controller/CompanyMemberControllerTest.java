@@ -30,7 +30,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 @SpringBootTest
 @Slf4j
-@ActiveProfiles("jpa-mysql")
+@ActiveProfiles("jpa-h2")
 class CompanyMemberControllerTest {
 
     @Value("${persistenceName:@null}")

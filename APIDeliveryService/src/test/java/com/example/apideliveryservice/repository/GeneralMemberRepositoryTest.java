@@ -1,6 +1,7 @@
 package com.example.apideliveryservice.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.example.apideliveryservice.RepositoryResetHelper;
 import com.example.apideliveryservice.entity.GeneralMemberEntity;
@@ -112,5 +113,17 @@ class GeneralMemberRepositoryTest {
         GeneralMemberEntity findMemberDto = findMember.orElse(null);
         //then
         assertThat(findMemberDto).isNull();
+    }
+
+    @Test
+    @DisplayName("로그인아이디로 찾기 결과 없을 때 Tset")
+    void findByLoginNameNoResult() {
+        //given
+
+        //when
+        Optional<GeneralMemberEntity> noExistLoginName = repository.findByLoginName(em,
+            "noExistLoginName");
+        //then
+        assertThat(noExistLoginName).isEqualTo(Optional.empty());
     }
 }
