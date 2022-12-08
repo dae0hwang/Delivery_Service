@@ -12,6 +12,6 @@ import lombok.NoArgsConstructor;
 public class ResponseOrderSuccess {
 
     private int status;
-    private List<PurchaseListEntity> purchaseList;
+    private List<GeneralMemberOrderDto> orderList;
     private List<FoodPriceSumDto> sumStatisticList;
 }

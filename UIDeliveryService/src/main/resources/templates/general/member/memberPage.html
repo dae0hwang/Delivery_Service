@@ -9,13 +9,6 @@
       let url = window.location.href;
       let id = url.replace('http://localhost:8080/delivery-service/general/member/list/', '');
 
-      // let addFoodFormUrl = 'http://localhost:8080/delivery-service/company/food/addFood/'+id;
-      // let addFoodBtn = document.getElementById('addFoodBtn');
-      // addFoodBtn.onclick =function () {
-      //   location.href = addFoodFormUrl;
-      // }
-
-
       //generalMember 정보 가져오기 name 적용하기
       let generalMemberInfo;
       axios({
@@ -84,9 +77,13 @@
         alert("서버에 문제가 있습니다. 잠시후 시도해 주세요.")
       });
 
-      //1개월 사용금액 a태그 href설정하기.
-      let aTag = document.getElementById("atag");
-      aTag.href = '/delivery-service/general/member/used/'+id
+      //주문목록리스트가기.
+      document.addEventListener('click', function (event) {
+        if (event.target.id != 'orderList') {
+          return;
+        }
+        location.href = '/delivery-service/general/member/order/' + id;
+      });
     };
   </script>
 
@@ -96,7 +93,7 @@
   <div>
     <h2 id="h2"></h2>
     <input type="button" value="돌아가기" onclick="location.href='/delivery-service/general/member/list'">
-    <a id="atag" >1개월 사용 금액 알아보기</a>
+    <input type="button" id="orderList" value="주문 내역 보기" >
   </div>
 
 
