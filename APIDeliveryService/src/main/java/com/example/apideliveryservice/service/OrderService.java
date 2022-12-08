@@ -1,5 +1,6 @@
 package com.example.apideliveryservice.service;
 
+import com.example.apideliveryservice.dto.GeneralMemberOrderDto;
 import com.example.apideliveryservice.entity.OrderDetailEntity;
 import com.example.apideliveryservice.repository.CompanyFoodRepository;
 import com.example.apideliveryservice.repository.OrderRepository;
@@ -32,6 +33,26 @@ public class OrderService {
             tx.begin();
             orderRepository.addOrder(em, generalId, orderDetailElementList);
             tx.commit();
+        } catch (Exception e) {
+            tx.rollback();
+            throw e;
+        } finally {
+            em.close();
+            emf.close();
+        }
+    }
+
+    public List<GeneralMemberOrderDto> findOrderListByGeneralId(Long generalId) {
+        EntityManagerFactory emf = Persistence.createEntityManagerFactory(persistenceName);
+        EntityManager em = emf.createEntityManager();
+        EntityTransaction tx = em.getTransaction();
+        try {
+            tx.begin();
+            List<GeneralMemberOrderDto> findOrderList =
+                orderRepository.findOrderListByGeneralId(
+                em, generalId);
+            tx.commit();
+            return findOrderList;
         } catch (Exception e) {
             tx.rollback();
             throw e;

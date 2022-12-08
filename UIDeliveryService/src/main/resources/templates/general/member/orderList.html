@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+        window.onload = function () {
+            // id 가져오기.
+            let url = window.location.href;
+            let id = url.replace('http://localhost:8080/delivery-service/general/member/order/', '');
+
+            //주문 내역 테이블 만들기.
+            const generalMemberOrderListAxios = axios({
+                url: "http://127.0.0.1:5510/api/delivery-service/order/member/order/list",
+                method: "get",
+                params: {'generalId': id}
+            });
+
+            const tableBodyElement = document.getElementById("tableBody");
+            const makeTable = (responseDataList)=>{
+                for (let i = 0; i < responseDataList.length; i++) {
+                    const date = responseDataList[i].registrationDate;
+                    const dateTextNode
+                        = document.createTextNode(date);
+                    const tdNode1 = document.createElement("td");
+                    tdNode1.appendChild(dateTextNode);
+
+                    const orderId = document.createTextNode(responseDataList[i].orderId);
+                    const tdNode2 = document.createElement("td");
+                    tdNode2.appendChild(orderId);
+
+                    const generalId = document.createTextNode(responseDataList[i].generalId);
+                    const tdNode3 = document.createElement("td");
+                    tdNode3.appendChild(generalId);
+
+                    const foodId = document.createTextNode(responseDataList[i].foodId);
+                    const tdNode4 = document.createElement("td");
+                    tdNode4.appendChild(foodId);
+
+                    const foodName = document.createTextNode(responseDataList[i].foodName);
+                    const tdNode5 = document.createElement("td");
+                    tdNode5.appendChild(foodName);
+
+                    const foodPrice = responseDataList[i].foodPrice.toString().replace(
+                        /\B(?=(\d{3})+(?!\d))/g, ',');
+                    const foodPriceNode = document.createTextNode(foodPrice);
+                    const tdNode6 = document.createElement("td");
+                    tdNode6.appendChild(foodPriceNode);
+
+                    const foodAmount = document.createTextNode(responseDataList[i].foodAmount);
+                    const tdNode7 = document.createElement("td");
+                    tdNode7.appendChild(foodAmount);
+
+                    const companyId = document.createTextNode(responseDataList[i].companyId);
+                    const tdNode8 = document.createElement("td");
+                    tdNode8.appendChild(companyId);
+
+                    let trNode = document.createElement("tr");
+                    trNode.appendChild(tdNode1);
+                    trNode.appendChild(tdNode2);
+                    trNode.appendChild(tdNode3);
+                    trNode.appendChild(tdNode4);
+                    trNode.appendChild(tdNode5);
+                    trNode.appendChild(tdNode6);
+                    trNode.appendChild(tdNode7);
+                    trNode.appendChild(tdNode8);
+                    tableBodyElement.appendChild(trNode);
+                }
+            }
+
+            generalMemberOrderListAxios
+            .then(response=>{
+                const orderList = response.data.orderList;
+                console.log(orderList)
+                makeTable(orderList);
+            })
+            .catch( error=>{
+                console.log(error);
+            })
+        }
+    </script>
+    <title>Document</title>
+</head>
+<body>
+    <h2>주문 목록 리스트</h2>
+    <table border="1">
+        <thead>
+        <tr>
+            <th>주문날짜</th>
+            <th>orderId</th>
+            <th>generalMemberId</th>
+            <th>foodId</th>
+            <th>foodName</th>
+            <th>foodPrice</th>
+            <th>foodAmount</th>
+            <th>companyId</th>
+        </tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+    </table>
+</body>
+</html>

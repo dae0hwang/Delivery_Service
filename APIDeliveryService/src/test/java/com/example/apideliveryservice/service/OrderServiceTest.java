@@ -3,8 +3,10 @@ package com.example.apideliveryservice.service;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.example.apideliveryservice.RepositoryResetHelper;
+import com.example.apideliveryservice.dto.GeneralMemberOrderDto;
 import com.example.apideliveryservice.entity.CompanyFoodEntity;
 import com.example.apideliveryservice.entity.OrderDetailEntity;
+import com.example.apideliveryservice.entity.OrderEntity;
 import com.example.apideliveryservice.repository.CompanyFoodRepository;
 import com.example.apideliveryservice.repository.OrderRepository;
 import java.math.BigDecimal;
@@ -19,6 +21,7 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -85,5 +88,44 @@ class OrderServiceTest {
         //then
         assertThat(findOrderDetailEntity1.getFoodAmount()).isEqualTo(3);
         assertThat(findOrderDetailEntity2.getFoodAmount()).isEqualTo(6);
+    }
+
+    @Test
+    @DisplayName("general member id별 주문 목록 list 찾기 Test")
+    void findOrderListByGeneralId() {
+        //given
+        tx.begin();
+        CompanyFoodEntity companyFoodEntity1 = new CompanyFoodEntity(null, 11l, "참치김밥",
+            new Timestamp(System.currentTimeMillis()), null);
+        companyFoodRepository.add(em, companyFoodEntity1, new BigDecimal("3000"));
+        CompanyFoodEntity companyFoodEntity2 = new CompanyFoodEntity(null, 11l, "고추김밥",
+            new Timestamp(System.currentTimeMillis()), null);
+        companyFoodRepository.add(em, companyFoodEntity2, new BigDecimal("4000"));
+        List<OrderDetailEntity> list = new ArrayList<>();
+        OrderDetailEntity orderDetailElement1 = new OrderDetailEntity(null, null, 11l, 1l, null, 3);
+        OrderDetailEntity orderDetailElement2 = new OrderDetailEntity(null, null, 11l, 2l, null, 6);
+        list.add(orderDetailElement1);
+        list.add(orderDetailElement2);
+        orderRepository.addOrder(em, 22l, list);
+        OrderEntity findOrderEntity = em.find(OrderEntity.class, 1l);
+        Timestamp registrationDate = findOrderEntity.getRegistrationDate();
+        tx.commit();
+
+        //when
+        List<GeneralMemberOrderDto> findOrderListByGeneralId = orderService.findOrderListByGeneralId(
+            22l);
+        List<GeneralMemberOrderDto> findOrderBlankList = orderService.findOrderListByGeneralId(44l);
+
+        List<GeneralMemberOrderDto> actualList = new ArrayList<>();
+        GeneralMemberOrderDto generalMemberOrderDto1 = new GeneralMemberOrderDto(registrationDate,
+            1l, 22l, 1l, "참치김밥", new BigDecimal("3000"), 3, 11l);
+        GeneralMemberOrderDto generalMemberOrderDto2 = new GeneralMemberOrderDto(registrationDate,
+            1l, 22l, 2l, "고추김밥", new BigDecimal("4000"), 6, 11l);
+        actualList.add(generalMemberOrderDto1);
+        actualList.add(generalMemberOrderDto2);
+
+        //then
+        assertThat(findOrderListByGeneralId).isEqualTo(actualList);
+        assertThat(findOrderBlankList).isEqualTo(new ArrayList<>());
     }
 }

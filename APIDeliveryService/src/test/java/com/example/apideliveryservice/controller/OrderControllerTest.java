@@ -1,16 +1,22 @@
 package com.example.apideliveryservice.controller;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.log;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.example.apideliveryservice.RepositoryResetHelper;
+import com.example.apideliveryservice.dto.GeneralMemberOrderDto;
 import com.example.apideliveryservice.dto.RequestOrder;
 import com.example.apideliveryservice.dto.ResponseOrderSuccess;
 import com.example.apideliveryservice.entity.CompanyFoodEntity;
+import com.example.apideliveryservice.entity.OrderDetailEntity;
+import com.example.apideliveryservice.entity.OrderEntity;
 import com.example.apideliveryservice.repository.CompanyFoodRepository;
+import com.example.apideliveryservice.repository.OrderRepository;
 import com.example.apideliveryservice.service.CompanyMemberService;
+import com.example.apideliveryservice.service.OrderService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.math.BigDecimal;
 import java.sql.Connection;
@@ -49,6 +55,10 @@ class OrderControllerTest {
     RepositoryResetHelper resetHelper;
     @Autowired
     CompanyMemberService service;
+    @Autowired
+    OrderRepository orderRepository;
+    @Autowired
+    OrderService orderService;
     Connection connection;
     MockMvc mockMvc;
     ObjectMapper objectMapper;
@@ -105,6 +115,41 @@ class OrderControllerTest {
         //then
         mockMvc.perform(post(url).contentType("application/json").content(requestJson))
             .andExpect(status().isCreated()).andExpect(content().json(responseContent))
+            .andDo(log());
+    }
+
+    @Test
+    @DisplayName("generalMemberId별 구매내역 Test")
+    void orderList() throws Exception {
+        //given
+        tx.begin();
+        CompanyFoodEntity companyFoodEntity1 = new CompanyFoodEntity(null, 11l, "참치김밥",
+            new Timestamp(System.currentTimeMillis()), null);
+        companyFoodRepository.add(em, companyFoodEntity1, new BigDecimal("3000"));
+        CompanyFoodEntity companyFoodEntity2 = new CompanyFoodEntity(null, 11l, "고추김밥",
+            new Timestamp(System.currentTimeMillis()), null);
+        companyFoodRepository.add(em, companyFoodEntity2, new BigDecimal("4000"));
+        List<OrderDetailEntity> list = new ArrayList<>();
+        OrderDetailEntity orderDetailElement1 = new OrderDetailEntity(null, null, 11l, 1l, null, 3);
+        OrderDetailEntity orderDetailElement2 = new OrderDetailEntity(null, null, 11l, 2l, null, 6);
+        list.add(orderDetailElement1);
+        list.add(orderDetailElement2);
+        orderRepository.addOrder(em, 22l, list);
+        OrderEntity findOrderEntity = em.find(OrderEntity.class, 1l);
+        Timestamp registrationDate = findOrderEntity.getRegistrationDate();
+        tx.commit();
+
+        String url = baseUrl + "/member/order/list";
+
+        List<GeneralMemberOrderDto> findOrderListByGeneralId = orderService.findOrderListByGeneralId(
+            22l);
+        ResponseOrderSuccess success = new ResponseOrderSuccess(201, findOrderListByGeneralId,
+            null);
+        String responseContent = objectMapper.writeValueAsString(success);
+        //when
+        //then
+        mockMvc.perform(get(url).param("generalId", "22"))
+            .andExpect(status().isOk()).andExpect(content().json(responseContent))
             .andDo(log());
     }
 }
