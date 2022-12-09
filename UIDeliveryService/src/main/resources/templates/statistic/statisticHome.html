@@ -9,9 +9,19 @@
 <p>
     <button th:text="'하루 단위 전체 가게 매출'" th:onclick="|location.href='@{/delivery-service/statistic/company/all/day}'|"></button>
 </p>
-<!--<p>-->
-<!--    <button th:text="'하루 단위 개별 가게 매출'" th:onclick="|location.href='@{/delivery-service/statistic/company/day}'|"></button>-->
-<!--</p>-->
+<p>
+    <button th:text="'한달 단위 전체 가게 매출'" th:onclick="|location.href='@{/delivery-service/statistic/company/all/month}'|"></button>
+</p>
+
+
+<p>
+    <button th:text="'가게 리스트'" th:onclick="|location.href='@{/delivery-service/statistic/company/id/list}'|"></button>
+</p>
+<p>
+    <button th:text="'회원 리스트'" th:onclick="|location.href='@{/delivery-service/statistic/general/id/list}'|"></button>
+</p>
+
+
 
 </body>
 </html>
