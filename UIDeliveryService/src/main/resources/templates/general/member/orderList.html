@@ -22,9 +22,9 @@
             const tableBodyElement = document.getElementById("tableBody");
             const makeTable = (responseDataList)=>{
                 for (let i = 0; i < responseDataList.length; i++) {
-                    const date = responseDataList[i].registrationDate;
                     const dateTextNode
-                        = document.createTextNode(date);
+                        = document.createTextNode(
+                        new Date(Date.parse(responseDataList[i].registrationDate)));
                     const tdNode1 = document.createElement("td");
                     tdNode1.appendChild(dateTextNode);
 
