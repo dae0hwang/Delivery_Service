@@ -8,6 +8,10 @@ import java.util.List;
 import java.util.Optional;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -36,21 +40,26 @@ public class CompanyFoodRepository {
         }
     }
 
+    //criteria적용
     public BigDecimal findPriceByFoodId(EntityManager em, Long foodId){
         CompanyFoodEntity companyFoodEntity = em.find(CompanyFoodEntity.class, foodId);
-        String jpql = "SELECT f FROM CompanyFoodPriceEntity f WHERE f.companyFood=:companyFood "
-            + "order by f.updateDate desc";
-        try {
-            CompanyFoodPriceEntity companyFoodPriceEntity = em.createQuery(jpql,
-                    CompanyFoodPriceEntity.class).setParameter("companyFood", companyFoodEntity)
-                .setMaxResults(1)
-                .getSingleResult();
-            BigDecimal findPrice = companyFoodPriceEntity.getPrice();
-            return findPrice;
-        } catch (NoResultException e) {
-            log.info("ex", e);
-            throw e;
-        }
+
+        CriteriaBuilder builder = em.getCriteriaBuilder();
+        CriteriaQuery<CompanyFoodPriceEntity> query = builder.createQuery(
+            CompanyFoodPriceEntity.class);
+        Root<CompanyFoodPriceEntity> root = query.from(CompanyFoodPriceEntity.class);
+
+//        Predicate companyFoodEqual = builder.equal(root.get("companyFood"), companyFoodEntity);
+//        Order updateDateDesc = builder.desc(root.get("updateDate"));
+
+        query.select(root).where(builder.equal(root.get("companyFood"), companyFoodEntity))
+            .orderBy(builder.desc(root.get("updateDate")));
+
+        TypedQuery<CompanyFoodPriceEntity> typedQuery = em.createQuery(query);
+        List<CompanyFoodPriceEntity> resultList = typedQuery.getResultList();
+        CompanyFoodPriceEntity companyFoodPriceEntity = resultList.stream().findFirst().get();
+        BigDecimal price = companyFoodPriceEntity.getPrice();
+        return price;
     }
 
     public List<CompanyFoodEntity> findAllFood(EntityManager em, Long id) {

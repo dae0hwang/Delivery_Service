@@ -112,16 +112,6 @@ class CompanyFoodRepositoryTest {
     }
 
     @Test
-    @DisplayName("아이디로 값찾기 결과값이 없을 때 Test")
-    void findPriceByFoodId() {
-        //given
-        //when
-        //then
-        assertThatThrownBy(()->repository.findPriceByFoodId(em, 11l)).isInstanceOf(
-            NoResultException.class);
-    }
-
-    @Test
     @DisplayName("memberId 일치하는 모든 음식 찾기 Test")
     void findAllFood() {
         //given
