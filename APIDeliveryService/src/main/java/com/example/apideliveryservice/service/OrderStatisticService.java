@@ -22,4 +22,39 @@ public class OrderStatisticService {
             return list;
         }
     }
+
+    public List<FoodPriceSumDto> companyAllOfMonth() throws SQLException {
+        try (Connection connection = orderStatisticRepository.connectHikariCp()){
+            List<FoodPriceSumDto> list = orderStatisticRepository.companyAllOfMonth(connection);
+            return list;
+        }
+    }
+
+    public List<FoodPriceSumDto> companyIdOfDay(Long companyMemberId) throws SQLException {
+        try (Connection connection = orderStatisticRepository.connectHikariCp()){
+            List<FoodPriceSumDto> list = orderStatisticRepository.companyIdOfDay(connection, companyMemberId);
+            return list;
+        }
+    }
+
+    public List<FoodPriceSumDto> companyIdOfMonth(Long companyMemberId) throws SQLException {
+        try (Connection connection = orderStatisticRepository.connectHikariCp()){
+            List<FoodPriceSumDto> list = orderStatisticRepository.companyIdOfMonth(connection, companyMemberId);
+            return list;
+        }
+    }
+
+    public List<FoodPriceSumDto> generalIdOfDay(Long generalMemberId) throws SQLException {
+        try (Connection connection = orderStatisticRepository.connectHikariCp()){
+            List<FoodPriceSumDto> list = orderStatisticRepository.generalIdOfDay(connection, generalMemberId);
+            return list;
+        }
+    }
+
+    public List<FoodPriceSumDto> generalIdOfMonth(Long generalMemberId) throws SQLException {
+        try (Connection connection = orderStatisticRepository.connectHikariCp()){
+            List<FoodPriceSumDto> list = orderStatisticRepository.generalIdOfMonth(connection, generalMemberId);
+            return list;
+        }
+    }
 }

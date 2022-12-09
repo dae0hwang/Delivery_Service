@@ -18,9 +18,40 @@ public class StatisticController {
         return "statistic/companyAllOfDay";
     }
 
-    @GetMapping("/company/day")
-    public String companyOfDay() {
-        return "statistic/companyOfDay";
+
+    @GetMapping("/company/all/month")
+    public String companyAllOfMonth() {
+        return "statistic/companyAllOfMonth";
+    }
+
+    @GetMapping("/company/id/list")
+    public String companyIdList() {
+        return "statistic/companyByIdList";
+    }
+
+    @GetMapping("/company/id/day/{companyId}")
+    public String companyIdOfDay() {
+        return "statistic/companyIdOfDay";
+    }
+
+    @GetMapping("/company/id/month/{companyId}")
+    public String companyIdOfMonth() {
+        return "statistic/companyIdOfMonth";
+    }
+
+    @GetMapping("/general/id/list")
+    public String generalIdList() {
+        return "statistic/generalByIdList";
+    }
+
+    @GetMapping("/general/id/day/{companyId}")
+    public String generalIdOfDay() {
+        return "statistic/generalIdOfDay";
+    }
+
+    @GetMapping("/general/id/month/{companyId}")
+    public String generalIdOfMonth() {
+        return "statistic/generalIdOfMonth";
     }
 }
 

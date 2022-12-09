@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+        window.onload = function () {
+            // id 가져오기.
+            let url = window.location.href;
+            let id = url.replace('http://localhost:8080/delivery-service/statistic/company/id/month/', '');
+            console.log("id"+id)
+
+            const companyAllOfDayAxios =  axios({
+                url: 'http://127.0.0.1:5510/api/delivery-service/statistic/company/id/month',
+                method: 'get',
+                params: {"companyId":id}
+
+            });
+            const tableBodyElement = document.getElementById("tableBody");
+            const makeTable = (sumStatisticList)=>{
+                for (let i = 0; i < sumStatisticList.length; i++) {
+                    const year = sumStatisticList[i].date.substring(0,4);
+                    const month = sumStatisticList[i].date.substring(4,6);
+                    const day = sumStatisticList[i].date.substring(6,8);
+                    const date = year + "년" + month + "월" + day + "일";
+
+                    const createdTextNode
+                        = document.createTextNode(date);
+                    const tdNode = document.createElement("td");
+                    tdNode.appendChild(createdTextNode);
+                    //한국 숫자 단위로 표현하기.
+                    const sum = sumStatisticList[i].sum.toString().replace(/\B(?=(\d{3})+(?!\d))/g,
+                        ',');
+                    const text = document.createTextNode(sum);
+                    const tdNode2 = document.createElement("td");
+                    tdNode2.appendChild(text)
+                    let trNode = document.createElement("tr");
+                    trNode.appendChild(tdNode);
+                    trNode.appendChild(tdNode2);
+                    tableBodyElement.appendChild(trNode);
+                }
+            }
+
+            companyAllOfDayAxios
+            .then(response=>{
+                console.log(response);
+                const sumStatisticList = response.data.sumStatisticList;
+                makeTable(sumStatisticList);
+            })
+            .catch(error=>{
+                console.log(error);
+            })
+
+            //상호 이름 넣어주기.
+            axios({
+                url:"http://127.0.0.1:5510/api/delivery-service/company/member/information",
+                method: "get",
+                params:{"memberId": id}
+            }).then(response=>{
+                const companyName = response.data.companyMemberDto.name;
+                document.getElementById("h2").appendChild(document.createTextNode(companyName+" 한달 단위 매출"))
+            })
+        };
+    </script>
+</head>
+<body>
+<h2 id="h2"></h2>
+<table border="1">
+    <thead>
+    <tr>
+        <th>날짜</th>
+        <th>매출금액</th>
+    </tr>
+    </thead>
+    <tbody id="tableBody">
+
+    </tbody>
+</table>
+</body>
+</html>
