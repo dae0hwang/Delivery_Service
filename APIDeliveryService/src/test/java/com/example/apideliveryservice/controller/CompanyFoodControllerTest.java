@@ -84,26 +84,26 @@ class CompanyFoodControllerTest {
         emf.close();
     }
 
-    @Test
-    @DisplayName("음식 등록 성공 Test")
-    void addFood1() throws Exception {
-        //given
-        String url = baseUrl + "/food/addFood";
-        RequestCompanyFood requestCompanyFoodDto = new RequestCompanyFood(
-            "1", "foodName", "3000");
-        String requestJson = objectMapper.writeValueAsString(requestCompanyFoodDto);
-        ResponseCompanyFoodSuccess success
-            = new ResponseCompanyFoodSuccess(201, null, null);
-        String responseContent = objectMapper.writeValueAsString(success);
-        //when
-        //then
-        mockMvc.perform(post(url)
-                .contentType("application/json")
-                .content(requestJson))
-            .andExpect(status().isCreated())
-            .andExpect(content().json(responseContent))
-            .andDo(log());
-    }
+//    @Test
+//    @DisplayName("음식 등록 성공 Test")
+//    void addFood1() throws Exception {
+//        //given
+//        String url = baseUrl + "/food/addFood";
+//        RequestCompanyFood requestCompanyFoodDto = new RequestCompanyFood(
+//            "1", "foodName", "3000");
+//        String requestJson = objectMapper.writeValueAsString(requestCompanyFoodDto);
+//        ResponseCompanyFoodSuccess success
+//            = new ResponseCompanyFoodSuccess(201, null, null);
+//        String responseContent = objectMapper.writeValueAsString(success);
+//        //when
+//        //then
+//        mockMvc.perform(post(url)
+//                .contentType("application/json")
+//                .content(requestJson))
+//            .andExpect(status().isCreated())
+//            .andExpect(content().json(responseContent))
+//            .andDo(log());
+//    }
 
 //    @Test
 //    @DisplayName("중복된 foodName(같은 memberId에서) 회원 가입 실패 Test")
