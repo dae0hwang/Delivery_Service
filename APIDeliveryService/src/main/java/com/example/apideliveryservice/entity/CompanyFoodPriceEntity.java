@@ -1,6 +1,5 @@
 package com.example.apideliveryservice.entity;
 
-import com.example.apideliveryservice.entity.CompanyFoodEntity;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import javax.persistence.Column;

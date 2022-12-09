@@ -4,10 +4,13 @@ import com.example.apideliveryservice.controller.CompanyFoodController;
 import com.example.apideliveryservice.exception.DuplicatedFoodNameException;
 import com.example.apideliveryservice.exception.ExceptionMessage;
 import com.example.apideliveryservice.exception.NonExistentFoodIdException;
+import com.fasterxml.jackson.databind.exc.InvalidFormatException;
+import java.sql.SQLIntegrityConstraintViolationException;
 import javax.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -82,4 +85,27 @@ public class CompanyFoodControllerExceptionAdvice {
         }
         return null;
     }
+//    @ExceptionHandler(SQLIntegrityConstraintViolationException.class)
+//    public void SQLIntegrityConstraintViolationException(SQLIntegrityConstraintViolationException e,
+//        HttpServletRequest request) {
+//        log.error("[exceptionHandle] ex 여기 들어옴", e);
+//        log.error(e.getMessage());
+//
+//    }
+//    @ExceptionHandler(HttpMessageNotReadableException.class)
+//    public void HttpMessageNotReadableException(HttpMessageNotReadableException e,
+//        HttpServletRequest request) {
+//        log.error("[exceptionHandle] ex 여기 들어옴", e);
+//        log.error(e.getMessage());
+//
+//    }
+//
+//    @ExceptionHandler(InvalidFormatException.class)
+//    public void HttpMessageNotReadableException(InvalidFormatException e,
+//        HttpServletRequest request) {
+//        log.error("[exceptionHandle] ex 여기 들어옴", e);
+//        log.error(e.getMessage());
+//
+//    }
+
 }
