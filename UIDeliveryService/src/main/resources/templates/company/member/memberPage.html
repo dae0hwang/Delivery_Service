@@ -41,6 +41,7 @@
 
     function makeTable(dataList) {
       for (i in dataList) {
+        console.log(dataList[i])
         let textNode1 = document.createTextNode(dataList[i].id);
         let tdNode1 = document.createElement("td");
         tdNode1.appendChild(textNode1)
@@ -50,7 +51,7 @@
         let textNode3 = document.createTextNode(dataList[i].name);
         let tdNode3 = document.createElement("td");
         tdNode3.appendChild(textNode3)
-        let textNode4 = document.createTextNode(dataList[i].tempPrice);
+        let textNode4 = document.createTextNode(dataList[i].price);
         let tdNode4 = document.createElement("td");
         tdNode4.appendChild(textNode4)
         let aNode = document.createElement("a");
