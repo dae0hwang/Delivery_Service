@@ -61,7 +61,7 @@
                 params:{"memberId": id}
             }).then(response=>{
                 const companyName = response.data.generalMemberDto.name;
-                document.getElementById("h2").appendChild(document.createTextNode(companyName+" 하루 단위 매출"))
+                document.getElementById("h2").appendChild(document.createTextNode(companyName+" 하루 단위 통계"))
             })
         };
     </script>
@@ -72,7 +72,7 @@
     <thead>
     <tr>
         <th>날짜</th>
-        <th>매출금액</th>
+        <th>구입금액</th>
     </tr>
     </thead>
     <tbody id="tableBody">

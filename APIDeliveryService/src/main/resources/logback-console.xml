@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<configuration scan="true" scanPeriod="30 seconds">
+<configuration scan="false" scanPeriod="10 seconds">
 
   <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
     <encoder>
       <pattern>[%d{yyyy-MM-dd HH:mm:ss}:%-4relative] %green([%thread]) %highlight(%-5level)
+        %logger{36}
         %boldWhite([%C.%M:%yellow(%L)]) - %msg%n</pattern>
     </encoder>
   </appender>
@@ -11,4 +12,7 @@
   <root level="info">
     <appender-ref ref="CONSOLE"/>
   </root>
+
+<!--  로거 네임작성해서 하는 것이다 위에 로거 -->
+  <logger name="org.hibernate" level="warn"/>
 </configuration>
