@@ -22,7 +22,7 @@
           tdNode3.appendChild(timeTextNode)
           let aNode = document.createElement("a");
           aNode.text="상세페이지"
-          aNode.href='http://localhost:8080/delivery-service/company/member/members/'+dataList[i].id
+          aNode.href='http://192.168.148.4:8080/delivery-service/company/member/members/'+dataList[i].id
           let tdNode4 = document.createElement("td");
           tdNode4.appendChild(aNode)
           let trNode = document.createElement("tr");
@@ -35,7 +35,7 @@
       }
 
       axios({
-        url: 'http://127.0.0.1:5510/api/delivery-service/company/member/allMember',
+        url: 'http://192.168.148.4:5510/api/delivery-service/company/member/allMember',
         method: 'get'
       })
       .then(function a(response) {

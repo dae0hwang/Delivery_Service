@@ -7,7 +7,7 @@
     window.onload = function () {
       //foodId
       let url = window.location.href;
-      let foodId = url.replace('http://localhost:8080/delivery-service/company/food/updatePrice/', '');
+      let foodId = url.replace('http://192.168.148.4:8080/delivery-service/company/food/updatePrice/', '');
 
       //취소버튼 이전 페이지
       let referrer = document.referrer;
@@ -20,7 +20,7 @@
       let idInput = document.getElementById("id");
       let foodInfo;
       axios({
-        url: 'http://127.0.0.1:5510/api/delivery-service/company/food/information',
+        url: 'http://192.168.148.4:5510/api/delivery-service/company/food/information',
         method: 'get',
         params: {
           foodId: foodId
@@ -40,7 +40,7 @@
 
       btnSubmit.onclick = function () {
         axios({
-          url: 'http://127.0.0.1:5510/api/delivery-service/company/food/update',
+          url: 'http://192.168.148.4:5510/api/delivery-service/company/food/update',
           method: 'put',
           data: {
             foodId: foodId,

@@ -7,12 +7,12 @@
     window.onload = function () {
       // id 가져오기.
       let url = window.location.href;
-      let id = url.replace('http://localhost:8080/delivery-service/general/member/list/', '');
+      let id = url.replace('http://192.168.148.4:8080/delivery-service/general/member/list/', '');
 
       //generalMember 정보 가져오기 name 적용하기
       let generalMemberInfo;
       axios({
-        url: 'http://127.0.0.1:5510/api/delivery-service/general/member/information',
+        url: 'http://192.168.148.4:5510/api/delivery-service/general/member/information',
         method: 'get',
         params: {
           memberId: id
@@ -45,7 +45,7 @@
           aNode.text = "음식주문페이지";
           //해당 generalmember id 해당 음식점 id 사용해서 음식주문 페이지 이동
           //아직 만들지 못함 구상해야함.
-          aNode.href = 'http://localhost:8080/delivery-service/general/member/purchase?generalMemberId='
+          aNode.href = 'http://192.168.148.4:8080/delivery-service/general/member/purchase?generalMemberId='
               +id+'&companyMemberId='+dataList[i].id
           let tdNode2 = document.createElement("td");
           tdNode2.appendChild(aNode)
@@ -59,7 +59,7 @@
 
       //모든 기업 정보 가져와서,
       axios({
-        url: 'http://127.0.0.1:5510/api/delivery-service/company/member/allMember',
+        url: 'http://192.168.148.4:5510/api/delivery-service/company/member/allMember',
         method: 'get',
       })
       .then(function (response) {
