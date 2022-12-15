@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 @RestController
 //@CrossOrigin(origins = "http://localhost:8080")
-@CrossOrigin(origins = "http://192.168.148.4:8080")
+//@CrossOrigin(origins = "http://192.168.148.4:8080")
 @RequestMapping("/api/delivery-service/statistic")
 @RequiredArgsConstructor
 public class OrderStatisticController {
