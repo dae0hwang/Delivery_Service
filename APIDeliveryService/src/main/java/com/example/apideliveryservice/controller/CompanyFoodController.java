@@ -23,7 +23,6 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 @RequiredArgsConstructor
 @RestController
-@CrossOrigin(origins = "http://localhost:8080")
 @RequestMapping("/api/delivery-service/company")
 public class CompanyFoodController {
 

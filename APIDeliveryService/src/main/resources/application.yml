@@ -11,9 +11,9 @@ spring:
       on-profile: jpa-mysql
 
 datasource:
-  url: "jdbc:mysql://localhost:3307/delivery_service"
-  username: "root"
-  password: "111111"
+  url: "jdbc:mysql://192.168.148.4:3306/delivery_service"
+  username: "hwang"
+  password: "5510"
 
 persistenceName: jpa-mysql
 
