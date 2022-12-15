@@ -1,9 +1,9 @@
 package com.example.apideliveryservice.repository;
 
 import com.example.apideliveryservice.dto.FoodPriceSumDto;
-import com.zaxxer.hikari.HikariDataSource;
 import java.math.BigDecimal;
 import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -27,12 +27,7 @@ public class OrderStatisticRepository {
     private String password;
 
     public Connection connectHikariCp() throws SQLException {
-        HikariDataSource dataSource = new HikariDataSource();
-        dataSource.setJdbcUrl(url);
-        dataSource.setUsername(username);
-        dataSource.setPassword(password);
-        dataSource.setMaximumPoolSize(10);
-        Connection connection = dataSource.getConnection();
+        Connection connection = DriverManager.getConnection(url, username, password);
         return connection;
     }
 
