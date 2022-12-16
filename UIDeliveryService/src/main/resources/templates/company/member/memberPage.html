@@ -19,7 +19,7 @@
     //음식 리스트 가져와 테이블 만들기.
 
       axios({
-        url: 'http://127.0.0.1:5510/api/delivery-service/company/member/information',
+        url: 'http://192.168.148.4:5510/api/delivery-service/company/member/information',
         method: 'get',
         params: {
           memberId: id
@@ -71,7 +71,7 @@
       }
 
       axios({
-        url: 'http://127.0.0.1:5510/api/delivery-service/company/food/allFood',
+        url: 'http://192.168.148.4:5510/api/delivery-service/company/food/allFood',
         method: 'get',
         params: {
           memberId: id
