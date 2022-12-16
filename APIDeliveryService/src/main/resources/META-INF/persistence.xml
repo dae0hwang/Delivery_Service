@@ -15,7 +15,7 @@
       <property name="javax.persistence.jdbc.user" value="hwang"/>
       <property name="javax.persistence.jdbc.password" value="5510"/>
       <property name="javax.persistence.jdbc.url"
-        value="jdbc:mysql://192.168.148.4:3306/delivery_service"/>
+        value="jdbc:mysql://192.168.100.1:3306/delivery_service"/>
       <property name="hibernate.dialect" value="org.hibernate.dialect.MySQL8Dialect"/>
       <property name="javax.persistence.provider" value="org.hibernate.jpa.HibernatePersistenceProvider"/>
       <property name="hibernate.hikari.minimumIdle" value="10"/>

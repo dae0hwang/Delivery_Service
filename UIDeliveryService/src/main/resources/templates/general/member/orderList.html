@@ -10,11 +10,11 @@
         window.onload = function () {
             // id 가져오기.
             let url = window.location.href;
-            let id = url.replace('http://localhost:8080/delivery-service/general/member/order/', '');
+            let id = url.replace('http://localhost:8081/delivery-service/general/member/order/', '');
 
             //주문 내역 테이블 만들기.
             const generalMemberOrderListAxios = axios({
-                url: "http://192.168.148.4:5510/api/delivery-service/order/member/order/list",
+                url: "http://192.168.100.1:5511/api/delivery-service/order/member/order/list",
                 method: "get",
                 params: {'generalId': id}
             });

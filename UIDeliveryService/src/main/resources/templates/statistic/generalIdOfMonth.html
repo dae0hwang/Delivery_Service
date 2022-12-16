@@ -11,10 +11,10 @@
         window.onload = function () {
             // id 가져오기.
             let url = window.location.href;
-            let id = url.replace('http://localhost:8080/delivery-service/statistic/general/id/month/', '');
+            let id = url.replace('http://localhost:8081/delivery-service/statistic/general/id/month/', '');
 
             const companyAllOfDayAxios =  axios({
-                url: 'http://192.168.148.4:5510/api/delivery-service/statistic/general/id/month',
+                url: 'http://192.168.100.1:5511/api/delivery-service/statistic/general/id/month',
                 method: 'get',
                 params: {"generalId":id}
 
@@ -55,7 +55,7 @@
 
             //회원 이름 넣어주기.
             axios({
-                url:"http://192.168.148.4:5510/api/delivery-service/general/member/information",
+                url:"http://192.168.100.1:5511/api/delivery-service/general/member/information",
                 method: "get",
                 params:{"memberId": id}
             }).then(response=>{
