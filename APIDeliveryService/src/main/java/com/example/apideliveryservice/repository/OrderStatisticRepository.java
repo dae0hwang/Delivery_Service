@@ -38,9 +38,8 @@ public class OrderStatisticRepository {
             + "       from order_list as a \n"
             + "       join order_detail_list as ad\n"
             + "       on a.id = ad.order_id\n"
-            + "       group by day(a.registration_date), month(a.registration_date), "
-            + "       year(a.registration_date)\n"
-            + "       order by 'date' desc";
+            + "       group by  date_format(a.registration_date, '%Y%m%d')\n"
+            + "       order by a.registration_date desc";
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             try (ResultSet resultSet = preparedStatement.executeQuery()){
                 while (resultSet.next()) {
@@ -61,8 +60,8 @@ public class OrderStatisticRepository {
             + "       from order_list as a \n"
             + "       join order_detail_list as ad\n"
             + "       on a.id = ad.order_id\n"
-            + "       group by  month(a.registration_date), year(a.registration_date)\n"
-            + "       order by 'date' desc";
+            + "       group by date_format(a.registration_date, '%Y%m')\n"
+            + "       order by a.registration_date desc";
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             try (ResultSet resultSet = preparedStatement.executeQuery()){
                 while (resultSet.next()) {
