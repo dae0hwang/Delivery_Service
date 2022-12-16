@@ -7,8 +7,8 @@
     window.onload = function () {
       //음식 등록 버튼 함수
       let url = window.location.href;
-      let id = url.replace('http://localhost:8080/delivery-service/company/member/members/', '');
-      let addFoodFormUrl = 'http://localhost:8080/delivery-service/company/food/addFood/'+id;
+      let id = url.replace('http://localhost:8081/delivery-service/company/member/members/', '');
+      let addFoodFormUrl = 'http://localhost:8081/delivery-service/company/food/addFood/'+id;
       let addFoodBtn = document.getElementById('addFoodBtn');
       addFoodBtn.onclick =function () {
         location.href = addFoodFormUrl;
@@ -19,7 +19,7 @@
     //음식 리스트 가져와 테이블 만들기.
 
       axios({
-        url: 'http://192.168.148.4:5510/api/delivery-service/company/member/information',
+        url: 'http://192.168.100.1:5511/api/delivery-service/company/member/information',
         method: 'get',
         params: {
           memberId: id
@@ -57,7 +57,7 @@
         let aNode = document.createElement("a");
         let textNode = document.createTextNode("가격수정페이지");
         aNode.appendChild(textNode)
-        aNode.href = 'http://localhost:8080/delivery-service/company/food/updatePrice/'+dataList[i].id;
+        aNode.href = 'http://localhost:8081/delivery-service/company/food/updatePrice/'+dataList[i].id;
         let tdNode5 = document.createElement("td");
         tdNode5.appendChild(aNode)
         let trNode = document.createElement("tr");
@@ -71,7 +71,7 @@
       }
 
       axios({
-        url: 'http://192.168.148.4:5510/api/delivery-service/company/food/allFood',
+        url: 'http://192.168.100.1:5511/api/delivery-service/company/food/allFood',
         method: 'get',
         params: {
           memberId: id

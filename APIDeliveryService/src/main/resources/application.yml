@@ -1,10 +1,10 @@
 server:
-  port: 5510
+  port: 5511
 logging:
   config: classpath:logback-console.xml
 
 datasource:
-  url: "jdbc:mysql://192.168.148.4:3306/delivery_service"
+  url: "jdbc:mysql://192.168.100.1:3306/delivery_service"
   username: "hwang"
   password: "5510"
 
@@ -19,7 +19,7 @@ spring:
       on-profile: jpa-mysql
 
 datasource:
-  url: "jdbc:mysql://192.168.148.4:3306/delivery_service"
+  url: "jdbc:mysql://192.168.100.1:3306/delivery_service"
   username: "hwang"
   password: "5510"
 

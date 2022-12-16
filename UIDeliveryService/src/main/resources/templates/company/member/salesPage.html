@@ -6,7 +6,7 @@
   <script>
     window.onload = function () {
       let url = window.location.href;
-      let memberId = url.replace('http://localhost:8080/delivery-service/company/member/sales/', '');
+      let memberId = url.replace('http://localhost:8081/delivery-service/company/member/sales/', '');
 
 
       //판매 내역 테이블 만드는 함수
@@ -45,7 +45,7 @@
       }
 
       axios({
-        url: 'http://192.168.148.4:5510/api/delivery-service/company/member/sales',
+        url: 'http://192.168.100.1:5511/api/delivery-service/company/member/sales',
         method: 'get',
         params: {
           companyMemberId: memberId
