@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "company_members")
+@Table(name = "company_member")
 public class CompanyMemberEntity {
 
     @Id
@@ -28,5 +28,5 @@ public class CompanyMemberEntity {
     @Column(name = "phone_verification")
     private Boolean phoneVerification;
     @Column(name = "registration_date")
-    private Timestamp createdAt;
+    private Timestamp registrationDate;
 }

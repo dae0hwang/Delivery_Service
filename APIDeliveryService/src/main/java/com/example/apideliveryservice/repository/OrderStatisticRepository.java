@@ -33,13 +33,13 @@ public class OrderStatisticRepository {
 
     public List<FoodPriceSumDto> companyAllOfDay(Connection connection) throws SQLException {
         List<FoodPriceSumDto> list = new ArrayList<>();
-        String sql = "select date_format(a.registration_date, '%Y%m%d') as 'date',\n"
-            + "       sum(ad.food_price*ad.food_amount) as sum\n"
-            + "       from order_list as a \n"
-            + "       join order_detail_list as ad\n"
-            + "       on a.id = ad.order_id\n"
-            + "       group by  date_format(a.registration_date, '%Y%m%d')\n"
-            + "       order by a.registration_date desc";
+        String sql = "select date_format(o.registration_date, '%Y%m%d') as 'date',\n"
+            + "       sum(od.food_price * od.food_amount) as sum\n"
+            + "       from orders as o \n"
+            + "       join order_detail as od\n"
+            + "       on o.id = od.order_id\n"
+            + "       group by  date_format(o.registration_date, '%Y%m%d')\n"
+            + "       order by o.registration_date desc";
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             try (ResultSet resultSet = preparedStatement.executeQuery()){
                 while (resultSet.next()) {
@@ -55,15 +55,42 @@ public class OrderStatisticRepository {
 
     public List<FoodPriceSumDto> companyAllOfMonth(Connection connection) throws SQLException {
         List<FoodPriceSumDto> list = new ArrayList<>();
-        String sql = "select date_format(a.registration_date, '%Y%m') as 'date',\n"
+        String sql = "select date_format(o.registration_date, '%Y%m') as 'date',\n"
+            + "       sum(od.food_price * od.food_amount) as sum\n"
+            + "       from orders as o \n"
+            + "       join order_detail_list as od\n"
+            + "       on o.id = od.order_id\n"
+            + "       group by date_format(o.registration_date, '%Y%m')\n"
+            + "       order by o.registration_date desc";
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            try (ResultSet resultSet = preparedStatement.executeQuery()){
+                while (resultSet.next()) {
+                    String date = resultSet.getString(1);
+                    BigDecimal sum = resultSet.getBigDecimal(2);
+                    FoodPriceSumDto foodPriceSumDto = new FoodPriceSumDto(date, sum);
+                    list.add(foodPriceSumDto);
+                }
+            }
+            return list;
+        }
+    }
+
+    //일단 스키마 정리부터하기ㅣ
+   //전부 보내기
+    public List<FoodPriceSumDto> companyIdOfDayTemp(Connection connection, Long companyMemberId)
+        throws SQLException {
+        List<FoodPriceSumDto> list = new ArrayList<>();
+        String sql = "select date_format(a.registration_date, '%Y%m%d') as 'date',\n"
             + "       sum(ad.food_price*ad.food_amount) as sum\n"
             + "       from order_list as a \n"
             + "       join order_detail_list as ad\n"
             + "       on a.id = ad.order_id\n"
-            + "       group by date_format(a.registration_date, '%Y%m')\n"
+            + "       and ad.company_id=?\n"
+            + "       group by date_format(a.registration_date, '%Y%m%d')\n"
             + "       order by a.registration_date desc";
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-            try (ResultSet resultSet = preparedStatement.executeQuery()){
+            preparedStatement.setLong(1, companyMemberId);
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 while (resultSet.next()) {
                     String date = resultSet.getString(1);
                     BigDecimal sum = resultSet.getBigDecimal(2);

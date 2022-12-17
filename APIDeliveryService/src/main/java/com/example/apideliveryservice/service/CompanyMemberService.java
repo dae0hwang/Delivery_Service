@@ -118,14 +118,14 @@ public class CompanyMemberService {
 
     private CompanyMemberDto changeMemberEntityToDto(CompanyMemberEntity memberEntity) {
         CompanyMemberDto memberDto = new CompanyMemberDto(memberEntity.getId(),
-            memberEntity.getName(), memberEntity.getCreatedAt());
+            memberEntity.getName(), memberEntity.getRegistrationDate());
         return memberDto;
     }
 
     private List<CompanyMemberDto> changeMemberEntityListToDtoList(
         List<CompanyMemberEntity> memberEntityList) {
         List<CompanyMemberDto> memberDtoList = memberEntityList.stream()
-            .map(m -> new CompanyMemberDto(m.getId(), m.getName(), m.getCreatedAt())).collect(Collectors.toList());
+            .map(m -> new CompanyMemberDto(m.getId(), m.getName(), m.getRegistrationDate())).collect(Collectors.toList());
         return memberDtoList;
     }
 }

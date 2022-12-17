@@ -25,8 +25,8 @@ public class CompanyFoodPriceEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @ManyToOne
-    @JoinColumn(name = "food_id")
-    private CompanyFoodEntity companyFood;
+    @JoinColumn(name = "company_food_id")
+    private CompanyFoodEntity companyFoodEntity;
     private BigDecimal price;
     @Column(name = "update_date")
     private Timestamp updateDate;

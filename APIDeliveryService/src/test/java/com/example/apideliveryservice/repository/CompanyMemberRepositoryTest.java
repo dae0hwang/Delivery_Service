@@ -26,7 +26,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
 @SpringBootTest
-@ActiveProfiles("jpa-h2")
+@ActiveProfiles("jpa-test")
 @Slf4j
 class CompanyMemberRepositoryTest {
 
@@ -60,7 +60,7 @@ class CompanyMemberRepositoryTest {
 
     @Test
     @DisplayName("save and findByLonginName Test")
-    void save() throws Exception {
+    void save() {
         //given
         CompanyMemberEntity companyMemberDto = new CompanyMemberEntity(null, "loginName", "password",
             "name", false, new Timestamp(System.currentTimeMillis()));

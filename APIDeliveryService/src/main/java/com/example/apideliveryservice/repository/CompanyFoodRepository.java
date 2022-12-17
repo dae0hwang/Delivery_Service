@@ -2,6 +2,7 @@ package com.example.apideliveryservice.repository;
 
 import com.example.apideliveryservice.entity.CompanyFoodEntity;
 import com.example.apideliveryservice.entity.CompanyFoodPriceEntity;
+import com.example.apideliveryservice.entity.CompanyMemberEntity;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.List;
@@ -28,10 +29,11 @@ public class CompanyFoodRepository {
 
     public Optional<CompanyFoodEntity> findByNameAndMemberId(EntityManager em, Long memberId,
         String findName) {
-        String jpql = "SELECT f FROM CompanyFoodEntity f WHERE f.name=:name AND f.memberId=:memberId";
+        CompanyMemberEntity findCompanyMember = em.find(CompanyMemberEntity.class, memberId);
+        String jpql = "SELECT f FROM CompanyFoodEntity f WHERE f.name=:name AND f.companyMemberEntity=:compnayMemberEntity";
         try {
             CompanyFoodEntity findCompanyFood = em.createQuery(jpql, CompanyFoodEntity.class)
-                .setParameter("name", findName).setParameter("memberId", memberId)
+                .setParameter("name", findName).setParameter("compnayMemberEntity", findCompanyMember)
                 .getSingleResult();
             return Optional.ofNullable(findCompanyFood);
         } catch (NoResultException e) {
@@ -52,7 +54,7 @@ public class CompanyFoodRepository {
 //        Predicate companyFoodEqual = builder.equal(root.get("companyFood"), companyFoodEntity);
 //        Order updateDateDesc = builder.desc(root.get("updateDate"));
 
-        query.select(root).where(builder.equal(root.get("companyFood"), companyFoodEntity))
+        query.select(root).where(builder.equal(root.get("companyFoodEntity"), companyFoodEntity))
             .orderBy(builder.desc(root.get("updateDate")));
 
         TypedQuery<CompanyFoodPriceEntity> typedQuery = em.createQuery(query);
@@ -62,10 +64,11 @@ public class CompanyFoodRepository {
         return price;
     }
 
-    public List<CompanyFoodEntity> findAllFood(EntityManager em, Long id) {
-        String jpql = "SELECT f FROM CompanyFoodEntity f WHERE f.memberId=:memberId";
+    public List<CompanyFoodEntity> findAllFood(EntityManager em, Long companyMemberId) {
+        CompanyMemberEntity findCompanyMember = em.find(CompanyMemberEntity.class, companyMemberId);
+        String jpql = "SELECT f FROM CompanyFoodEntity f WHERE f.companyMemberEntity=:companyMemberEntity";
         List<CompanyFoodEntity> companyFoodEntities = em.createQuery(jpql, CompanyFoodEntity.class)
-            .setParameter("memberId", id).getResultList();
+            .setParameter("companyMemberEntity", findCompanyMember).getResultList();
         addListTempPrice(em, companyFoodEntities);
         return companyFoodEntities;
     }
@@ -73,13 +76,13 @@ public class CompanyFoodRepository {
     private void addListTempPrice(EntityManager em, List<CompanyFoodEntity> companyFoodEntities) {
         companyFoodEntities.replaceAll(companyFoodEntity -> {
             String jpql = "select p from CompanyFoodPriceEntity p "
-                + "where p.companyFood=:companyFood order by p.updateDate desc";
+                + "where p.companyFoodEntity=:companyFood order by p.updateDate desc";
             List<CompanyFoodPriceEntity> companyFoodPriceEntities = em.createQuery(jpql,
                     CompanyFoodPriceEntity.class).setParameter("companyFood", companyFoodEntity)
                 .getResultList();
             CompanyFoodPriceEntity companyFoodPriceEntity = companyFoodPriceEntities.stream().findFirst()
                 .get();
-            return new CompanyFoodEntity(companyFoodEntity.getId(), companyFoodEntity.getMemberId(),
+            return new CompanyFoodEntity(companyFoodEntity.getId(), companyFoodEntity.getCompanyMemberEntity(),
                 companyFoodEntity.getName(), companyFoodEntity.getRegistrationDate(),
                 companyFoodPriceEntity.getPrice());
         });
@@ -96,12 +99,12 @@ public class CompanyFoodRepository {
 
     private CompanyFoodEntity addTempPrice(EntityManager em, CompanyFoodEntity companyFoodDto) {
         String foodPriceDtoJpql = "select p from CompanyFoodPriceEntity p "
-            + "where p.companyFood=:companyFood order by p.updateDate desc";
+            + "where p.companyFoodEntity=:companyFood order by p.updateDate desc";
         List<CompanyFoodPriceEntity> companyFoodPriceDtoList = em.createQuery(foodPriceDtoJpql,
             CompanyFoodPriceEntity.class).setParameter("companyFood", companyFoodDto).getResultList();
         CompanyFoodPriceEntity foodPriceDto = companyFoodPriceDtoList.stream().findFirst()
             .get();
-        return new CompanyFoodEntity(companyFoodDto.getId(), companyFoodDto.getMemberId(),
+        return new CompanyFoodEntity(companyFoodDto.getId(), companyFoodDto.getCompanyMemberEntity(),
             companyFoodDto.getName(), companyFoodDto.getRegistrationDate(),
             foodPriceDto.getPrice());
     }

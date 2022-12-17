@@ -1,7 +1,6 @@
 package com.example.apideliveryservice.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.example.apideliveryservice.RepositoryResetHelper;
 import com.example.apideliveryservice.entity.GeneralMemberEntity;
@@ -27,7 +26,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
 @SpringBootTest
-@ActiveProfiles("jpa-h2")
+@ActiveProfiles("jpa-test")
 @Slf4j
 class GeneralMemberRepositoryTest {
 
@@ -116,7 +115,7 @@ class GeneralMemberRepositoryTest {
     }
 
     @Test
-    @DisplayName("로그인아이디로 찾기 결과 없을 때 Tset")
+    @DisplayName("로그인아이디로 찾기 결과 없을 때 Test")
     void findByLoginNameNoResult() {
         //given
 

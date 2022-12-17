@@ -118,14 +118,16 @@ public class GeneralMemberService {
 
     private GeneralMemberDto changeMemberEntityToDto(GeneralMemberEntity memberEntity) {
         GeneralMemberDto memberDto = new GeneralMemberDto(memberEntity.getId(),
-            memberEntity.getLoginName(), memberEntity.getName(), memberEntity.getCreatedAt());
+            memberEntity.getLoginName(), memberEntity.getName(),
+            memberEntity.getRegistrationDate());
         return memberDto;
     }
 
-    private List<GeneralMemberDto> changeAllMemberEntityToDto(List<GeneralMemberEntity> allMemberEntity) {
+    private List<GeneralMemberDto> changeAllMemberEntityToDto(
+        List<GeneralMemberEntity> allMemberEntity) {
         List<GeneralMemberDto> allMemberDto = allMemberEntity.stream().map(
             m -> new GeneralMemberDto(m.getId(), m.getLoginName(), m.getName(),
-                m.getCreatedAt())).collect(Collectors.toList());
+                m.getRegistrationDate())).collect(Collectors.toList());
         return allMemberDto;
     }
 }

@@ -16,21 +16,7 @@ persistenceName: jpa-mysql
 spring:
   config:
     activate:
-      on-profile: jpa-mysql
-
-datasource:
-  url: "jdbc:mysql://192.168.100.1:3306/delivery_service"
-  username: "hwang"
-  password: "5510"
-
-persistenceName: jpa-mysql
-
----
-
-spring:
-  config:
-    activate:
-      on-profile: jpa-h2
+      on-profile: jpa-test
   datasource:
     driver-class-name: org.h2.Driver
     url: jdbc:h2:mem:test;MODE=MYSQL
@@ -45,10 +31,11 @@ datasource:
 persistenceName: jpa-test
 
 ---
+
 spring:
   config:
     activate:
-      on-profile: test
+      on-profile: console-test
 
 
 datasource:
@@ -56,5 +43,4 @@ datasource:
   username: sa
   password:
 
-
-persistenceName: test
+persistenceName: console-test
