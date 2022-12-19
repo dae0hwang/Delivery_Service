@@ -3,8 +3,11 @@
 <head>
   <meta charset="utf-8">
   <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-  <script>
+  <script th:inline="javascript">
     window.onload = function () {
+      let apiUrl = [[${@environment.getProperty('url.api')}]];
+      let uiUrl = [[${@environment.getProperty('url.ui')}]];
+
       let txtId = document.getElementById("id");
       let txtPassword = document.getElementById("password");
       let txtName = document.getElementById("name");
@@ -12,7 +15,7 @@
 
       btnSubmit.onclick = function () {
         axios({
-          url: 'http://192.168.100.1:5511/api/delivery-service/general/member/join',
+          url: "http://"+apiUrl+"/api/delivery-service/general/member/join",
           method: 'post',
           data: {
             loginName: txtId.value,
@@ -24,7 +27,7 @@
           let status = response.status;
           if (status == 201) {
             alert("회원가입에 성공하였습니다.");
-            window.location.href="http://localhost:8081/delivery-service";
+            window.location.href="http://"+uiUrl+"/delivery-service";
           }
         })
         .catch(function (error) {

@@ -3,11 +3,14 @@
 <head>
   <meta charset="utf-8">
   <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-  <script>
+  <script th:inline="javascript">
     window.onload = function () {
+      let apiUrl = [[${@environment.getProperty('url.api')}]];
+      let uiUrl = [[${@environment.getProperty('url.ui')}]];
+
       //foodId
       let url = window.location.href;
-      let foodId = url.replace('http://localhost:8081/delivery-service/company/food/updatePrice/', '');
+      let foodId = url.replace("http://"+uiUrl+"/delivery-service/company/food/updatePrice/", "");
 
       //취소버튼 이전 페이지
       let referrer = document.referrer;
@@ -20,7 +23,7 @@
       let idInput = document.getElementById("id");
       let foodInfo;
       axios({
-        url: 'http://192.168.100.1:5511/api/delivery-service/company/food/information',
+        url: "http://"+apiUrl+"/api/delivery-service/company/food/information",
         method: 'get',
         params: {
           foodId: foodId
@@ -40,7 +43,7 @@
 
       btnSubmit.onclick = function () {
         axios({
-          url: 'http://192.168.100.1:5511/api/delivery-service/company/food/update',
+          url: "http://"+apiUrl+"/api/delivery-service/company/food/update",
           method: 'put',
           data: {
             foodId: foodId,

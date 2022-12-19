@@ -3,8 +3,11 @@
 <head>
     <meta charset="utf-8">
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-    <script>
+    <script th:inline="javascript">
         window.onload = async function () {
+            let apiUrl = [[${@environment.getProperty('url.api')}]];
+            let uiUrl = [[${@environment.getProperty('url.ui')}]];
+
             //requestParam 가져오기 함수
             function getParam(sname) {
                 var params = location.search.substr(location.search.indexOf("?") + 1);
@@ -27,7 +30,7 @@
             //제네럴멤버 h2 나타내기
             let generalH2 = document.getElementById("generalH2");
             axios({
-                url: 'http://192.168.100.1:5511/api/delivery-service/general/member/information',
+                url: "http://"+apiUrl+"/api/delivery-service/general/member/information",
                 method: 'get',
                 params: {
                     memberId: generalMemberId
@@ -47,7 +50,7 @@
             //컴패니멤버 h2 나타내기
             let companyH2 = document.getElementById("companyH2");
             axios({
-                url: 'http://192.168.100.1:5511/api/delivery-service/company/member/information',
+                url: "http://"+apiUrl+"/api/delivery-service/company/member/information",
                 method: 'get',
                 params: {
                     memberId: companyMemberId
@@ -65,7 +68,7 @@
 
             //foodList
             const data = await axios.get(
-                'http://192.168.100.1:5511/api/delivery-service/company/food/allFood',
+                "http://"+apiUrl+"/api/delivery-service/company/food/allFood",
                 {params: {memberId: companyMemberId}})
             const dataList = data.data.list;
             console.log(data)
@@ -120,7 +123,7 @@
             //음식주문 함수
             function purchaseFunction(list) {
                 axios({
-                    url: 'http://192.168.100.1:5511/api/delivery-service/order/member/order',
+                    url: "http://"+apiUrl+"/api/delivery-service/order/member/order",
                     method: 'post',
                     data: list
                 })

@@ -3,14 +3,17 @@
 <head>
   <meta charset="UTF-8">
   <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-  <script>
+  <script th:inline="javascript">
     window.onload = function () {
+      let apiUrl = [[${@environment.getProperty('url.api')}]];
+      let uiUrl = [[${@environment.getProperty('url.ui')}]];
+
       //취소버튼 함수
       let url = window.location.href;
-      let id = url.replace("http://localhost:8081/delivery-service/company/food/addFood/", "");
+      let id = url.replace("http://"+uiUrl+"/delivery-service/company/food/addFood/", "");
       var cancelBtn = document.getElementById('cancel');
       cancelBtn.onclick = function () {
-        location.href = "http://localhost:8081/delivery-service/company/member/members/" + id;
+        location.href = "http://"+uiUrl+"/delivery-service/company/member/members/" + id;
       }
 
       //음식등록 함수
@@ -19,7 +22,7 @@
       let btnSubmit = document.getElementById("submit");
       btnSubmit.onclick = function () {
         axios({
-          url: 'http://192.168.100.1:5511/api/delivery-service/company/food/addFood',
+          url: "http://"+apiUrl+"/api/delivery-service/company/food/addFood",
           method: 'post',
           data: {
             memberId: id,
@@ -31,7 +34,7 @@
           let status = response.status;
           if (status == 201) {
             alert("음식등록에 성공했습니다.");
-            window.location.href = "http://localhost:8081/delivery-service/company/member/members/" + id;
+            window.location.href = "http://"+uiUrl+"/delivery-service/company/member/members/" + id;
           }
         })
         .catch(function (error) {
