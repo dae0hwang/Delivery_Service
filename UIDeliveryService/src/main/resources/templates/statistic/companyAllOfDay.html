@@ -4,10 +4,13 @@
     <meta charset="UTF-8">
     <title>Title</title>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-    <script>
+    <script th:inline="javascript">
         window.onload = function () {
+            let apiUrl = [[${@environment.getProperty('url.api')}]];
+            let uiUrl = [[${@environment.getProperty('url.ui')}]];
+
             const companyAllOfDayAxios =  axios({
-                url: 'http://192.168.100.1:5511/api/delivery-service/statistic/company/all/day',
+                url: "http://"+apiUrl+"/api/delivery-service/statistic/company/all/day",
                 method: 'get'
             });
             const tableBodyElement = document.getElementById("tableBody");

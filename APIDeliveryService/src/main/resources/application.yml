@@ -1,5 +1,3 @@
-server:
-  port: 5511
 logging:
   config: classpath:logback-console.xml
 
@@ -11,6 +9,21 @@ datasource:
 persistenceName: jpa-mysql
 
 
+---
+spring:
+  config:
+    activate:
+      on-profile: local
+server:
+  port: 5510
+---
+
+spring:
+  config:
+    activate:
+      on-profile: server
+server:
+  port: 5511
 ---
 
 spring:

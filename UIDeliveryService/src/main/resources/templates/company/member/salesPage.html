@@ -3,10 +3,13 @@
 <head>
   <meta charset="utf-8">
   <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-  <script>
+  <script th:inline="javascript">
     window.onload = function () {
+      let apiUrl = [[${@environment.getProperty('url.api')}]];
+      let uiUrl = [[${@environment.getProperty('url.ui')}]];
+
       let url = window.location.href;
-      let memberId = url.replace('http://localhost:8081/delivery-service/company/member/sales/', '');
+      let memberId = url.replace("http://"+uiUrl+"/delivery-service/company/member/sales/", "");
 
 
       //판매 내역 테이블 만드는 함수
@@ -45,7 +48,7 @@
       }
 
       axios({
-        url: 'http://192.168.100.1:5511/api/delivery-service/company/member/sales',
+        url: "http://"+apiUrl+"/api/delivery-service/company/member/sales",
         method: 'get',
         params: {
           companyMemberId: memberId
