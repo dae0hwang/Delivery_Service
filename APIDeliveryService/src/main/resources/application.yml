@@ -16,6 +16,9 @@ spring:
       on-profile: local
 server:
   port: 5510
+
+url:
+  ui: 127.0.0.1:8080
 ---
 
 spring:
@@ -24,6 +27,9 @@ spring:
       on-profile: server
 server:
   port: 5511
+
+url:
+  ui: 127.0.0.1:8081
 ---
 
 spring:
