@@ -30,8 +30,8 @@ spring:
 server:
   port: 5511
 url:
-  api: 127.0.0.1:5510
-  ui: 127.0.0.1.8080
+  api: 127.0.0.1:5511
+  ui: 127.0.0.1.8081
 ---
 
 spring:
@@ -43,9 +43,9 @@ spring:
     username: sa
     password:
     driver-class-name: org.h2.Driver
-  jpa:
-    hibernate:
-      ddl-auto: create
+#  jpa:
+#    hibernate:
+#      ddl-auto: create
 
 ---
 
@@ -58,6 +58,6 @@ spring:
     username: sa
     password:
     driver-class-name: org.h2.Driver
-  jpa:
-    hibernate:
-      ddl-auto: create
+#  jpa:
+#    hibernate:
+#      ddl-auto: create
