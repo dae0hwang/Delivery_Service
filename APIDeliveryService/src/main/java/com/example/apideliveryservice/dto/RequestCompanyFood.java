@@ -12,8 +12,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class RequestCompanyFood {
 
-    @NotBlank(message = ExceptionMessage.RequestCompanyFoodDtoMemberId)
-    private String memberId;
+    private Long memberId;
     @NotBlank(message = ExceptionMessage.RequestCompanyFoodDtoName)
     private String name;
     private BigDecimal price;

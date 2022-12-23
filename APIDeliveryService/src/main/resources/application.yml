@@ -1,72 +1,63 @@
 logging:
   config: classpath:logback-console.xml
-
-datasource:
-  url: "jdbc:mysql://192.168.100.1:3306/delivery_service"
-  username: "hwang"
-  password: "5510"
-
-persistenceName: jpa-mysql
 ---
 
 spring:
   config:
     activate:
       on-profile: local
+  datasource:
+    url: jdbc:mysql://192.168.100.1:3306/delivery_service_temp
+    username: hwang
+    password: 5510
+    driver-class-name: com.mysql.cj.jdbc.Driver
 server:
   port: 5510
+url:
+  api: 127.0.0.1:5510
+  ui: 127.0.0.1.8080
 ---
 
 spring:
   config:
     activate:
       on-profile: server
+  datasource:
+    url: jdbc:mysql://192.168.100.1:3306/delivery_service
+    username: hwang
+    password: 5510
+    driver-class-name: com.mysql.cj.jdbc.Driver
 server:
   port: 5511
+url:
+  api: 127.0.0.1:5510
+  ui: 127.0.0.1.8080
 ---
 
-spring:
-  config:
-    activate:
-      on-profile: jpa-mysql
-
-datasource:
-  url: "jdbc:mysql://192.168.100.1:3306/delivery_service"
-  username: "hwang"
-  password: "5510"
-
-persistenceName: jpa-mysql
-
----
-
-spring:
-  config:
-    activate:
-      on-profile: jpa-h2
-  datasource:
-    driver-class-name: org.h2.Driver
-    url: jdbc:h2:mem:test;MODE=MYSQL
-    username: sa
-    password:
-
-datasource:
-  url: jdbc:h2:mem:test;MODE=MySQL
-  username: sa
-  password:
-
-persistenceName: jpa-test
-
----
 spring:
   config:
     activate:
       on-profile: test
+  datasource:
+    url: jdbc:h2:mem:test;MODE=MYSQL
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+  jpa:
+    hibernate:
+      ddl-auto: create
 
+---
 
-datasource:
-  url: jdbc:h2:tcp://localhost/~/test
-  username: sa
-  password:
-
-
-persistenceName: test
+spring:
+  config:
+    activate:
+      on-profile: h2
+  datasource:
+    url:  jdbc:h2:tcp://localhost/~/datajpa
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+  jpa:
+    hibernate:
+      ddl-auto: create

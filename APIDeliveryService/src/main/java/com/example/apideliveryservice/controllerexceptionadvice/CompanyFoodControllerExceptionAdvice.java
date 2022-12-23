@@ -85,27 +85,27 @@ public class CompanyFoodControllerExceptionAdvice {
         }
         return null;
     }
-//    @ExceptionHandler(SQLIntegrityConstraintViolationException.class)
-//    public void SQLIntegrityConstraintViolationException(SQLIntegrityConstraintViolationException e,
-//        HttpServletRequest request) {
-//        log.error("[exceptionHandle] ex 여기 들어옴", e);
-//        log.error(e.getMessage());
-//
-//    }
-//    @ExceptionHandler(HttpMessageNotReadableException.class)
-//    public void HttpMessageNotReadableException(HttpMessageNotReadableException e,
-//        HttpServletRequest request) {
-//        log.error("[exceptionHandle] ex 여기 들어옴", e);
-//        log.error(e.getMessage());
-//
-//    }
-//
-//    @ExceptionHandler(InvalidFormatException.class)
-//    public void HttpMessageNotReadableException(InvalidFormatException e,
-//        HttpServletRequest request) {
-//        log.error("[exceptionHandle] ex 여기 들어옴", e);
-//        log.error(e.getMessage());
-//
-//    }
+    @ExceptionHandler(SQLIntegrityConstraintViolationException.class)
+    public void SQLIntegrityConstraintViolationException(SQLIntegrityConstraintViolationException e,
+        HttpServletRequest request) {
+        log.error("[exceptionHandle] ex 여기 들어옴", e);
+        log.error(e.getMessage());
+
+    }
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public void HttpMessageNotReadableException(HttpMessageNotReadableException e,
+        HttpServletRequest request) {
+        log.error("[exceptionHandle] ex 여기 들어옴", e);
+        log.error(e.getMessage());
+
+    }
+
+    @ExceptionHandler(InvalidFormatException.class)
+    public void HttpMessageNotReadableException(InvalidFormatException e,
+        HttpServletRequest request) {
+        log.error("[exceptionHandle] ex 여기 들어옴", e);
+        log.error(e.getMessage());
+
+    }
 
 }

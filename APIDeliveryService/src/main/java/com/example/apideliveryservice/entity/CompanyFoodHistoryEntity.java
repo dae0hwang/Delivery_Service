@@ -13,34 +13,30 @@ import javax.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import lombok.ToString;
 
 @Getter
-@Setter
 @ToString
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
-@Table(name = "company_food")
-public class CompanyFoodEntity {
+@Table(name = "company_food_history")
+public class CompanyFoodHistoryEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @ManyToOne
-    @JoinColumn(name = "company_member_id", nullable = false)
-    private CompanyMemberEntity companyMemberEntity;
-    @Column(nullable = false)
-    private String name;
+    @JoinColumn(name = "company_food_id", nullable = false)
+    private CompanyFoodEntity companyFoodEntity;
     @Column(nullable = false)
     private BigDecimal price;
-    @Column(name = "registration_date", nullable = false)
-    private Timestamp registrationDate;
+    @Column(nullable = false)
+    private Timestamp updateDate;
 
-    public CompanyFoodEntity(CompanyMemberEntity companyMemberEntity, String name, BigDecimal price, Timestamp registrationDate) {
-        this.companyMemberEntity = companyMemberEntity;
-        this.name = name;
+    public CompanyFoodHistoryEntity(CompanyFoodEntity companyFoodEntity, BigDecimal price,
+        Timestamp updateDate) {
+        this.companyFoodEntity = companyFoodEntity;
         this.price = price;
-        this.registrationDate = registrationDate;
+        this.updateDate = updateDate;
     }
 }

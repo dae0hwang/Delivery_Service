@@ -11,13 +11,19 @@ import com.example.apideliveryservice.RepositoryResetHelper;
 import com.example.apideliveryservice.controllerexceptionadvice.CompanyFoodControllerExceptionAdvice;
 import com.example.apideliveryservice.dto.RequestCompanyFood;
 import com.example.apideliveryservice.dto.ResponseCompanyFoodSuccess;
+import com.example.apideliveryservice.dto.ResponseError;
+import com.example.apideliveryservice.entity.CompanyMemberEntity;
 import com.example.apideliveryservice.interceptor.ExceptionResponseInterceptor;
 import com.example.apideliveryservice.repository.CompanyFoodRepository;
+import com.example.apideliveryservice.repository.CompanyMemberRepository;
 import com.example.apideliveryservice.service.CompanyFoodService;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
@@ -33,32 +39,28 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.transaction.annotation.Transactional;
 
+@Transactional
 @SpringBootTest
 @Slf4j
-@ActiveProfiles("jpa-mysql")
+@ActiveProfiles("test")
 class CompanyFoodControllerTest {
 
-    @Value("${persistenceName:@null}")
-    private String persistenceName;
     @Autowired
     CompanyFoodController controller;
     @Autowired
-    CompanyFoodRepository repository;
+    CompanyFoodRepository companyFoodRepository;
     @Autowired
-    RepositoryResetHelper resetHelper;
+    CompanyFoodService companyFoodService;
     @Autowired
-    CompanyFoodService service;
-    Connection connection;
+    CompanyMemberRepository companyMemberRepository;
     MockMvc mockMvc;
     ObjectMapper objectMapper;
     String baseUrl;
-    EntityManagerFactory emf;
-    EntityManager em;
-    EntityTransaction tx;
 
     @BeforeEach
-    void beforeEach() throws SQLException {
+    void beforeEach(){
         baseUrl = "/api/delivery-service/company";
         objectMapper = new ObjectMapper();
 
@@ -66,44 +68,97 @@ class CompanyFoodControllerTest {
             .setControllerAdvice(new CompanyFoodControllerExceptionAdvice())
             .addInterceptors(new ExceptionResponseInterceptor())
             .build();
-        connection = DriverManager.getConnection("jdbc:h2:mem:test;MODE=MySQL", "sa", "");
-
-        resetHelper.ifExistDeleteCompanyFood(connection);
-        resetHelper.createCompanyFoodTable(connection);
-        resetHelper.ifExistDeleteCompanyFoodPrice(connection);
-        resetHelper.createCompanyFoodPriceTable(connection);
-
-        emf = Persistence.createEntityManagerFactory(persistenceName);
-        em = emf.createEntityManager();
-        tx = em.getTransaction();
     }
 
-    @AfterEach
-    void afterEach() {
-        em.close();
-        emf.close();
+    @Test
+    @DisplayName("음식 등록 성공 Test")
+    void addFood1() throws Exception {
+        //given
+        String url = baseUrl + "/food/addFood";
+
+        CompanyMemberEntity saveCompanyMember = companyMemberRepository.save(
+            new CompanyMemberEntity("loginName", "password", "name", false,
+                new Timestamp(System.currentTimeMillis())));
+
+        RequestCompanyFood requestCompanyFood = new RequestCompanyFood(saveCompanyMember.getId(), "foodName", new BigDecimal("3000"));
+        String requestJson = objectMapper.writeValueAsString(requestCompanyFood);
+
+        ResponseCompanyFoodSuccess success
+            = new ResponseCompanyFoodSuccess(201, null, null);
+        String responseContent = objectMapper.writeValueAsString(success);
+        //when
+        //then
+        mockMvc.perform(post(url)
+                .contentType("application/json")
+                .content(requestJson))
+            .andExpect(status().isCreated())
+            .andExpect(content().json(responseContent))
+            .andDo(log());
     }
 
-//    @Test
-//    @DisplayName("음식 등록 성공 Test")
-//    void addFood1() throws Exception {
-//        //given
-//        String url = baseUrl + "/food/addFood";
-//        RequestCompanyFood requestCompanyFoodDto = new RequestCompanyFood(
-//            "1", "foodName", "3000");
-//        String requestJson = objectMapper.writeValueAsString(requestCompanyFoodDto);
-//        ResponseCompanyFoodSuccess success
-//            = new ResponseCompanyFoodSuccess(201, null, null);
-//        String responseContent = objectMapper.writeValueAsString(success);
-//        //when
-//        //then
-//        mockMvc.perform(post(url)
-//                .contentType("application/json")
-//                .content(requestJson))
-//            .andExpect(status().isCreated())
-//            .andExpect(content().json(responseContent))
-//            .andDo(log());
-//    }
+    @Test
+    @DisplayName("request name 공백 음식 등록 실패 Test")
+    void addFood2() throws Exception {
+        //given
+        String url = baseUrl + "/food/addFood";
+
+        CompanyMemberEntity saveCompanyMember = companyMemberRepository.save(
+            new CompanyMemberEntity("loginName", "password", "name", false,
+                new Timestamp(System.currentTimeMillis())));
+
+        RequestCompanyFood requestCompanyFood1 = new RequestCompanyFood(
+            saveCompanyMember.getId(), "", new BigDecimal("3000"));
+        String requestJson1 = objectMapper.writeValueAsString(requestCompanyFood1);
+        RequestCompanyFood requestCompanyFood2 = new RequestCompanyFood(
+            saveCompanyMember.getId(), "   ", new BigDecimal("3000"));
+        String requestJson2 = objectMapper.writeValueAsString(requestCompanyFood2);
+
+        ResponseError error
+            = new ResponseError("/errors/food/add/name-blank"
+            , "MethodArgumentNotValidException", 400, "requestCompanyFood name must not be blank"
+            , "/api/delivery-service/company/food/addFood");
+        String responseContent = objectMapper.writeValueAsString(error);
+        //when
+        //then
+        mockMvc.perform(post(url)
+                .contentType("application/json")
+                .content(requestJson1))
+            .andExpect(status().isBadRequest())
+            .andExpect(content().json(responseContent))
+            .andDo(log());
+        mockMvc.perform(post(url)
+                .contentType("application/json")
+                .content(requestJson2))
+            .andExpect(status().isBadRequest())
+            .andExpect(content().json(responseContent))
+            .andDo(log());
+    }
+
+    //validation하나씩 처리해보자.
+    @Test
+    @DisplayName("request price가 숫자가 아니다. 음식 등록 실패 Test")
+    void addFood3() throws Exception {
+        //given
+        String url = baseUrl + "/food/addFood";
+
+        CompanyMemberEntity saveCompanyMember = companyMemberRepository.save(
+            new CompanyMemberEntity("loginName", "password", "name", false,
+                new Timestamp(System.currentTimeMillis())));
+
+        RequestCompanyFood requestCompanyFood = new RequestCompanyFood(
+            saveCompanyMember.getId(), "", new BigDecimal("3000"));
+        String requestJson = objectMapper.writeValueAsString(requestCompanyFood);
+
+        //then
+        mockMvc.perform(post(url)
+                .contentType("application/json")
+                .content(requestJson))
+            .andExpect(status().isOk());
+
+
+    }
+
+
 
 //    @Test
 //    @DisplayName("중복된 foodName(같은 memberId에서) 회원 가입 실패 Test")
@@ -137,39 +192,7 @@ class CompanyFoodControllerTest {
 //            .andDo(log());
 //    }
 //
-//    @Test
-//    @DisplayName("이름 공백 회원 가입 실패 Test")
-//    void joinMember3() throws Exception {
-//        //given
-//        String url = baseUrl + "/food/addFood";
-//
-//        RequestCompanyFoodDto requestCompanyFoodDto1 = new RequestCompanyFoodDto(
-//            "1", "", "5000");
-//        String requestJson1 = objectMapper.writeValueAsString(requestCompanyFoodDto1);
-//        RequestCompanyFoodDto requestCompanyFoodDto2 = new RequestCompanyFoodDto(
-//            "1", "   ", "50000");
-//        String requestJson2 = objectMapper.writeValueAsString(requestCompanyFoodDto2);
-//
-//        ResponseError error
-//            = new ResponseError("/errors/food/add/name-blank"
-//            , "MethodArgumentNotValidException", 400, "requestCompanyFood name must not be blank"
-//            , "/api/delivery-service/company/food/addFood");
-//        String responseContent = objectMapper.writeValueAsString(error);
-//        //when
-//        //then
-//        mockMvc.perform(post(url)
-//                .contentType("application/json")
-//                .content(requestJson1))
-//            .andExpect(status().isBadRequest())
-//            .andExpect(content().json(responseContent))
-//            .andDo(log());
-//        mockMvc.perform(post(url)
-//                .contentType("application/json")
-//                .content(requestJson2))
-//            .andExpect(status().isBadRequest())
-//            .andExpect(content().json(responseContent))
-//            .andDo(log());
-//    }
+
 //
 //    @Test
 //    @DisplayName("숫자가 price 회원 가입 실패 Test")

@@ -17,7 +17,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name="order_detail_list")
+@Table(name="order_detail")
 public class OrderDetailEntity {
 
     @Id
@@ -26,10 +26,12 @@ public class OrderDetailEntity {
     @ManyToOne
     @JoinColumn(name = "order_id")
     private OrderEntity orderEntity;
-    @Column(name = "company_id")
-    private Long companyId;
-    @Column(name = "food_id")
-    private Long foodId;
+    @ManyToOne
+    @JoinColumn(name = "company_member_id")
+    private CompanyMemberEntity companyMemberEntity;
+    @ManyToOne
+    @JoinColumn(name = "company_food_id")
+    private CompanyFoodEntity companyFoodEntity;
     @Column(name = "food_price")
     private BigDecimal foodPrice;
     @Column(name = "food_amount")

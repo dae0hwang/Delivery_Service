@@ -27,20 +27,27 @@ dependencies {
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
     annotationProcessor 'org.projectlombok:lombok'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
     implementation group: 'mysql', name: 'mysql-connector-java', version: '8.0.28'
+
+
     testCompileOnly 'org.projectlombok:lombok'
     testAnnotationProcessor 'org.projectlombok:lombok'
-    implementation 'com.h2database:h2'
+
+    //jpa 하이버네이트 스프링데이터jpa 스프링jdbc가 모두 들어가 있다.
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    runtimeOnly 'com.h2database:h2'
+
+
+
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'org.passay:passay:1.6.2'
 
-    //jpa dependency without spring
-    implementation group: 'org.hibernate', name: 'hibernate-entitymanager', version: '5.4.1.Final'
-    implementation group: 'javax.xml.bind', name: 'jaxb-api', version: '2.3.1'
-    runtimeOnly 'com.h2database:h2:1.4.187'
 
-    //hikaricp for jdbc
-    implementation group: 'com.zaxxer', name: 'HikariCP', version: '2.2.5'
+
+    //showing sql parameter library
+    implementation 'com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.5.7'
+
 }
 
 tasks.named('test') {
