@@ -10,7 +10,7 @@ server:
   port: 8080
 url:
   api: 127.0.0.1:5510
-  ui: 127.0.0.1:8080
+  ui: localhost:8080
 ---
 
 spring:
@@ -21,4 +21,4 @@ server:
   port: 8081
 url:
   api: 127.0.0.1:5511
-  ui: 127.0.0.1:8081
+  ui: localhost:8081
