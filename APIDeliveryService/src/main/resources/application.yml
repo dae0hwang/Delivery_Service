@@ -4,6 +4,7 @@ logging:
 datasource:
   url: "jdbc:mysql://192.168.100.1:3306/delivery_service"
   username: "hwang"
+
   password: "5510"
 
 persistenceName: jpa-mysql
@@ -15,6 +16,9 @@ spring:
       on-profile: local
 server:
   port: 5510
+
+url:
+  ui: http://localhost:8080
 ---
 
 spring:
@@ -23,6 +27,9 @@ spring:
       on-profile: server
 server:
   port: 5511
+
+url:
+  ui: http://localhost:8081
 ---
 
 spring:
