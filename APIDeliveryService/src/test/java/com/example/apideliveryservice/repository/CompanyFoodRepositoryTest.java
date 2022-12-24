@@ -30,27 +30,6 @@ class CompanyFoodRepositoryTest {
     @PersistenceContext
     EntityManager em;
 
-    @Test
-    //내가 만든것이 아니기 때문에 안해도된다.
-    //업데이트도 테스트해보기
-    @DisplayName("스프링데이터 save, findById")
-    void saveFoodAndFindTest() {
-        //given
-        CompanyMemberEntity saveCompanyMember = new CompanyMemberEntity("loginName", "password",
-            "name", false, new Timestamp(System.currentTimeMillis()));
-        em.persist(saveCompanyMember);
-        CompanyFoodEntity saveCompanyFood = new CompanyFoodEntity(saveCompanyMember, "foodName",
-            new BigDecimal("3000"), new Timestamp(System.currentTimeMillis()));
-        companyFoodRepository.save(saveCompanyFood);
-        //when
-        //업데이트 테스트
-        CompanyFoodEntity findCompanyFood = companyFoodRepository.findById(1l).orElseThrow();
-        findCompanyFood.setPrice(new BigDecimal("5000"));
-        CompanyFoodEntity findUpdatedCompanyFood = companyFoodRepository.findById(1l).orElseThrow();
-
-        //then
-        assertThat(findUpdatedCompanyFood.getPrice()).isEqualTo(new BigDecimal("5000"));
-    }
 
     @Test
     @DisplayName("같은 음식점 중복된 음식 체크 Test")
