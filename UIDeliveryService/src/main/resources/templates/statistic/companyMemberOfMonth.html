@@ -13,7 +13,7 @@
             let apiUrl = [[${@environment.getProperty('url.api')}]]
 
             const companyAllOfDayAxios =  axios({
-                url: 'http://'+apiUrl+'/api/delivery-service/statistic/general/member/day',
+                url: 'http://'+apiUrl+'/api/delivery-service/statistic/company/member/month',
                 method: 'get',
             });
 
@@ -33,8 +33,7 @@
 
                     const year = sumStatisticList[i].date.substring(0,4);
                     const month = sumStatisticList[i].date.substring(4,6);
-                    const day = sumStatisticList[i].date.substring(6,8);
-                    const date = year + "년" + month + "월" + day + "일";
+                    const date = year + "년" + month + "월";
                     const dateText = document.createTextNode(date);
                     const tdNode3 = document.createElement("td")
                     tdNode3.appendChild(dateText)
@@ -69,12 +68,12 @@
     </script>
 </head>
 <body>
-<h2 id="h2">하루 단위 손님 별 매출</h2>
+<h2 id="h2">한달 단위 가게 별 매출</h2>
 <a href="javascript:history.back();">뒤로가기</a>
 <table border="1">
     <thead>
     <tr>
-        <th>generalMemberId</th>
+        <th>companyMemberId</th>
         <th>가게이름</th>
         <th>날짜</th>
         <th>매출금액</th>
