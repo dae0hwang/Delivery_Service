@@ -4,7 +4,7 @@
   <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
     <encoder>
       <pattern>[%d{yyyy-MM-dd HH:mm:ss}:%-4relative] %green([%thread]) %highlight(%-5level)
-        %logger{36}
+        %logger
         %boldWhite([%C.%M:%yellow(%L)]) - %msg%n</pattern>
     </encoder>
   </appender>
@@ -13,6 +13,15 @@
     <appender-ref ref="CONSOLE"/>
   </root>
 
-<!--  로거 네임작성해서 하는 것이다 위에 로거 -->
+<!--  logger name 과 level을 작성해서 로거를 설정 -->
+  <logger name="com.example.apideliveryservice.ApiDeliveryServiceApplication" level="warn"/>
+  <logger name="org.hibernate.validator.internal.util.Version" level="warn"/>
+  <logger name="org.springframework.boot.devtools.env.DevToolsPropertyDefaultsPostProcessor" level="warn"/>
+  <logger name="org.springframework.data.repository.config.RepositoryConfigurationDelegate" level="warn"/>
+  <logger name="org.springframework.web" level="warn"/>
+  <logger name="org.apache" level="warn"/>
+  <logger name="org.springframework.boot.web" level="warn"/>
+  <logger name=" com.zaxxer.hikari.HikariDataSource" level="warn"/>
+  <logger name="org.springframework.boot.autoconfigure.h2.H2ConsoleAutoConfiguration" level="warn"/>
   <logger name="org.hibernate" level="warn"/>
 </configuration>
