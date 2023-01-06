@@ -26,16 +26,16 @@ public class CompanyMemberController {
     private final CompanyMemberService companyMemberService;
 
     @PostMapping("/member/join")
-    public ResponseEntity joinMember(
-        @Validated @RequestBody RequestCompanyMember requestCompanyMember) throws Exception {
+    public ResponseEntity<ResponseCompanyMemberSuccess> joinMember(
+        @Validated @RequestBody RequestCompanyMember requestCompanyMember) {
         companyMemberService.join(requestCompanyMember.getLoginName(),
             requestCompanyMember.getPassword(), requestCompanyMember.getName());
         ResponseCompanyMemberSuccess success = new ResponseCompanyMemberSuccess(201, null, null);
-        return new ResponseEntity(success, HttpStatus.CREATED);
+        return new ResponseEntity<>(success, HttpStatus.CREATED);
     }
 
     @GetMapping("/member/allMember")
-    public ResponseEntity findAllMember() throws Exception {
+    public ResponseEntity<ResponseCompanyMemberSuccess> findAllMember() {
         List<CompanyMemberDto> allMember = companyMemberService.findAllMember();
         ResponseCompanyMemberSuccess success = new ResponseCompanyMemberSuccess(200, allMember,
             null);
@@ -43,7 +43,7 @@ public class CompanyMemberController {
     }
 
     @GetMapping("/member/information")
-    public ResponseEntity findMember(@RequestParam("memberId") String MemberId) throws Exception {
+    public ResponseEntity<ResponseCompanyMemberSuccess> findMember(@RequestParam("memberId") Long MemberId) {
         CompanyMemberDto findMember = companyMemberService.findMember(MemberId);
         ResponseCompanyMemberSuccess success = new ResponseCompanyMemberSuccess(200, null,
             findMember);

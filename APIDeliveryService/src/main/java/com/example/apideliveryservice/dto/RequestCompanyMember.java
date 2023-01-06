@@ -1,6 +1,6 @@
 package com.example.apideliveryservice.dto;
 
-import com.example.apideliveryservice.exception.ExceptionMessage;
+import com.example.apideliveryservice.exception.CompanyMemberExceptionEnum.Constants;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
@@ -13,11 +13,11 @@ import lombok.NoArgsConstructor;
 public class RequestCompanyMember {
 
     @Pattern(regexp = "^[a-z0-9]{8,20}$", message =
-        ExceptionMessage.RequestCompanyMemberDtoLoginName)
+        Constants.joinLoginNameValidation)
     private String loginName;
     @Pattern(regexp = "^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$ %^&*-]).{8,}$", message
-        = ExceptionMessage.RequestCompanyMemberDtoPassword)
+        = Constants.joinPasswordValidation)
     private String password;
-    @NotBlank(message = ExceptionMessage.RequestCompanyMemberDtoName)
+    @NotBlank(message = Constants.joinNameValidation)
     private String name;
 }

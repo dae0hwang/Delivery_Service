@@ -7,7 +7,8 @@
     window.onload = function () {
       let apiUrl = [[${@environment.getProperty('url.api')}]];
       let uiUrl = [[${@environment.getProperty('url.ui')}]];
-
+      console.log(apiUrl)
+      console.log(uiUrl)
       let txtId = document.getElementById("id");
       let txtPassword = document.getElementById("password");
       let txtName = document.getElementById("name");

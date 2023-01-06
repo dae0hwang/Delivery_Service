@@ -11,8 +11,6 @@ public class RequestOrder {
 
     private Long generalMemberId;
     private Long companyMemberId;
-    //    @Digits(message = ExceptionMessage.RequestPurchaseListDtoGeneralFoodId, integer = 10,
-//        fraction = 0)
     private Long foodId;
     private Integer foodAmount;
 }

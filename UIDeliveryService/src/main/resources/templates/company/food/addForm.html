@@ -11,10 +11,6 @@
       //취소버튼 함수
       let url = window.location.href;
       let id = url.replace("http://"+uiUrl+"/delivery-service/company/food/addFood/", "");
-
-      // let url = window.location.href;
-      // let id = url.charAt(gogo.length - 1);
-
       var cancelBtn = document.getElementById('cancel');
       cancelBtn.onclick = function () {
         location.href = "http://"+uiUrl+"/delivery-service/company/member/members/" + id;

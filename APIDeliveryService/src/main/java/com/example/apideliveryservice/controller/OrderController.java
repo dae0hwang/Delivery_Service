@@ -3,9 +3,7 @@ package com.example.apideliveryservice.controller;
 import com.example.apideliveryservice.dto.GeneralMemberOrderDto;
 import com.example.apideliveryservice.dto.RequestOrder;
 import com.example.apideliveryservice.dto.ResponseOrderSuccess;
-import com.example.apideliveryservice.entity.OrderDetailEntity;
 import com.example.apideliveryservice.service.OrderService;
-import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,13 +25,10 @@ public class OrderController {
 
     private final OrderService orderService;
 
-    //valid적용하는 것 남음
     @PostMapping("/member/order")
-    public ResponseEntity orderFood(@Validated @RequestBody List<RequestOrder> list)
-        throws Exception {
-        Long generalMemberId = list.get(0).getGeneralMemberId();
-        List<OrderDetailEntity> orderDetailElementList = getOrderDetailEntities(list);
-        orderService.addOrder(generalMemberId, orderDetailElementList);
+    public ResponseEntity orderFood(@Validated @RequestBody List<RequestOrder> requestOrderList) {
+        Long generalMemberId = requestOrderList.get(0).getGeneralMemberId();
+        orderService.addOrder(generalMemberId, requestOrderList);
         ResponseOrderSuccess success = new ResponseOrderSuccess(201, null, null);
         return new ResponseEntity(success, HttpStatus.CREATED);
     }
@@ -45,17 +40,4 @@ public class OrderController {
         ResponseOrderSuccess success = new ResponseOrderSuccess(201, orderListByGeneralId, null);
         return new ResponseEntity(success, HttpStatus.OK);
     }
-
-    private List<OrderDetailEntity> getOrderDetailEntities(List<RequestOrder> list) {
-        List<OrderDetailEntity> orderDetailElementList = new ArrayList<>();
-        for (RequestOrder requestOrder : list) {
-            OrderDetailEntity orderDetailElement = new OrderDetailEntity(null, null,
-                requestOrder.getCompanyMemberId(), requestOrder.getFoodId(), null,
-                requestOrder.getFoodAmount());
-            orderDetailElementList.add(orderDetailElement);
-        }
-        return orderDetailElementList;
-    }
-
-
 }

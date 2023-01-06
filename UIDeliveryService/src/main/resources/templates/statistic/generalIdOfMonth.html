@@ -3,42 +3,54 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0
+          , minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Document</title>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-    <script>
+    <script th:inline="javascript">
         window.onload = function () {
-            // id 가져오기.
-            let url = window.location.href;
-            let id = url.replace('http://localhost:8081/delivery-service/statistic/general/id/month/', '');
+            let apiUrl = [[${@environment.getProperty('url.api')}]]
 
             const companyAllOfDayAxios =  axios({
-                url: 'http://192.168.100.1:5511/api/delivery-service/statistic/general/id/month',
+                url: 'http://'+apiUrl+'/api/delivery-service/statistic/general/member/month',
                 method: 'get',
-                params: {"generalId":id}
-
             });
+
             const tableBodyElement = document.getElementById("tableBody");
             const makeTable = (sumStatisticList)=>{
                 for (let i = 0; i < sumStatisticList.length; i++) {
+
+                    const memberId = sumStatisticList[i].memberId;
+                    const memberIdText = document.createTextNode(memberId);
+                    const tdNode1 = document.createElement("td")
+                    tdNode1.appendChild(memberIdText);
+
+                    const memberName = sumStatisticList[i].memberName;
+                    const memberNameText = document.createTextNode(memberName);
+                    const tdNode2 = document.createElement("td")
+                    tdNode2.appendChild(memberNameText);
+
                     const year = sumStatisticList[i].date.substring(0,4);
                     const month = sumStatisticList[i].date.substring(4,6);
-                    const date = year + "년" + month + "월"
+                    const date = year + "년" + month + "월";
+                    const dateText = document.createTextNode(date);
+                    const tdNode3 = document.createElement("td")
+                    tdNode3.appendChild(dateText)
 
-                    const createdTextNode
-                        = document.createTextNode(date);
-                    const tdNode = document.createElement("td");
-                    tdNode.appendChild(createdTextNode);
                     //한국 숫자 단위로 표현하기.
                     const sum = sumStatisticList[i].sum.toString().replace(/\B(?=(\d{3})+(?!\d))/g,
                         ',');
                     const text = document.createTextNode(sum);
-                    const tdNode2 = document.createElement("td");
-                    tdNode2.appendChild(text)
+                    const tdNode4 = document.createElement("td")
+                    tdNode4.appendChild(text);
+
                     let trNode = document.createElement("tr");
-                    trNode.appendChild(tdNode);
+                    trNode.appendChild(tdNode1);
                     trNode.appendChild(tdNode2);
+                    trNode.appendChild(tdNode3);
+                    trNode.appendChild(tdNode4);
+
                     tableBodyElement.appendChild(trNode);
                 }
             }
@@ -52,26 +64,19 @@
             .catch(error=>{
                 console.log(error);
             })
-
-            //회원 이름 넣어주기.
-            axios({
-                url:"http://192.168.100.1:5511/api/delivery-service/general/member/information",
-                method: "get",
-                params:{"memberId": id}
-            }).then(response=>{
-                const companyName = response.data.generalMemberDto.name;
-                document.getElementById("h2").appendChild(document.createTextNode(companyName+" 한달 단위 통계"))
-            })
         };
     </script>
 </head>
 <body>
-<h2 id="h2"></h2>
+<h2 id="h2">한달 단위 손님 별 매출</h2>
+<a href="javascript:history.back();">뒤로가기</a>
 <table border="1">
     <thead>
     <tr>
+        <th>generalMemberId</th>
+        <th>가게이름</th>
         <th>날짜</th>
-        <th>구입금액</th>
+        <th>매출금액</th>
     </tr>
     </thead>
     <tbody id="tableBody">

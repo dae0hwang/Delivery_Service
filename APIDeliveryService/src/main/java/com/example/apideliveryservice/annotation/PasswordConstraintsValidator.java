@@ -1,6 +1,6 @@
 package com.example.apideliveryservice.annotation;
 
-import com.example.apideliveryservice.exception.ExceptionMessage;
+import com.example.apideliveryservice.exception.GeneralMemberExceptionEnum.Constants;
 import java.util.Arrays;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
@@ -37,7 +37,7 @@ public class PasswordConstraintsValidator implements ConstraintValidator<Passwor
         }
         //Sending one message each time failed validation.
         constraintValidatorContext.buildConstraintViolationWithTemplate(
-                ExceptionMessage.RequestGeneralMemberDtoPassword).addConstraintViolation()
+                Constants.joinPasswordValidation).addConstraintViolation()
             .disableDefaultConstraintViolation();
         return false;
     }

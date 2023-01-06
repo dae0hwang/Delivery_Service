@@ -27,7 +27,7 @@ public class GeneralMemberController {
 
     @PostMapping("/member/join")
     public ResponseEntity joinMember(
-        @Validated @RequestBody RequestGeneralMember requestGeneralMember) throws Exception {
+        @Validated @RequestBody RequestGeneralMember requestGeneralMember) {
         generalMemberService.join(requestGeneralMember.getLoginName(),
             requestGeneralMember.getPassword(), requestGeneralMember.getName());
         ResponseGeneralMemberSuccess success = new ResponseGeneralMemberSuccess(201, null, null);
@@ -35,7 +35,7 @@ public class GeneralMemberController {
     }
 
     @GetMapping("/member/all")
-    public ResponseEntity findAllMember() throws Exception {
+    public ResponseEntity findAllMember() {
         List<GeneralMemberDto> allMember = generalMemberService.findAllMember();
         ResponseGeneralMemberSuccess success = new ResponseGeneralMemberSuccess(200, allMember,
             null);
@@ -43,7 +43,7 @@ public class GeneralMemberController {
     }
 
     @GetMapping("/member/information")
-    public ResponseEntity findMember(@RequestParam("memberId") String memberId) throws Exception {
+    public ResponseEntity findMember(@RequestParam("memberId") Long memberId) {
         GeneralMemberDto findMember = generalMemberService.findById(memberId);
         ResponseGeneralMemberSuccess success = new ResponseGeneralMemberSuccess(200, null,
             findMember);

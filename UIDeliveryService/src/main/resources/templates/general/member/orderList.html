@@ -17,7 +17,7 @@
 
             //주문 내역 테이블 만들기.
             const generalMemberOrderListAxios = axios({
-                url: "http://"+uiUrl+"/api/delivery-service/order/member/order/list",
+                url: "http://"+apiUrl+"/api/delivery-service/order/member/order/list",
                 method: "get",
                 params: {'generalId': id}
             });
@@ -35,7 +35,7 @@
                     const tdNode2 = document.createElement("td");
                     tdNode2.appendChild(orderId);
 
-                    const generalId = document.createTextNode(responseDataList[i].generalId);
+                    const generalId = document.createTextNode(responseDataList[i].generalMemberId);
                     const tdNode3 = document.createElement("td");
                     tdNode3.appendChild(generalId);
 
@@ -89,6 +89,7 @@
 </head>
 <body>
     <h2>주문 목록 리스트</h2>
+    <a href="javascript:history.back();">뒤로가기</a>
     <table border="1">
         <thead>
         <tr>

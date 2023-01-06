@@ -2,12 +2,11 @@ package com.example.apideliveryservice.service;
 
 import com.example.apideliveryservice.dto.FoodPriceSumDto;
 import com.example.apideliveryservice.repository.OrderStatisticRepository;
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Slf4j
@@ -16,45 +15,28 @@ public class OrderStatisticService {
 
     private final OrderStatisticRepository orderStatisticRepository;
 
-    public List<FoodPriceSumDto> companyAllOfDay() throws SQLException {
-        try (Connection connection = orderStatisticRepository.connectHikariCp()){
-            List<FoodPriceSumDto> list = orderStatisticRepository.companyAllOfDay(connection);
-            return list;
-        }
+    @Transactional(readOnly = true)
+    public List<FoodPriceSumDto> companyAllOfDay() {
+        return orderStatisticRepository.companyAllOfDay();
     }
-
-    public List<FoodPriceSumDto> companyAllOfMonth() throws SQLException {
-        try (Connection connection = orderStatisticRepository.connectHikariCp()){
-            List<FoodPriceSumDto> list = orderStatisticRepository.companyAllOfMonth(connection);
-            return list;
-        }
+    @Transactional(readOnly = true)
+    public List<FoodPriceSumDto> companyAllOfMonth() {
+        return orderStatisticRepository.companyAllOfMonth();
     }
-
-    public List<FoodPriceSumDto> companyIdOfDay(Long companyMemberId) throws SQLException {
-        try (Connection connection = orderStatisticRepository.connectHikariCp()){
-            List<FoodPriceSumDto> list = orderStatisticRepository.companyIdOfDay(connection, companyMemberId);
-            return list;
-        }
+    @Transactional(readOnly = true)
+    public List<FoodPriceSumDto> companyMemberOfDay() {
+        return orderStatisticRepository.companyMemberOfDay();
     }
-
-    public List<FoodPriceSumDto> companyIdOfMonth(Long companyMemberId) throws SQLException {
-        try (Connection connection = orderStatisticRepository.connectHikariCp()){
-            List<FoodPriceSumDto> list = orderStatisticRepository.companyIdOfMonth(connection, companyMemberId);
-            return list;
-        }
+    @Transactional(readOnly = true)
+    public List<FoodPriceSumDto> companyMemberOfMonth() {
+        return orderStatisticRepository.companyMemberOfMonth();
     }
-
-    public List<FoodPriceSumDto> generalIdOfDay(Long generalMemberId) throws SQLException {
-        try (Connection connection = orderStatisticRepository.connectHikariCp()){
-            List<FoodPriceSumDto> list = orderStatisticRepository.generalIdOfDay(connection, generalMemberId);
-            return list;
-        }
+    @Transactional(readOnly = true)
+    public List<FoodPriceSumDto> generalMemberOfDay() {
+        return orderStatisticRepository.generalMemberOfDay();
     }
-
-    public List<FoodPriceSumDto> generalIdOfMonth(Long generalMemberId) throws SQLException {
-        try (Connection connection = orderStatisticRepository.connectHikariCp()){
-            List<FoodPriceSumDto> list = orderStatisticRepository.generalIdOfMonth(connection, generalMemberId);
-            return list;
-        }
+    @Transactional(readOnly = true)
+    public List<FoodPriceSumDto> generalMemberOfMonth() {
+        return orderStatisticRepository.generalMemberOfMonth();
     }
 }
