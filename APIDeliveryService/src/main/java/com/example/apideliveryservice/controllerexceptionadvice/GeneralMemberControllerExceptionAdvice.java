@@ -1,11 +1,16 @@
-package com.example.apideliveryservice.controllerExceptionAdvice;
+package com.example.apideliveryservice.controllerexceptionadvice;
+
+
+import static com.example.apideliveryservice.exception.GeneralMemberExceptionEnum.GENERAL_JOIN_DUPLICATED_LOGIN_NAME;
+import static com.example.apideliveryservice.exception.GeneralMemberExceptionEnum.GENERAL_JOIN_LOGIN_NAME_VALIDATION;
+import static com.example.apideliveryservice.exception.GeneralMemberExceptionEnum.GENERAL_JOIN_NAME_VALIDATION;
+import static com.example.apideliveryservice.exception.GeneralMemberExceptionEnum.GENERAL_JOIN_PASSWORD_VALIDATION;
+import static com.example.apideliveryservice.exception.GeneralMemberExceptionEnum.findByErrorMessage;
 
 import com.example.apideliveryservice.controller.GeneralMemberController;
-import com.example.apideliveryservice.exception.DeliveryServiceException;
-import com.example.apideliveryservice.exception.ExceptionMessage;
+import com.example.apideliveryservice.exception.GeneralMemberException;
 import com.example.apideliveryservice.threadlocalstorage.ErrorInformationTls;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -17,87 +22,52 @@ public class GeneralMemberControllerExceptionAdvice {
 
     private final ErrorInformationTls threadLocalStorage = new ErrorInformationTls();
 
-    @ExceptionHandler(DeliveryServiceException.class)
-    public ResponseEntity methodArgumentNotValidExHandle(DeliveryServiceException e) {
-        log.warn("[exceptionHandle] ex", e);
-
-        ResponseEntity responseEntity = makeDeliveryServiceExceptionResponseAndSetTls(e);
-        return responseEntity;
+    @ExceptionHandler(GeneralMemberException.class)
+    public ResponseEntity generalMemberExceptionAdvice(GeneralMemberException e) {
+        log.warn("[exceptionAdvice] ex", e);
+        return makeGeneralMemberExceptionResponseAndSetTls(e);
     }
 
-    private ResponseEntity makeDeliveryServiceExceptionResponseAndSetTls(
-        DeliveryServiceException e) {
-
+    private ResponseEntity makeGeneralMemberExceptionResponseAndSetTls(
+        GeneralMemberException e) {
         String errorMessage = e.getMessage();
-        String errorName = e.getClass().getSimpleName();
-        switch (errorMessage) {
-            case ExceptionMessage.DeliveryExceptionDuplicatedName:
-                threadLocalStorage.setErrorType("/errors/general/member/join/duplicate-login-name");
-                threadLocalStorage.setErrorTitle(errorName);
-                threadLocalStorage.setErrorDetail(errorMessage);
-                return new ResponseEntity(HttpStatus.CONFLICT);
-            case ExceptionMessage.DeliveryExceptionNonExistentMemberId:
-                threadLocalStorage.setErrorType("/errors/general/member/find/non-exist");
-                threadLocalStorage.setErrorTitle(errorName);
-                threadLocalStorage.setErrorDetail(errorMessage);
-                return new ResponseEntity(HttpStatus.NOT_FOUND);
+        switch (findByErrorMessage(errorMessage)) {
+            case GENERAL_JOIN_DUPLICATED_LOGIN_NAME:
+                threadLocalStorage.setErrorType(GENERAL_JOIN_DUPLICATED_LOGIN_NAME.getErrorType());
+                threadLocalStorage.setErrorTitle(GENERAL_JOIN_DUPLICATED_LOGIN_NAME.getErrorTitle());
+                threadLocalStorage.setErrorDetail(GENERAL_JOIN_DUPLICATED_LOGIN_NAME.getErrormessage());
+                return new ResponseEntity(GENERAL_JOIN_DUPLICATED_LOGIN_NAME.getHttpStatus());
+
         }
-        return null;
+        throw new RuntimeException();
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity methodArgumentNotValidExHandle(MethodArgumentNotValidException e) {
-        log.warn("[exceptionHandle] ex", e);
-
-        ResponseEntity responseEntity = makeArgumentNotValidResponseAndSetTls(e);
-        return responseEntity;
+    public ResponseEntity methodArgumentNotValidExceptionAdvice(MethodArgumentNotValidException e) {
+        log.warn("[exceptionAdvice] ex", e);
+        return makeArgumentNotValidResponseAndSetTls(e);
     }
-
 
     private ResponseEntity makeArgumentNotValidResponseAndSetTls(
         MethodArgumentNotValidException e) {
-        String errorName = e.getClass().getSimpleName();
         String errorMessage = e.getBindingResult().getAllErrors().get(0).getDefaultMessage();
-        switch (errorMessage) {
-            case ExceptionMessage.RequestGeneralMemberDtoLoginName:
-                threadLocalStorage.setErrorType("/errors/general/member/join/longinName-pattern");
-                threadLocalStorage.setErrorTitle(errorName);
-                threadLocalStorage.setErrorDetail(errorMessage);
-                return new ResponseEntity(HttpStatus.BAD_REQUEST);
-            case ExceptionMessage.RequestGeneralMemberDtoPassword:
-                threadLocalStorage.setErrorType("/errors/general/member/join/password-pattern");
-                threadLocalStorage.setErrorTitle(errorName);
-                threadLocalStorage.setErrorDetail(errorMessage);
-                return new ResponseEntity(HttpStatus.BAD_REQUEST);
-            case ExceptionMessage.RequestGeneralMemberDtoName:
-                threadLocalStorage.setErrorType("/errors/general/member/join/name-blank");
-                threadLocalStorage.setErrorTitle(errorName);
-                threadLocalStorage.setErrorDetail(errorMessage);
-                return new ResponseEntity(HttpStatus.BAD_REQUEST);
-            case ExceptionMessage.RequestPurchaseListDtoGeneralMemberId:
-                threadLocalStorage.setErrorType(
-                    "/errors/general/member/purchase/generalMemberId-notDigit");
-                threadLocalStorage.setErrorTitle(errorName);
-                threadLocalStorage.setErrorDetail(errorMessage);
-                return new ResponseEntity(HttpStatus.BAD_REQUEST);
-            case ExceptionMessage.RequestPurchaseListDtoCompanyMemberId:
-                threadLocalStorage.setErrorType(
-                    "/errors/general/member/purchase/companyMemberId-notDigit");
-                threadLocalStorage.setErrorTitle(errorName);
-                threadLocalStorage.setErrorDetail(errorMessage);
-                return new ResponseEntity(HttpStatus.BAD_REQUEST);
-            case ExceptionMessage.RequestPurchaseListDtoGeneralFoodId:
-                threadLocalStorage.setErrorType("/errors/general/member/purchase/foodId-notDigit");
-                threadLocalStorage.setErrorTitle(errorName);
-                threadLocalStorage.setErrorDetail(errorMessage);
-                return new ResponseEntity(HttpStatus.BAD_REQUEST);
-            case ExceptionMessage.RequestPurchaseListDtoGeneralFoodPrice:
-                threadLocalStorage.setErrorType(
-                    "/errors/general/member/purchase/foodPrice-notDigit");
-                threadLocalStorage.setErrorTitle(errorName);
-                threadLocalStorage.setErrorDetail(errorMessage);
-                return new ResponseEntity(HttpStatus.BAD_REQUEST);
+        switch (findByErrorMessage(errorMessage)) {
+            case GENERAL_JOIN_LOGIN_NAME_VALIDATION:
+                threadLocalStorage.setErrorType(GENERAL_JOIN_LOGIN_NAME_VALIDATION.getErrorType());
+                threadLocalStorage.setErrorTitle(GENERAL_JOIN_LOGIN_NAME_VALIDATION.getErrorTitle());
+                threadLocalStorage.setErrorDetail(GENERAL_JOIN_LOGIN_NAME_VALIDATION.getErrormessage());
+                return new ResponseEntity(GENERAL_JOIN_LOGIN_NAME_VALIDATION.getHttpStatus());
+            case GENERAL_JOIN_PASSWORD_VALIDATION:
+                threadLocalStorage.setErrorType(GENERAL_JOIN_PASSWORD_VALIDATION.getErrorType());
+                threadLocalStorage.setErrorTitle(GENERAL_JOIN_PASSWORD_VALIDATION.getErrorTitle());
+                threadLocalStorage.setErrorDetail(GENERAL_JOIN_PASSWORD_VALIDATION.getErrormessage());
+                return new ResponseEntity(GENERAL_JOIN_PASSWORD_VALIDATION.getHttpStatus());
+            case GENERAL_JOIN_NAME_VALIDATION:
+                threadLocalStorage.setErrorType(GENERAL_JOIN_NAME_VALIDATION.getErrorType());
+                threadLocalStorage.setErrorTitle(GENERAL_JOIN_NAME_VALIDATION.getErrorTitle());
+                threadLocalStorage.setErrorDetail(GENERAL_JOIN_NAME_VALIDATION.getErrormessage());
+                return new ResponseEntity(GENERAL_JOIN_NAME_VALIDATION.getHttpStatus());
         }
-        return null;
+        throw new RuntimeException();
     }
 }

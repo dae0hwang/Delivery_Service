@@ -1,15 +1,13 @@
 logging:
   config: classpath:logback-console.xml
 
-datasource:
-  url: "jdbc:mysql://192.168.100.1:3306/delivery_service"
-  username: "hwang"
+spring:
+  datasource:
+    url: "jdbc:mysql://192.168.100.1:3306/delivery_service"
+    username: "hwang"
+    password: "5510"
 
-  password: "5510"
-
-persistenceName: jpa-mysql
 ---
-
 spring:
   config:
     activate:
@@ -35,45 +33,25 @@ url:
 spring:
   config:
     activate:
-      on-profile: jpa-mysql
-
-datasource:
-  url: "jdbc:mysql://192.168.100.1:3306/delivery_service"
-  username: "hwang"
-  password: "5510"
-
-persistenceName: jpa-mysql
-
----
-
-spring:
-  config:
-    activate:
-      on-profile: jpa-h2
+      on-profile: test
   datasource:
-    driver-class-name: org.h2.Driver
     url: jdbc:h2:mem:test;MODE=MYSQL
     username: sa
     password:
-
-datasource:
-  url: jdbc:h2:mem:test;MODE=MySQL
-  username: sa
-  password:
-
-persistenceName: jpa-test
+    driver-class-name: org.h2.Driver
 
 ---
+
 spring:
   config:
     activate:
-      on-profile: test
-
-
-datasource:
-  url: jdbc:h2:tcp://localhost/~/test
-  username: sa
-  password:
-
-
-persistenceName: test
+      on-profile: h2
+  datasource:
+    url:  jdbc:h2:tcp://localhost/./datajpa;MODE=MYSQL
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+  jpa:
+    hibernate:
+      ddl-auto: create
+    database: h2

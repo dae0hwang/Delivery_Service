@@ -3,139 +3,89 @@ package com.example.apideliveryservice.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import com.example.apideliveryservice.RepositoryResetHelper;
 import com.example.apideliveryservice.dto.GeneralMemberDto;
+import com.example.apideliveryservice.dto.RequestGeneralMember;
 import com.example.apideliveryservice.entity.GeneralMemberEntity;
-import com.example.apideliveryservice.exception.DeliveryServiceException;
+import com.example.apideliveryservice.exception.GeneralMemberException;
 import com.example.apideliveryservice.repository.GeneralMemberRepository;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.sql.Timestamp;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.EntityTransaction;
-import javax.persistence.Persistence;
-import org.junit.jupiter.api.BeforeEach;
+import java.util.NoSuchElementException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest
-@ActiveProfiles("jpa-h2")
+@Transactional
+@ActiveProfiles("test")
 class GeneralMemberServiceTest {
 
-    @Value("${persistenceName:@null}")
-    private String persistenceName;
     @Autowired
-    GeneralMemberRepository repository;
+    GeneralMemberRepository generalMemberRepository;
     @Autowired
-    GeneralMemberService service;
-    @Autowired
-    RepositoryResetHelper resetHelper;
-    Connection connection;
-    EntityManagerFactory emf;
-    EntityManager em;
-    EntityTransaction tx;
-
-    @BeforeEach
-    void beforeEach() throws SQLException {
-        connection = DriverManager.getConnection("jdbc:h2:mem:test;MODE=MySQL", "sa", "");
-        resetHelper.ifExistDeleteGeneralMembers(connection);
-        resetHelper.createGeneralMembersTable(connection);
-
-        emf = Persistence.createEntityManagerFactory(persistenceName);
-        em = emf.createEntityManager();
-        tx = em.getTransaction();
-    }
+    GeneralMemberService generalMemberService;
 
     @Test
-    @DisplayName("회원 가입 성공 Test")
-    void join1() throws Exception {
+    @DisplayName("일반 멤버 가입 성공 테스트")
+    void joinTest1() {
         //given
-
+        RequestGeneralMember requestGeneralMember = new RequestGeneralMember("loginName",
+            "password", "name");
         //when
-        service.join("loginName", "password", "name");
-        GeneralMemberEntity findMember = repository.findByLoginName(em, "loginName")
-            .orElse(null);
+        generalMemberService.join(requestGeneralMember.getLoginName(),
+            requestGeneralMember.getPassword(), requestGeneralMember.getName());
         //then
-        assertThat(findMember).isNotNull();
+        GeneralMemberEntity findGeneralMember = generalMemberRepository.findAll().get(0);
+        assertThat(findGeneralMember).isNotNull();
     }
 
     @Test
-    @DisplayName("회원 가입 실패 중복된 loginName Test")
-    void join2() throws SQLException {
+    @DisplayName("중복된 loginName 회원 가입 실패 테스트")
+    void joinTest2() {
         //given
-        tx.begin();
-        GeneralMemberEntity firstSaveMember = new GeneralMemberEntity(null, "loginName", "password",
-            "name", false, new Timestamp(System.currentTimeMillis()));
-        repository.create(em, firstSaveMember);
-        tx.commit();
+        generalMemberRepository.save(
+            new GeneralMemberEntity("loginName", "password", "name", false));
         //when
         //then
         assertThatThrownBy(() ->
-            service.join("loginName", "password2", "name"))
-            .isInstanceOf(DeliveryServiceException.class);
+            generalMemberService.join("loginName", "password2", "name"))
+            .isInstanceOf(GeneralMemberException.class);
     }
 
     @Test
     @DisplayName("모든 general member 찾기 test")
-    void findAllMember() throws Exception {
+    void findAllMember() {
         //given
-        tx.begin();
-        GeneralMemberEntity companyMemberDto1 = new GeneralMemberEntity(null, "loginName1", "password",
-            "name", false, new Timestamp(System.currentTimeMillis()));
-        GeneralMemberEntity companyMemberDto2 = new GeneralMemberEntity(null, "loginName2", "password",
-            "name", false, new Timestamp(System.currentTimeMillis()));
-        repository.create(em, companyMemberDto1);
-        repository.create(em, companyMemberDto2);
-        tx.commit();
+        List<GeneralMemberEntity> saveCompanyMemberList = Arrays.asList(
+            new GeneralMemberEntity("loginName", "password", "name", false),
+            new GeneralMemberEntity("loginName2", "password2", "name2", false));
 
-        List<GeneralMemberDto> result = new ArrayList<>();
-        result.add(
-            new GeneralMemberDto(1l, "loginName1", "name", companyMemberDto1.getCreatedAt()));
-        result.add(
-            new GeneralMemberDto(2l, "loginName2", "name", companyMemberDto2.getCreatedAt()));
+        List<GeneralMemberEntity> saveGeneralMemberList = generalMemberRepository.saveAll(
+            saveCompanyMemberList);
 
         //when
-        List<GeneralMemberDto> expected = service.findAllMember();
-
+        List<GeneralMemberDto> expectedList= generalMemberService.findAllMember();
         //then
-        assertThat(expected).isEqualTo(result);
-    }
-    //여기할 차례
-
-    @Test
-    @DisplayName("id로멤버 찾기  성공 test")
-    void findById() throws Exception {
-        //given
-        GeneralMemberEntity result = new GeneralMemberEntity(null, "loginName1", "password", "name", false
-            , new Timestamp(System.currentTimeMillis()));
-        tx.begin();
-        repository.create(em, result);
-        tx.commit();
-
-        GeneralMemberDto actual = new GeneralMemberDto(1l, "loginName1", "name",
-            result.getCreatedAt());
-        //when
-        GeneralMemberDto findMember = service.findById("1");
-        //then
-        assertThat(actual).isEqualTo(findMember);
+        assertThat(expectedList).extracting("loginName").containsExactly("loginName", "loginName2");
     }
 
     @Test
-    @DisplayName("id로 멤버 찾기 실패  존재하지 않는 id test")
-    void findMember2() throws SQLException {
+    @DisplayName("company member 찾기 성공과 실패 test")
+    void findMember1() {
         //given
+        GeneralMemberEntity saveGeneralMember = generalMemberRepository.save(
+            new GeneralMemberEntity("loginName", "password", "name", false));
+
         //when
+        GeneralMemberDto findCompanyMemberDto = generalMemberService.findById(
+            saveGeneralMember.getId());
         //then
-        assertThatThrownBy(() ->
-            service.findById("2"))
-            .isInstanceOf(DeliveryServiceException.class);
+        assertThat(findCompanyMemberDto.getLoginName()).isEqualTo(saveGeneralMember.getLoginName());
+        assertThatThrownBy(
+            () -> generalMemberService.findById(saveGeneralMember.getId() + 1L)).isInstanceOf(
+            NoSuchElementException.class);
     }
 }

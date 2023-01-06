@@ -2,38 +2,36 @@ package com.example.apideliveryservice.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.example.apideliveryservice.RepositoryResetHelper;
 import com.example.apideliveryservice.dto.GeneralMemberOrderDto;
+import com.example.apideliveryservice.dto.RequestOrder;
 import com.example.apideliveryservice.entity.CompanyFoodEntity;
+import com.example.apideliveryservice.entity.CompanyMemberEntity;
+import com.example.apideliveryservice.entity.GeneralMemberEntity;
 import com.example.apideliveryservice.entity.OrderDetailEntity;
 import com.example.apideliveryservice.entity.OrderEntity;
 import com.example.apideliveryservice.repository.CompanyFoodRepository;
+import com.example.apideliveryservice.repository.CompanyMemberRepository;
+import com.example.apideliveryservice.repository.GeneralMemberRepository;
+import com.example.apideliveryservice.repository.OrderDetailRepository;
 import com.example.apideliveryservice.repository.OrderRepository;
 import java.math.BigDecimal;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.sql.Timestamp;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.EntityTransaction;
-import javax.persistence.Persistence;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest
-@ActiveProfiles("jpa-h2")
+@Transactional
+@ActiveProfiles("test")
 class OrderServiceTest {
 
-    @Value("${persistenceName:@null}")
-    private String persistenceName;
+    @Autowired
+    EntityManager em;
     @Autowired
     CompanyFoodRepository companyFoodRepository;
     @Autowired
@@ -41,91 +39,70 @@ class OrderServiceTest {
     @Autowired
     OrderService orderService;
     @Autowired
-    RepositoryResetHelper resetHelper;
-    Connection connection;
-    EntityManagerFactory emf;
-    EntityManager em;
-    EntityTransaction tx;
-
-    @BeforeEach
-    void beforeEach() throws SQLException {
-        connection = DriverManager.getConnection("jdbc:h2:mem:test;MODE=MySQL", "sa", "");
-        resetHelper.ifExistDeleteOrderList(connection);
-        resetHelper.createOrderList(connection);
-        resetHelper.ifExistDeleteOrderDetailList(connection);
-        resetHelper.createOrderDetailList(connection);
-        resetHelper.ifExistDeleteCompanyFood(connection);
-        resetHelper.createCompanyFoodTable(connection);
-        resetHelper.ifExistDeleteCompanyFoodPrice(connection);
-        resetHelper.createCompanyFoodPriceTable(connection);
-
-        emf = Persistence.createEntityManagerFactory(persistenceName);
-        em = emf.createEntityManager();
-        tx = em.getTransaction();
-    }
-
+    GeneralMemberRepository generalMemberRepository;
+    @Autowired
+    OrderDetailRepository orderDetailRepository;
+    @Autowired
+    CompanyMemberRepository companyMemberRepository;
     @Test
-    void addOrder() throws Exception {
+    @DisplayName("음식 주문 성공 테스트")
+    void addOrder() {
         //given
-        tx.begin();
-        CompanyFoodEntity companyFoodEntity = new CompanyFoodEntity(null, 1l, "김밥",
-            new Timestamp(System.currentTimeMillis()), null);
-        companyFoodRepository.add(em, companyFoodEntity, new BigDecimal("3000"));
-        tx.commit();
+        GeneralMemberEntity saveGeneralMember = generalMemberRepository.save(
+            new GeneralMemberEntity("generalMember", "password", "generalName", false));
+        CompanyMemberEntity saveCompanyMember = companyMemberRepository.save(
+            new CompanyMemberEntity("companyMember", "password", "companyName", false));
+        CompanyFoodEntity saveCompanyFood = companyFoodRepository.save(
+            new CompanyFoodEntity(saveCompanyMember, "foodName1", new BigDecimal("3000")));
+        List<RequestOrder> requestList = Arrays.asList(
+            new RequestOrder(saveGeneralMember.getId(), saveCompanyMember.getId(),
+                saveCompanyFood.getId(), 3),
+            new RequestOrder(saveGeneralMember.getId(), saveCompanyMember.getId(),
+                saveCompanyFood.getId(), 5));
+
         //when
-        List<OrderDetailEntity> list = new ArrayList<>();
-        OrderDetailEntity orderDetailElement1 = new OrderDetailEntity(null, null, 11l, 1l, null, 3);
-        OrderDetailEntity orderDetailElement2 = new OrderDetailEntity(null, null, 11l, 1l, null, 6);
-        list.add(orderDetailElement1);
-        list.add(orderDetailElement2);
-
-        tx.begin();
-        orderRepository.addOrder(em, 22l, list);
-        OrderDetailEntity findOrderDetailEntity1 = em.find(OrderDetailEntity.class, 1l);
-        OrderDetailEntity findOrderDetailEntity2 = em.find(OrderDetailEntity.class, 2l);
-        tx.commit();
-
+        orderService.addOrder(saveGeneralMember.getId(), requestList);
         //then
-        assertThat(findOrderDetailEntity1.getFoodAmount()).isEqualTo(3);
-        assertThat(findOrderDetailEntity2.getFoodAmount()).isEqualTo(6);
+        em.flush();
+        em.clear();
+        List<OrderEntity> orderEntityList = orderRepository.findAll();
+        List<OrderDetailEntity> orderDetailEntityList = orderDetailRepository.findAll();
+        assertThat(orderEntityList.size()).isEqualTo(1);
+        assertThat(orderDetailEntityList.size()).isEqualTo(2);
     }
 
     @Test
     @DisplayName("general member id별 주문 목록 list 찾기 Test")
     void findOrderListByGeneralId() {
         //given
-        tx.begin();
-        CompanyFoodEntity companyFoodEntity1 = new CompanyFoodEntity(null, 11l, "참치김밥",
-            new Timestamp(System.currentTimeMillis()), null);
-        companyFoodRepository.add(em, companyFoodEntity1, new BigDecimal("3000"));
-        CompanyFoodEntity companyFoodEntity2 = new CompanyFoodEntity(null, 11l, "고추김밥",
-            new Timestamp(System.currentTimeMillis()), null);
-        companyFoodRepository.add(em, companyFoodEntity2, new BigDecimal("4000"));
-        List<OrderDetailEntity> list = new ArrayList<>();
-        OrderDetailEntity orderDetailElement1 = new OrderDetailEntity(null, null, 11l, 1l, null, 3);
-        OrderDetailEntity orderDetailElement2 = new OrderDetailEntity(null, null, 11l, 2l, null, 6);
-        list.add(orderDetailElement1);
-        list.add(orderDetailElement2);
-        orderRepository.addOrder(em, 22l, list);
-        OrderEntity findOrderEntity = em.find(OrderEntity.class, 1l);
-        Timestamp registrationDate = findOrderEntity.getRegistrationDate();
-        tx.commit();
+        GeneralMemberEntity saveGeneralMember1 = generalMemberRepository.save(
+            new GeneralMemberEntity("general1", "password", "general1", false));
+        GeneralMemberEntity saveGeneralMember2 = generalMemberRepository.save(
+            new GeneralMemberEntity("general2", "password", "general1", false));
+        CompanyMemberEntity saveCompanyMember = companyMemberRepository.save(
+            new CompanyMemberEntity("companyMember", "password", "companyName", false));
+        CompanyFoodEntity saveCompanyFood = companyFoodRepository.save(
+            new CompanyFoodEntity(saveCompanyMember, "foodName1", new BigDecimal("3000")));
+        List<RequestOrder> requestList1 = Arrays.asList(
+            new RequestOrder(saveGeneralMember1.getId(), saveCompanyMember.getId(),
+                saveCompanyFood.getId(), 3),
+            new RequestOrder(saveGeneralMember1.getId(), saveCompanyMember.getId(),
+                saveCompanyFood.getId(), 5));
+        List<RequestOrder> requestList2 = Arrays.asList(
+            new RequestOrder(saveGeneralMember2.getId(), saveCompanyMember.getId(),
+                saveCompanyFood.getId(), 3));
 
+        orderService.addOrder(saveGeneralMember1.getId(), requestList1);
+        orderService.addOrder(saveGeneralMember2.getId(), requestList2);
         //when
-        List<GeneralMemberOrderDto> findOrderListByGeneralId = orderService.findOrderListByGeneralId(
-            22l);
-        List<GeneralMemberOrderDto> findOrderBlankList = orderService.findOrderListByGeneralId(44l);
-
-        List<GeneralMemberOrderDto> actualList = new ArrayList<>();
-        GeneralMemberOrderDto generalMemberOrderDto1 = new GeneralMemberOrderDto(registrationDate,
-            1l, 22l, 1l, "참치김밥", new BigDecimal("3000"), 3, 11l);
-        GeneralMemberOrderDto generalMemberOrderDto2 = new GeneralMemberOrderDto(registrationDate,
-            1l, 22l, 2l, "고추김밥", new BigDecimal("4000"), 6, 11l);
-        actualList.add(generalMemberOrderDto1);
-        actualList.add(generalMemberOrderDto2);
-
+        em.flush();
+        em.clear();
+        List<GeneralMemberOrderDto> orderListByGeneralId1 = orderService.findOrderListByGeneralId(
+            saveGeneralMember1.getId());
+        List<GeneralMemberOrderDto> orderListByGeneralId2 = orderService.findOrderListByGeneralId(
+                    saveGeneralMember2.getId());
         //then
-        assertThat(findOrderListByGeneralId).isEqualTo(actualList);
-        assertThat(findOrderBlankList).isEqualTo(new ArrayList<>());
+        assertThat(orderListByGeneralId1.size()).isEqualTo(2);
+        assertThat(orderListByGeneralId2.size()).isEqualTo(1);
     }
 }

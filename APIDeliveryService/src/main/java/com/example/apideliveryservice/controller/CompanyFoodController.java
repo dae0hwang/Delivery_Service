@@ -28,35 +28,35 @@ public class CompanyFoodController {
     private final CompanyFoodService companyFoodService;
 
     @PostMapping("food/addFood")
-    public ResponseEntity addFood(@Validated @RequestBody RequestCompanyFood requestCompanyFood)
-        throws Exception {
-        companyFoodService.addFood(requestCompanyFood.getMemberId(), requestCompanyFood.getName(),
-            requestCompanyFood.getPrice());
+    public ResponseEntity<ResponseCompanyFoodSuccess> addFood(@Validated @RequestBody RequestCompanyFood requestCompanyFood) {
+        companyFoodService.addFood(requestCompanyFood.getMemberId(), requestCompanyFood.getName()
+            , requestCompanyFood.getPrice());
         ResponseCompanyFoodSuccess success = new ResponseCompanyFoodSuccess(201, null, null);
-        return new ResponseEntity(success, HttpStatus.CREATED);
+        return new ResponseEntity<>(success, HttpStatus.CREATED);
     }
 
     @GetMapping("/food/allFood")
-    public ResponseEntity allFood(@RequestParam("memberId") String memberId) throws Exception {
-        List<CompanyFoodDto> allFood = companyFoodService.findAllFood(memberId);
+    public ResponseEntity<ResponseCompanyFoodSuccess> allFood(@RequestParam("memberId") Long companyMemberId) {
+        List<CompanyFoodDto> allFood = companyFoodService.findAllFoodByCompanyMemberId(
+            companyMemberId);
         ResponseCompanyFoodSuccess success = new ResponseCompanyFoodSuccess(200, allFood, null);
         return ResponseEntity.status(HttpStatus.OK).body(success);
     }
 
     @GetMapping("/food/information")
-    public ResponseEntity foodInformation(
-        @RequestParam("foodId") String foodId) throws Exception {
-        CompanyFoodDto findFood = companyFoodService.findFood(foodId);
+    public ResponseEntity<ResponseCompanyFoodSuccess> foodInformation(
+        @RequestParam("foodId") Long companyFoodId) {
+        CompanyFoodDto findFood = companyFoodService.findFoodById(companyFoodId);
         ResponseCompanyFoodSuccess success = new ResponseCompanyFoodSuccess(200, null,
             findFood);
-        return new ResponseEntity(success, HttpStatus.OK);
+        return new ResponseEntity<>(success, HttpStatus.OK);
     }
 
     @PutMapping("/food/update")
-    public ResponseEntity updatePrice(@Validated @RequestBody RequestCompanyFoodPrice request)
-        throws Exception {
-        companyFoodService.updatePrice(request.getFoodId(), request.getPrice());
+    public ResponseEntity<ResponseCompanyFoodSuccess> updatePrice(@Validated @RequestBody RequestCompanyFoodPrice request) {
+        companyFoodService.updateFoodPrice(request.getFoodId(), request.getPrice());
         ResponseCompanyFoodSuccess success = new ResponseCompanyFoodSuccess(200, null, null);
-        return new ResponseEntity(success, HttpStatus.OK);
+        return new ResponseEntity<>(success, HttpStatus.OK);
     }
+
 }

@@ -1,64 +1,74 @@
 package com.example.apideliveryservice.service;
 
 import com.example.apideliveryservice.dto.GeneralMemberOrderDto;
+import com.example.apideliveryservice.dto.RequestOrder;
+import com.example.apideliveryservice.entity.CompanyFoodEntity;
+import com.example.apideliveryservice.entity.CompanyMemberEntity;
+import com.example.apideliveryservice.entity.GeneralMemberEntity;
 import com.example.apideliveryservice.entity.OrderDetailEntity;
+import com.example.apideliveryservice.entity.OrderEntity;
 import com.example.apideliveryservice.repository.CompanyFoodRepository;
+import com.example.apideliveryservice.repository.CompanyMemberRepository;
+import com.example.apideliveryservice.repository.GeneralMemberRepository;
+import com.example.apideliveryservice.repository.OrderDetailRepository;
 import com.example.apideliveryservice.repository.OrderRepository;
+import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.EntityTransaction;
-import javax.persistence.Persistence;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Slf4j
 @RequiredArgsConstructor
 public class OrderService {
 
-    @Value("${persistenceName:@null}")
-    private String persistenceName;
-    private final OrderRepository orderRepository;
     private final CompanyFoodRepository companyFoodRepository;
+    private final OrderRepository orderRepository;
+    private final OrderDetailRepository orderDetailRepository;
+    private final GeneralMemberRepository generalMemberRepository;
+    private final CompanyMemberRepository companyMemberRepository;
 
-    public void addOrder(Long generalId, List<OrderDetailEntity> orderDetailElementList)
-        throws Exception {
-        EntityManagerFactory emf = Persistence.createEntityManagerFactory(persistenceName);
-        EntityManager em = emf.createEntityManager();
-        EntityTransaction tx = em.getTransaction();
-        try {
-            tx.begin();
-            orderRepository.addOrder(em, generalId, orderDetailElementList);
-            tx.commit();
-        } catch (Exception e) {
-            tx.rollback();
-            throw e;
-        } finally {
-            em.close();
-            emf.close();
+
+    @Transactional
+    public void addOrder(Long generalMemberId, List<RequestOrder> requestOrderList) {
+        GeneralMemberEntity findGeneralMember = generalMemberRepository.findById(generalMemberId)
+            .orElseThrow();
+        OrderEntity saveOrderEntity = orderRepository.save(new OrderEntity(findGeneralMember));
+        for (RequestOrder requestOrder : requestOrderList) {
+            CompanyFoodEntity findCompanyFood = companyFoodRepository.findById(
+                requestOrder.getFoodId()).orElseThrow();
+            CompanyMemberEntity findCompanyMember = companyMemberRepository.findById(
+                requestOrder.getCompanyMemberId()).orElseThrow();
+            orderDetailRepository.save(
+                new OrderDetailEntity(saveOrderEntity, findCompanyMember, findCompanyFood,
+                    findCompanyFood.getPrice(), requestOrder.getFoodAmount()));
         }
     }
+    @Transactional(readOnly = true)
+    public List<GeneralMemberOrderDto> findOrderListByGeneralId(Long generalMemberId) {
+        GeneralMemberEntity findGeneralMember = generalMemberRepository.findById(
+            generalMemberId).orElseThrow();
+        List<OrderEntity> findOrderList = orderRepository.findAllByGeneralMemberEntity(
+            findGeneralMember);
+        List<GeneralMemberOrderDto> generalMemberOrderDtoList = new ArrayList<>();
 
-    public List<GeneralMemberOrderDto> findOrderListByGeneralId(Long generalId) {
-        EntityManagerFactory emf = Persistence.createEntityManagerFactory(persistenceName);
-        EntityManager em = emf.createEntityManager();
-        EntityTransaction tx = em.getTransaction();
-        try {
-            tx.begin();
-            List<GeneralMemberOrderDto> findOrderList =
-                orderRepository.findOrderListByGeneralId(
-                em, generalId);
-            tx.commit();
-            return findOrderList;
-        } catch (Exception e) {
-            tx.rollback();
-            throw e;
-        } finally {
-            em.close();
-            emf.close();
+        for (OrderEntity orderEntity : findOrderList) {
+            Timestamp registrationDate = orderEntity.getRegistrationDate();
+            Long orderId = orderEntity.getId();
+            Long findGeneralMemberId = orderEntity.getGeneralMemberEntity().getId();
+            List<OrderDetailEntity> orderDetailEntityList = orderEntity.getOrderDetailEntityList();
+            for (OrderDetailEntity orderDetail : orderDetailEntityList) {
+                GeneralMemberOrderDto generalMemberOrderDto = new GeneralMemberOrderDto(
+                    registrationDate, orderId, findGeneralMemberId,
+                    orderDetail.getCompanyFoodEntity().getId(),
+                    orderDetail.getCompanyFoodEntity().getName(), orderDetail.getFoodPrice(),
+                    orderDetail.getFoodAmount(), orderDetail.getCompanyMemberEntity().getId());
+                generalMemberOrderDtoList.add(generalMemberOrderDto);
+            }
         }
+
+        return generalMemberOrderDtoList;
     }
+
 }

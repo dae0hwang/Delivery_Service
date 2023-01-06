@@ -10,7 +10,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
@@ -22,7 +21,7 @@ public class OrderStatisticController {
     private final OrderStatisticService orderStatisticService;
 
     @GetMapping("/company/all/day")
-    public ResponseEntity companyAllOfDay() throws Exception {
+    public ResponseEntity companyAllOfDay() {
         List<FoodPriceSumDto> statisticList = orderStatisticService.companyAllOfDay();
         ResponseOrderSuccess success = new ResponseOrderSuccess(200, null,
             statisticList);
@@ -30,40 +29,40 @@ public class OrderStatisticController {
     }
 
     @GetMapping("/company/all/month")
-    public ResponseEntity companyAllOfMonth() throws Exception {
+    public ResponseEntity companyAllOfMonth() {
         List<FoodPriceSumDto> statisticList = orderStatisticService.companyAllOfMonth();
         ResponseOrderSuccess success = new ResponseOrderSuccess(200, null,
             statisticList);
         return new ResponseEntity(success, HttpStatus.OK);
     }
 
-    @GetMapping("/company/id/day")
-    public ResponseEntity companyIdOfDay(@RequestParam Long companyId) throws Exception {
-        List<FoodPriceSumDto> statisticList = orderStatisticService.companyIdOfDay(companyId);
+    @GetMapping("/company/member/day")
+    public ResponseEntity companyIdOfDay() {
+        List<FoodPriceSumDto> statisticList = orderStatisticService.companyMemberOfDay();
         ResponseOrderSuccess success = new ResponseOrderSuccess(200, null,
             statisticList);
         return new ResponseEntity(success, HttpStatus.OK);
     }
 
-    @GetMapping("/company/id/month")
-    public ResponseEntity companyIdOfMonth(@RequestParam Long companyId) throws Exception {
-        List<FoodPriceSumDto> statisticList = orderStatisticService.companyIdOfMonth(companyId);
+    @GetMapping("/company/member/month")
+    public ResponseEntity companyIdOfMonth() {
+        List<FoodPriceSumDto> statisticList = orderStatisticService.companyMemberOfMonth();
         ResponseOrderSuccess success = new ResponseOrderSuccess(200, null,
             statisticList);
         return new ResponseEntity(success, HttpStatus.OK);
     }
 
-    @GetMapping("/general/id/day")
-    public ResponseEntity generalIdOfDay(@RequestParam Long generalId) throws Exception {
-        List<FoodPriceSumDto> statisticList = orderStatisticService.generalIdOfDay(generalId);
+    @GetMapping("/general/member/day")
+    public ResponseEntity generalMemberOfDay() {
+        List<FoodPriceSumDto> statisticList = orderStatisticService.generalMemberOfDay();
         ResponseOrderSuccess success = new ResponseOrderSuccess(200, null,
             statisticList);
         return new ResponseEntity(success, HttpStatus.OK);
     }
 
-    @GetMapping("/general/id/month")
-    public ResponseEntity generalIdOfMonth(@RequestParam Long generalId) throws Exception {
-        List<FoodPriceSumDto> statisticList = orderStatisticService.generalIdOfMonth(generalId);
+    @GetMapping("/general/member/month")
+    public ResponseEntity generalMemberOfMonth() {
+        List<FoodPriceSumDto> statisticList = orderStatisticService.generalMemberOfMonth();
         ResponseOrderSuccess success = new ResponseOrderSuccess(200, null,
             statisticList);
         return new ResponseEntity(success, HttpStatus.OK);

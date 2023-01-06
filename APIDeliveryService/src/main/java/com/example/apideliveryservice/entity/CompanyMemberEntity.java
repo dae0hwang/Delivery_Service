@@ -3,19 +3,22 @@ package com.example.apideliveryservice.entity;
 import java.sql.Timestamp;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EntityListeners;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
-@Table(name = "company_members")
+@EntityListeners(AuditingEntityListener.class)
+@Table(name = "company_member")
 public class CompanyMemberEntity {
 
     @Id
@@ -27,6 +30,14 @@ public class CompanyMemberEntity {
     private String name;
     @Column(name = "phone_verification")
     private Boolean phoneVerification;
-    @Column(name = "registration_date")
-    private Timestamp createdAt;
+    @CreatedDate
+    private Timestamp registrationDate;
+
+    public CompanyMemberEntity(String loginName, String password, String name,
+        Boolean phoneVerification) {
+        this.loginName = loginName;
+        this.password = password;
+        this.name = name;
+        this.phoneVerification = phoneVerification;
+    }
 }

@@ -1,6 +1,6 @@
 package com.example.apideliveryservice.dto;
 
-import com.example.apideliveryservice.exception.ExceptionMessage;
+import com.example.apideliveryservice.exception.CompanyFoodExceptionEnum.Constants;
 import java.math.BigDecimal;
 import javax.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
@@ -12,9 +12,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class RequestCompanyFood {
 
-    @NotBlank(message = ExceptionMessage.RequestCompanyFoodDtoMemberId)
-    private String memberId;
-    @NotBlank(message = ExceptionMessage.RequestCompanyFoodDtoName)
+    private Long memberId;
+    @NotBlank(message = Constants.addOrderRequestNameBlank)
     private String name;
     private BigDecimal price;
 }

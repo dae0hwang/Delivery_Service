@@ -1,131 +1,56 @@
 package com.example.apideliveryservice.service;
 
+import static com.example.apideliveryservice.exception.GeneralMemberExceptionEnum.GENERAL_JOIN_DUPLICATED_LOGIN_NAME;
+
 import com.example.apideliveryservice.dto.GeneralMemberDto;
 import com.example.apideliveryservice.entity.GeneralMemberEntity;
-import com.example.apideliveryservice.exception.DeliveryServiceException;
-import com.example.apideliveryservice.exception.ExceptionMessage;
+import com.example.apideliveryservice.exception.GeneralMemberException;
 import com.example.apideliveryservice.repository.GeneralMemberRepository;
-import java.sql.Timestamp;
 import java.util.List;
 import java.util.stream.Collectors;
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.EntityTransaction;
-import javax.persistence.Persistence;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
 public class GeneralMemberService {
 
-    @Value("${persistenceName:@null}")
-    private String persistenceName;
     private final GeneralMemberRepository generalMemberRepository;
-
-    /**
-     * @param loginName, password, name
-     * @throws Exception
-     * @throws DeliveryServiceException-general member join fail due to DuplicatedLoginName
-     */
-    public void join(String loginName, String password, String name) throws Exception {
-        GeneralMemberEntity generalMemberEntity = getGeneralMember(loginName, password, name);
-        EntityManagerFactory emf = Persistence.createEntityManagerFactory(persistenceName);
-        EntityManager em = emf.createEntityManager();
-        EntityTransaction tx = em.getTransaction();
-        try {
-            tx.begin();
-            validateDuplicateLoginName(em, generalMemberEntity);
-            generalMemberRepository.create(em, generalMemberEntity);
-            tx.commit();
-        } catch (Exception e) {
-            tx.rollback();
-            throw e;
-        } finally {
-            em.close();
-            emf.close();
-        }
+    @Transactional
+    public void join(String loginName, String password, String name){
+        validateDuplicateLoginName(loginName);
+        generalMemberRepository.save(new GeneralMemberEntity(loginName, password, name, false));
     }
 
-    private GeneralMemberEntity getGeneralMember(String loginName, String password, String name) {
-        GeneralMemberEntity generalMemberEntity = new GeneralMemberEntity(null, loginName, password, name,
-            false, new Timestamp(System.currentTimeMillis()));
-        return generalMemberEntity;
+    @Transactional(readOnly = true)
+    public List<GeneralMemberDto> findAllMember() {
+        return changeAllMemberEntityToDto(generalMemberRepository.findAll());
     }
 
-    private void validateDuplicateLoginName(EntityManager em, GeneralMemberEntity generalMemberEntity) {
-        generalMemberRepository.findByLoginName(em, generalMemberEntity.getLoginName())
-            .ifPresent(m -> {
-                throw new DeliveryServiceException(
-                    ExceptionMessage.DeliveryExceptionDuplicatedName);
-            });
-    }
-
-    /**
-     * @return generalMemberList
-     * @throws Exception
-     */
-    public List<GeneralMemberDto> findAllMember() throws Exception {
-        EntityManagerFactory emf = Persistence.createEntityManagerFactory(persistenceName);
-        EntityManager em = emf.createEntityManager();
-        EntityTransaction tx = em.getTransaction();
-        try {
-            tx.begin();
-            List<GeneralMemberEntity> allMemberEntity = generalMemberRepository.findAll(em);
-            tx.commit();
-            List<GeneralMemberDto> allMemberDto = changeAllMemberEntityToDto(allMemberEntity);
-            return allMemberDto;
-        } catch (Exception e) {
-            tx.rollback();
-            throw e;
-        } finally {
-            em.close();
-            emf.close();
-        }
-    }
-
-    /**
-     * @param id
-     * @return findCompanyMember
-     * @throws Exception
-     * @throws DeliveryServiceException-general member findById fail due to
-     *                                          NonExistentMemberIdException
-     */
-    public GeneralMemberDto findById(String id) throws Exception {
-        EntityManagerFactory emf = Persistence.createEntityManagerFactory(persistenceName);
-        EntityManager em = emf.createEntityManager();
-        EntityTransaction tx = em.getTransaction();
-        try {
-            tx.begin();
-            GeneralMemberEntity memberEntity = generalMemberRepository.findById(em, Long.parseLong(id))
-                .orElse(null);
-            if (memberEntity == null) {
-                throw new DeliveryServiceException(
-                    ExceptionMessage.DeliveryExceptionNonExistentMemberId);
-            }
-            tx.commit();
-            GeneralMemberDto memberDto = changeMemberEntityToDto(memberEntity);
-            return memberDto;
-        } catch (Exception e) {
-            tx.rollback();
-            throw e;
-        } finally {
-            em.close();
-            emf.close();
-        }
+    @Transactional(readOnly = true)
+    public GeneralMemberDto findById(Long id) {
+        GeneralMemberEntity findGeneralMemberEntity = generalMemberRepository.findById(id)
+            .orElseThrow();
+        return changeMemberEntityToDto(findGeneralMemberEntity);
     }
 
     private GeneralMemberDto changeMemberEntityToDto(GeneralMemberEntity memberEntity) {
-        GeneralMemberDto memberDto = new GeneralMemberDto(memberEntity.getId(),
-            memberEntity.getLoginName(), memberEntity.getName(), memberEntity.getCreatedAt());
-        return memberDto;
+        return new GeneralMemberDto(memberEntity.getId(),
+            memberEntity.getLoginName(), memberEntity.getName(), memberEntity.getRegistrationDate());
     }
 
     private List<GeneralMemberDto> changeAllMemberEntityToDto(List<GeneralMemberEntity> allMemberEntity) {
-        List<GeneralMemberDto> allMemberDto = allMemberEntity.stream().map(
+        return allMemberEntity.stream().map(
             m -> new GeneralMemberDto(m.getId(), m.getLoginName(), m.getName(),
-                m.getCreatedAt())).collect(Collectors.toList());
-        return allMemberDto;
+                m.getRegistrationDate())).collect(Collectors.toList());
+    }
+
+    private void validateDuplicateLoginName(String loginName) {
+        generalMemberRepository.findByLoginName(loginName)
+            .ifPresent(m -> {
+                throw new GeneralMemberException(
+                    GENERAL_JOIN_DUPLICATED_LOGIN_NAME.getErrormessage());
+            });
     }
 }

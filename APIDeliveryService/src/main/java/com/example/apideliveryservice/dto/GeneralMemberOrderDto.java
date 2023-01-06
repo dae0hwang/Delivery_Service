@@ -13,7 +13,7 @@ public class GeneralMemberOrderDto {
 
     private Date registrationDate;
     private Long orderId;
-    private Long generalId;
+    private Long generalMemberId;
     private Long foodId;
     private String foodName;
     private BigDecimal foodPrice;
