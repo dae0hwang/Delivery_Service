@@ -12,6 +12,8 @@ import com.example.apideliveryservice.repository.CompanyFoodHistoryRepository;
 import com.example.apideliveryservice.repository.CompanyFoodRepository;
 import com.example.apideliveryservice.repository.CompanyMemberRepository;
 import java.math.BigDecimal;
+import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -22,6 +24,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -41,6 +44,38 @@ class CompanyFoodServiceTest {
     CompanyMemberRepository companyMemberRepository;
     @Autowired
     EntityManager em;
+    @Autowired
+    RedisTemplate<String, List<CompanyFoodDto>> redisTemplate;
+
+    @Test
+    @DisplayName("lettuce 기본 테스트")
+    void lettuceTest() {
+        //어떻게 저장 되는 지 확인하기.
+//        redisTemplate.opsForValue().set("companyFood::"+3l,
+//            new CompanyFoodDto(1l, 1l, "foodName", new Timestamp(System.currentTimeMillis()),
+//                new BigDecimal("3000")));
+//        Object o = redisTemplate.opsForValue().get("companyFood::3");
+//        Object o = redisTemplate.opsForValue().get("companyFood::123123");
+//        if (o == null) System.out.println("aa");
+//        System.out.println("zzz");
+
+//        System.out.println("o = " + o);
+
+        //오케이 성공
+        List<CompanyFoodDto> list = Arrays.asList(
+            new CompanyFoodDto(1l, 2l, "nanan", new Timestamp(System.currentTimeMillis()),
+                new BigDecimal("300")));
+        redisTemplate.opsForValue().set("companyFood::33",list );
+//        List<CompanyFoodDto> companyFoodDtos = redisTemplate.opsForValue().get("companyFood::1");
+//        System.out.println("companyFoodDtos = " + companyFoodDtos);
+        //삭제를 한번 해보자.
+//        redisTemplate.delete("companyFood::1");
+
+        List<CompanyFoodDto> companyFoodDtos = redisTemplate.opsForValue().get("companyFood::33");
+        System.out.println("companyFoodDtos = " + companyFoodDtos);
+
+
+    }
 
     @Test
     @DisplayName("음식 등록 성공 Test")

@@ -18,6 +18,7 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,12 +31,15 @@ public class CompanyFoodService {
     private final CompanyFoodRepository companyFoodRepository;
     private final CompanyFoodHistoryRepository companyFoodHistoryRepository;
     private final CompanyMemberRepository companyMemberRepository;
+    private final RedisTemplate<String, List<CompanyFoodDto>> redisTemplate;
 
     @Transactional
     public void addFood(Long companyMemberId, String foodName, BigDecimal price)  {
         try {
             validateDuplicateFoodName(companyMemberId, foodName);
             saveCompanyFoodAndHistory(companyMemberId, foodName, price);
+            //redis
+            redisTemplate.delete("companyFood::" + companyMemberId);
         } catch (DataIntegrityViolationException e) {
             throw new CompanyFoodException(ADD_ORDER_REQUEST_PRICE_BLANK.getErrormessage());
         }
@@ -43,12 +47,21 @@ public class CompanyFoodService {
 
     @Transactional(readOnly = true)
     public List<CompanyFoodDto> findAllFoodByCompanyMemberId(Long companyMemberId) {
+        //redis
+        List<CompanyFoodDto> redisValue = redisTemplate.opsForValue()
+            .get("companyFood::" + companyMemberId);
+        if (redisValue != null) {
+            return redisValue;
+        } else {
             CompanyMemberEntity findCompanyMember = companyMemberRepository.findById(companyMemberId)
                 .orElseThrow();
             List<CompanyFoodEntity> findCompanyFoodList =
                 companyFoodRepository.findAllByCompanyMemberEntity(findCompanyMember);
             List<CompanyFoodDto> companyFoodDtoList = changeFoodEntityListToDto(findCompanyFoodList);
+            //redis
+            redisTemplate.opsForValue().set("companyFood::" + companyMemberId, companyFoodDtoList);
             return companyFoodDtoList;
+        }
     }
 
     @Transactional(readOnly = true)
@@ -64,6 +77,9 @@ public class CompanyFoodService {
         try {
             CompanyFoodEntity findCompanyFood = companyFoodPriceUpdate(companyFoodId, updatePrice);
             saveCompanyFoodUpdatePriceHistory(updatePrice, findCompanyFood);
+            //redis 사용
+            redisTemplate.delete(
+                "companyFood::" + findCompanyFood.getCompanyMemberEntity().getId());
         } catch (DataIntegrityViolationException e) {
             throw new CompanyFoodException(UPDATE_PRICE_REQUEST_PRICE_BLANK.getErrormessage());
         }
