@@ -23,5 +23,5 @@
   <logger name="org.springframework.boot.web" level="warn"/>
   <logger name=" com.zaxxer.hikari.HikariDataSource" level="warn"/>
   <logger name="org.springframework.boot.autoconfigure.h2.H2ConsoleAutoConfiguration" level="warn"/>
-  <logger name="org.hibernate" level="warn"/>
+  <logger name="org.hibernate.SQL" level="debug"/>
 </configuration>
