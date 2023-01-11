@@ -9,7 +9,8 @@ spring:
   redis:
     host: 192.168.100.1
     port: 6379
-
+  jpa:
+    open-in-view: false
 
 ---
 spring:
