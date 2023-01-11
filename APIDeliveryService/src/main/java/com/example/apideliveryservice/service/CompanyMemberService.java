@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,6 +22,7 @@ public class CompanyMemberService {
 
     private final CompanyMemberRepository companyMemberRepository;
     @Transactional
+    @CacheEvict(value = "companyMemberList", allEntries = true)
     public void join(String loginName, String password, String name){
         validateDuplicateLoginName(loginName);
         CompanyMemberEntity companyMemberEntity = getCompanyMemberEntity(loginName, password, name);
@@ -38,6 +41,7 @@ public class CompanyMemberService {
             });
     }
     @Transactional(readOnly = true)
+    @Cacheable(value = "companyMemberList")
     public List<CompanyMemberDto> findAllMember(){
         List<CompanyMemberEntity> allCompanyMember = companyMemberRepository.findAll();
         return changeMemberEntityListToDtoList(
