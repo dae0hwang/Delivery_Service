@@ -11,6 +11,11 @@ spring:
     port: 6379
   jpa:
     open-in-view: false
+    properties:
+      hibernate:
+        format_sql: true
+        
+
 
 ---
 spring:
