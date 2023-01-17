@@ -14,14 +14,14 @@ public class NginXController {
 
     @GetMapping("/a")
     public String first(HttpServletRequest request) {
-        log.info("들어옴");
+        log.info("int");
         String url = request.getRequestURL().toString();
         return "uiA " + url;
     }
 
     @GetMapping("/a/b")
     public String second(HttpServletRequest request) {
-        log.info("들어옴");
+        log.info("in");
         String url = request.getRequestURL().toString();
         return "uiB "+url;
     }
