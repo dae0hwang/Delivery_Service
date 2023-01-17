@@ -6,21 +6,22 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletRequest;
+
 @RestController
-@RequestMapping("")
 @RequiredArgsConstructor
 public class NginXController {
 
-    @Value("${server.port}")
-    int port;
     @GetMapping("/a")
-    public String first() {
-        return "uiA "+port;
+    public String first(HttpServletRequest request) {
+        String url = request.getRequestURL().toString();
+        return "uiA " + url;
     }
 
     @GetMapping("/a/b")
-    public String se() {
-        return "uiB "+port;
+    public String second(HttpServletRequest request) {
+        String url = request.getRequestURL().toString();
+        return "uiB "+url;
     }
 
 }
