@@ -18,14 +18,14 @@ public class NginXController {
 
     @GetMapping("/a")
     public String first(HttpServletRequest request) {
-        log.info("in");
+        log.info("in ");
         String url = request.getRequestURL().toString();
         return "apiA " + url;
     }
 
     @GetMapping("/a/b")
     public String second(HttpServletRequest request) {
-        log.info("in");
+        log.info("in ");
         String url = request.getRequestURL().toString();
         return "apiB "+url;
     }

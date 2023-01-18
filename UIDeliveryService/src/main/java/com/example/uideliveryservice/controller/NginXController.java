@@ -14,7 +14,7 @@ public class NginXController {
 
     @GetMapping("/a")
     public String first(HttpServletRequest request) {
-        log.info("int");
+        log.info("in");
         String url = request.getRequestURL().toString();
         return "uiA " + url;
     }
