@@ -8,9 +8,10 @@ spring:
       on-profile: local
 server:
   port: 8080
+#local은 유지하기.
 url:
   api: 127.0.0.1:5510
-  ui: localhost:8080
+  ui: 127.0.0.1:8080
 ---
 
 spring:
@@ -20,5 +21,5 @@ spring:
 server:
   port: 8081
 url:
-  api: 127.0.0.1:5511
-  ui: localhost:8081
+  api: 127.0.0.3:80
+  ui: 127.0.0.3:80
