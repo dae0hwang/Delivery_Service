@@ -22,7 +22,7 @@ public class CompanyMemberService {
 
     private final CompanyMemberRepository companyMemberRepository;
     @Transactional
-    @CacheEvict(value = "companyMemberList", allEntries = true)
+//    @CacheEvict(value = "companyMemberList", allEntries = true)
     public void join(String loginName, String password, String name){
         validateDuplicateLoginName(loginName);
         CompanyMemberEntity companyMemberEntity = getCompanyMemberEntity(loginName, password, name);
@@ -41,7 +41,7 @@ public class CompanyMemberService {
             });
     }
     @Transactional(readOnly = true)
-    @Cacheable(value = "companyMemberList")
+//    @Cacheable(value = "companyMemberList")
     public List<CompanyMemberDto> findAllMember(){
         List<CompanyMemberEntity> allCompanyMember = companyMemberRepository.findAll();
         return changeMemberEntityListToDtoList(
