@@ -15,29 +15,30 @@ public class NginXController {
     @GetMapping("/a")
     public String first(HttpServletRequest request) {
         log.info("ui - in");
-        String url = request.getRequestURL().toString();
+
+        String url = request.getRemoteAddr().toString();
         return "uiA " + url;
     }
 
     @GetMapping("/a/b")
     public String second(HttpServletRequest request) {
         log.info("ui - in");
-        String url = request.getRequestURL().toString();
-        return "uiB "+url;
+        String url = request.getRemoteAddr().toString();
+        return "uiB " + url;
     }
 
     //api
     @GetMapping("api/a")
     public String api1(HttpServletRequest request) {
         log.info("api - in ");
-        String url = request.getRequestURL().toString();
+        String url = request.getRemoteAddr().toString();;
         return "apiA " + url;
     }
 
     @GetMapping("api/a/b")
     public String api2(HttpServletRequest request) {
         log.info("api - in ");
-        String url = request.getRequestURL().toString();
+        String url = request.getRemoteAddr().toString();
         return "apiB "+url;
     }
 
