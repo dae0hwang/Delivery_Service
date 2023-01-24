@@ -9,11 +9,32 @@
     </encoder>
   </appender>
 
+  <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+
+    <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+      <!-- daily rollover -->
+      <fileNamePattern>./errorLog/error_log.%d{yyyy-MM-dd}</fileNamePattern>
+      <!-- keep 30 days' worth of history capped at 3GB total size -->
+      <maxHistory>30</maxHistory>
+      <totalSizeCap>3GB</totalSizeCap>
+    </rollingPolicy>
+
+    <encoder>
+      <charset>UTF-8</charset>
+      <Pattern>%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n</Pattern>
+    </encoder>
+
+    <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+      <level>WARN</level>
+    </filter>
+  </appender>
+
   <root level="info">
     <appender-ref ref="CONSOLE"/>
+    <appender-ref ref="FILE"/>
   </root>
 
-<!--  logger name 과 level을 작성해서 로거를 설정 -->
+  <!--  logger name 과 level을 지정해서 로거를 설정 -->
   <logger name="com.example.apideliveryservice.ApiDeliveryServiceApplication" level="warn"/>
   <logger name="org.hibernate.validator.internal.util.Version" level="warn"/>
   <logger name="org.springframework.boot.devtools.env.DevToolsPropertyDefaultsPostProcessor" level="warn"/>
