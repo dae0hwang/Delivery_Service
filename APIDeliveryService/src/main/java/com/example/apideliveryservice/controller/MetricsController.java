@@ -6,12 +6,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class MetricsController {
 
-    @GetMapping("/end-point1")
+    @GetMapping("api/end-point1")
     public String endPoint1() {
         return "Metrics for endPoint1";
     }
 
-    @GetMapping("/end-point2")
+    @GetMapping("api/end-point2")
     public String endpoint2() {
         return "Metrics for endPoint2";
     }
