@@ -16,4 +16,24 @@ public class MetricsController {
         return "Metrics for endPoint2";
     }
 
+    @GetMapping("api/one")
+    public String one() {
+        return "one";
+    }
+
+    @GetMapping("api/two")
+    public String two() {
+        return "two";
+    }
+
+    @GetMapping("api/error1")
+    public String error1() {
+        throw new IllegalStateException("error1");
+    }
+
+    @GetMapping("api/error2")
+    public String error2() {
+        throw new IllegalStateException("error2");
+    }
+
 }
