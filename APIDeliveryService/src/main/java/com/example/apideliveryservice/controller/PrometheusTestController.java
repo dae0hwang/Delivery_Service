@@ -1,13 +1,20 @@
 package com.example.apideliveryservice.controller;
 
+import javax.servlet.http.HttpServletRequest;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class PrometheusTestController {
 
+    @GetMapping("api/ip")
+    public String ipTest(HttpServletRequest request) {
+        String ip = request.getHeader("x-forwarded-for");
+        return "ip = " + ip;
+    }
     @GetMapping("api/end-point1")
     public String endPoint1() {
+
         return "Metrics for endPoint1";
     }
 

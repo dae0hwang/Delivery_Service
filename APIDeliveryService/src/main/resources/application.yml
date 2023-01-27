@@ -33,7 +33,7 @@ server:
     accesslog:
       enabled: true
       pattern: "%t %a %r %s (%D ms)"
-
+  forward-headers-strategy: native
 ---
 spring:
   config:
