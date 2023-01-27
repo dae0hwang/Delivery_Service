@@ -32,8 +32,11 @@ server:
     basedir: "my-tomcat"
     accesslog:
       enabled: true
-      pattern: "%t %a %r %s (%D ms)"
-  forward-headers-strategy: framework
+      pattern: "%{X-Forwarded-For}i (, %h) %l %u %t &quot;%r&quot; %s %b"
+    remoteip:
+      remote-ip-header: "x-forwarded-for"
+      protocol-header: "forwarded-proto"
+
 ---
 spring:
   config:
