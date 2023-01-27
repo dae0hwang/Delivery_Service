@@ -4,7 +4,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-public class MetricsController {
+public class PrometheusTestController {
 
     @GetMapping("api/end-point1")
     public String endPoint1() {
