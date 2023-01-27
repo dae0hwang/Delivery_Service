@@ -9,7 +9,7 @@ public class PrometheusTestController {
 
     @GetMapping("api/ip")
     public String ipTest(HttpServletRequest request) {
-        String ip = request.getHeader("x-forwarded-for");
+        String ip = request.getHeader("X_FORWARDED_FOR");
         return "ip = " + ip;
     }
     @GetMapping("api/end-point1")
