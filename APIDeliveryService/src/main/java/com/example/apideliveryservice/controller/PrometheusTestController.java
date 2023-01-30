@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class PrometheusTestController {
 
+    private static int count = 0;
     @GetMapping("api/ip")
     public String ipTest(HttpServletRequest request) {
         String ip = request.getHeader("X_FORWARDED_FOR");
@@ -41,6 +42,17 @@ public class PrometheusTestController {
     @GetMapping("api/error2")
     public String error2() {
         throw new IllegalStateException("error2");
+    }
+
+    @GetMapping("api/error")
+    public int errorRandomTest() {
+        count++;
+        if (count == 3) {
+            count = 0;
+            throw new IllegalStateException("error2");
+        } else {
+            return count;
+        }
     }
 
 }
