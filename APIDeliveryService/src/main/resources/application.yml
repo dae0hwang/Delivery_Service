@@ -32,7 +32,7 @@ server:
     basedir: "my-tomcat"
     accesslog:
       enabled: true
-      pattern: "%i %t %a %r %s (%D ms)"
+      pattern: "%{X-Forwarded-For}i %l %u %t &quot;%r&quot; %s %b"
 
 ---
 spring:
