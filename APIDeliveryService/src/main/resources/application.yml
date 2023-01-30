@@ -32,10 +32,8 @@ server:
     basedir: "my-tomcat"
     accesslog:
       enabled: true
-      pattern: "%{X-Real-IP}i  %l %u %t &quot;%r&quot; %s %b"
-    remoteip:
-      remote-ip-header: "x-real-ip"
-      protocol-header: "forwarded-proto"
+      pattern: "%i %l %u %t &quot;%r&quot; %s %b"
+
 
 ---
 spring:
