@@ -51,7 +51,7 @@
             }
 
             axios({
-                url: "10.0.2.6:5511/api/delivery-service/general/member/all",
+                url: "http://"+apiUrl+"/api/delivery-service/general/member/all",
                 method: 'get'
             })
             .then(function a(response) {
