@@ -31,7 +31,7 @@
 
   <!--  ELK-->
   <appender name="LOGSTASH" class="net.logstash.logback.appender.LogstashAccessTcpSocketAppender">
-    <destination>127.0.0.1:5044</destination>
+    <destination>127.0.0.1:4560</destination>
     <encoder class ="net.logstash.logback.encoder.LogstashAccessEncoder"></encoder>
   </appender>
 
