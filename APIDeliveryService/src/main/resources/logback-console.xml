@@ -30,14 +30,14 @@
   </appender>
 
   <!--  ELK-->
-  <appender name="LOGSTASH" class="net.logstash.logback.appender.LogstashAccessTcpSocketAppender">
+  <appender name="LOGSTASH" class="net.logstash.logback.appender.LogstashTcpSocketAppender">
     <destination>127.0.0.1:4560</destination>
-    <encoder class ="net.logstash.logback.encoder.LogstashAccessEncoder"></encoder>
+    <encoder class="net.logstash.logback.encoder.LogstashEncoder"></encoder>
   </appender>
 
   <root level="info">
-    <appender-ref ref="CONSOLE"/>
-    <appender-ref ref="FILE"/>
+<!--    <appender-ref ref="CONSOLE"/>-->
+<!--    <appender-ref ref="FILE"/>-->
     <appender-ref ref="LOGSTASH"/>
   </root>
 
