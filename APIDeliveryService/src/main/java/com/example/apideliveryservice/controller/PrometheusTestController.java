@@ -65,13 +65,13 @@ public class PrometheusTestController {
 
     @GetMapping("/api/warn")
     public String warn() {
-        log.info("warn test message");
+        log.warn("warn test message");
         return "warnOK";
     }
 
     @GetMapping("/api/error")
     public String error() {
-        log.info("error test message");
+        log.error("error test message");
         return "errorOK";
     }
 
