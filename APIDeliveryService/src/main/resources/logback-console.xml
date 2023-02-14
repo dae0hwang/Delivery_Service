@@ -38,7 +38,7 @@
   <root level="info">
     <appender-ref ref="CONSOLE"/>
 <!--    <appender-ref ref="FILE"/>-->
-    <appender-ref ref="LOGSTASH"/>
+<!--    <appender-ref ref="LOGSTASH"/>-->
   </root>
 
   <!--  logger name 과 level을 지정해서 로거를 설정 -->
