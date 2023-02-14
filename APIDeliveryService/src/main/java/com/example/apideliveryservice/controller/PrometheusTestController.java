@@ -1,10 +1,12 @@
 package com.example.apideliveryservice.controller;
 
 import javax.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@Slf4j
 public class PrometheusTestController {
 
     private static int count = 0;
@@ -53,6 +55,24 @@ public class PrometheusTestController {
         } else {
             return count;
         }
+    }
+
+    @GetMapping("/api/info")
+    public String info() {
+        log.info("info test message");
+        return "infoOK";
+    }
+
+    @GetMapping("/api/warn")
+    public String warn() {
+        log.info("warn test message");
+        return "warnOK";
+    }
+
+    @GetMapping("/api/error")
+    public String error() {
+        log.info("error test message");
+        return "errorOK";
     }
 
 }
