@@ -32,7 +32,7 @@ server:
     basedir: "my-tomcat"
     accesslog:
       enabled: true
-      pattern: "%i %t %a %r %s (%D ms)"
+      pattern: "%i  %{remote-ip}i  %t %a %r %s (%D ms)"
   forward-headers-strategy: native
 
 ---
