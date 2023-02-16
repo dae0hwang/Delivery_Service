@@ -33,7 +33,7 @@ server:
     accesslog:
       enabled: true
       pattern: "%{X-Forwarded-For}i (, %h) %t %a %r %s (%D ms)"
-  forward-headers-strategy: framework
+  forward-headers-strategy: native
 
 ---
 spring:
