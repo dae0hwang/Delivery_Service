@@ -2,18 +2,18 @@ management:
   endpoints:
     web:
       exposure:
-        include: health,info,metrics,prometheus
-  metrics:
-    tags:
-      application: ${spring.application.name}
+        include: prometheus
+#  metrics:
+#    tags:
+#      application: ${spring.application.name}
 
 
 logging:
   config: classpath:logback-console.xml
 
 spring:
-  application:
-    name: monitoring
+#  application:
+#    name: monitoring
   datasource:
     url: "jdbc:mysql://127.0.0.3:3306/delivery_service"
     username: "hwang"
