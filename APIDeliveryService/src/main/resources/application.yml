@@ -22,8 +22,14 @@ server:
 url:
   ui: http://localhost:8080
 ---
-
 spring:
+  datasource:
+    url: "jdbc:mysql://10.0.2.3:3306/delivery_service"
+    username: "hwang"
+    password: "5510"
+  redis:
+    host: 10.0.2.3
+    port: 6379
   config:
     activate:
       on-profile: server
