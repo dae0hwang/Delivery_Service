@@ -95,7 +95,7 @@ class CompanyFoodControllerTest {
     @DisplayName("request name 공백 음식 등록 실패 Test")
     void addFood2() throws Exception {
         //given
-        String url = baseUrl + "/food/addFood";
+        String url = baseUrl +  "/food/addFood";
 
         CompanyMemberEntity saveCompanyMember = companyMemberRepository.save(
             new CompanyMemberEntity("loginName", "password", "name", false));
