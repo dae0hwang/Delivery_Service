@@ -45,7 +45,7 @@ RequestBody로 들어오는 회원 가입 정보들을 Validation을 적용했�
 
 - 회원 가입 성공
 
-![ㅁ회원가입성공](https://github.com/dae0hwang/IgnorantEnglish/assets/103154389/5de87c0e-b4f4-4ba4-8b2b-96fa22b6e246)
+![a회원가입라스트 성공](https://github.com/dae0hwang/IgnorantEnglish/assets/103154389/23541c3d-fbef-4775-8613-cc9518ae846b)
 
 - 중복된 아이디 예외 발생
 
