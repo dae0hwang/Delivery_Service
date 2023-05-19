@@ -22,13 +22,21 @@ Html로 구성된 UI 서버는 javascript-axios를 사용하여 API 서버와 �
 
 [Spring Mysql과 Querydsl 통계성 쿼리 처리](https://coding-business.tistory.com/104)
 
-&nbsp;&nbsp;&nbsp;&nbsp;[DB OLTP와 OLAP의 차이](https://coding-business.tistory.com/39)
-
 [Rest API Axios 통신에 대한 이해](https://coding-business.tistory.com/105)
 
 [CORS 이해와 동작 원리 파악](https://coding-business.tistory.com/47)
 
 [Logback 설정 파일, 콘솔과 파일에 원하는 형식 로그 출력하기](https://coding-business.tistory.com/85)
+
+[ELK를 사용하여 SpringServer 에러 로그 모으기](https://www.notion.so/SeperateDeliveryService-3702e4734db24b3fad822aad452106e1)
+
+[무중단 배포를 위한 Nginx 로드밸런싱 적용](https://coding-business.tistory.com/59)
+
+
+[DB 접근을 줄이고 빠른 조회를 위한 Spring Redis 사용](https://coding-business.tistory.com/55)
+
+[Gloabal Cache Redis에 대한 이해](https://coding-business.tistory.com/76)
+
 
 # 서버 동작 구성
 ### 1. validation을 사용한 가게, 고객 회원 가입
