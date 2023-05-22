@@ -53,7 +53,7 @@ RequestBody로 들어오는 회원 가입 정보들을 Validation을 적용했�
 
 - 아이디, 비밀번호, 이름 validation 예외 발생
 
-![ㅁvalidation](https://github.com/dae0hwang/IgnorantEnglish/assets/103154389/7b21f1df-3b9b-40d9-ade3-1bae2304b694)
+![validation수정](https://github.com/dae0hwang/Ignorant_English_Service/assets/103154389/c05f249a-5e6b-4c05-8d18-92a9c765047a)
 
 ### 2. 음식점 - 음식 등록, 가격 수정
 각 가게마다 음식을 등록할 수 있고, 음식을 등록한 이후 가격을 수정할 수 있습니다.
