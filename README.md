@@ -21,10 +21,12 @@ RequestBody로 들어오는 회원 가입 정보를 검증하고 그에 따른 �
 <p align="left">
 <img src="https://github.com/dae0hwang/Delivery_Service/assets/103154389/880c68e1-2cf1-47a1-81cb-85cee86d6133">
 </p>
+
 - 중복된 아이디 검증
 <p align="left">
 <img src="https://github.com/dae0hwang/Delivery_Service/assets/103154389/1c351ebe-8886-46e9-92c2-c18dea6047f9">
 </p>
+
 - 아이디, 비밀번호, 이름 정보 검증
 <p align="left">
 <img src="https://github.com/dae0hwang/Delivery_Service/assets/103154389/260836d4-8371-4859-bbb2-32ee15d65699">
